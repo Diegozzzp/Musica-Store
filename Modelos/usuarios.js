@@ -8,7 +8,7 @@ const UsuariosSchema = new mongoose.Schema({
     avatar : { type: String,  min : 3, max : 30 },
     correo : { type: String, required: true, min : 3, max : 30 },
     password : { type: String, required: true, min : 3, max : 30 },
-    rol : { type: String, required: true, min : 3, max : 30, default: 'usuario' },
+    rol : { type: String,min : 3, max : 30, default: 'usuario' },
     carrito : { type: Array, default: [] },
     compras : { type: Array, default: [] },
     fecha : { type: Date, default: Date.now },
