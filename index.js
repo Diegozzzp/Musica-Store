@@ -17,9 +17,14 @@ corsOptions = {
 app.use(cors());
 
 const usuarios = require('./Rutas/usuarios');
+const categoria = require('./Rutas/categoria');
+const rol = require('./Rutas/rol');
+const compra = require('./Rutas/compra');
+const producto = require('./Rutas/producto');
 
 //usar las rutas
-app.use(usuarios);
+app.use(usuarios, categoria, rol, compra, producto);
+
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en el puerto ${port}`);

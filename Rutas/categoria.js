@@ -1,0 +1,14 @@
+const router = require('express').Router();
+const { obtenerCategorias, buscarCategorias, crearCategorias, editarCategorias, eliminarCategorias } = require('../Controladores/categoria');
+
+router.get('/categorias', obtenerCategorias);
+
+router.get('/categorias/:id', buscarCategorias);
+
+router.post('/categorias', crearCategorias);
+
+router.patch('/categorias/:id', editarCategorias);
+
+router.delete('/categorias/:id', eliminarCategorias);
+
+module.exports = router;
