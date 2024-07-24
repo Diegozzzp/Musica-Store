@@ -9,6 +9,7 @@ exports.obtenerCompras = async (req, res) => {
     }
 }
 
+//controlador para crear una nueva compra
 exports.crearCompra = async (req, res) => {
     try {
         const { usuario, carrito, total, fecha } = req.body;
@@ -20,7 +21,7 @@ exports.crearCompra = async (req, res) => {
     }
 }
 
-
+//controlador para editar una compra
 exports.editarCompra = async (req, res) => {
     try {
         const { id } = req.params;
@@ -33,6 +34,7 @@ exports.editarCompra = async (req, res) => {
     }
 }
 
+//controlador para eliminar una compra
 exports.eliminarCompra = async (req, res) => {
     try {
         const { id } = req.params;

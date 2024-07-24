@@ -1,6 +1,6 @@
 const Productos = require('../Modelos/producto');
 
-exports.ObtenerProductos = async (req, res) => {
+exports.obtenerProductos = async (req, res) => {
     try{
         const productos = await Productos.find();
         res.json(productos);

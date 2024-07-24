@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
-const CompraSchema = new mongoose.Schema({
-    usuario : { objectId: true, ref: 'usuarios', required: true, default : null },
-    prductos : { type: Array, default: [] , required: true },
+
+const compraSchema = new mongoose.Schema({ 
+    usuario : { type: mongoose.Schema.Types.ObjectId, ref: 'usuarios', required: true },
+    productos: [ {
+        product : { type: mongoose.Schema.Types.ObjectId, ref: 'productos', required: true },
+        cantidad : { type: Number, required: true, min : 1, max : 100}
+    }],
     total : { type: Number, required: true },
     fecha : { type: Date, default: Date.now },
     fechaActualizacion : { type: Date },
@@ -11,9 +15,9 @@ const CompraSchema = new mongoose.Schema({
     Eliminado : { type: Boolean, default: false }
 });
 
-CompraSchema.plugin(mongoosePaginate);
+compraSchema.plugin(mongoosePaginate);
 
-const Compra = mongoose.model('compra', CompraSchema);
+const Compra = mongoose.model('compra', compraSchema);
 
 Compra.paginate().then({});
 
