@@ -25,9 +25,8 @@ const Banner = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 7000); // Cambia cada 7 segundos
-
-    return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
+    }, 7000); 
+    return () => clearInterval(interval); 
   }, []);
 
   return (

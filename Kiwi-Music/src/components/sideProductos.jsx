@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Importa tus imágenes de productos
 import product1 from '../images/producto1.png';
 
 const products = [

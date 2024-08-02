@@ -14,7 +14,7 @@ exports.obtenerProductos = async (req, res) => {
 
 exports.ObtenerProductoCampo = async (req, res) => {
     try{
-        const {id , nombre, categoria} = req.query;
+        const {id , nombre, categoria, descripcion} = req.query;
         const filtro = {};
         if(id){
             filtro._id = id;
@@ -24,6 +24,9 @@ exports.ObtenerProductoCampo = async (req, res) => {
         }
         if(categoria){
             filtro.categoria = categoria;
+        }
+        if(descripcion){
+            filtro.descripcion = { $regex: new RegExp(descripcion, 'i') };
         }
         const producto = await Productos.find(filtro);
         res.json(producto);
