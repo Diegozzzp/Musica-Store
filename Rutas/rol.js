@@ -1,12 +1,18 @@
 const router = require('express').Router();
-const { obtenerRol, crearRol, editarRol, eliminarRol } = require('../Controladores/rol');
 
-router.get('/roles/:id', obtenerRol);
+const {obtenerCategorias, buscarCategorias, crearCategorias, editarCategorias, eliminarCategorias } = require('../Controladores/categoria');
 
-router.post('/roles', crearRol);
+const { validarRol } = require('../validaciones/rol');
 
-router.patch('/roles/:id', editarRol);
+router.get('/roles', obtenerCategorias);
 
-router.delete('/roles/:id', eliminarRol);
+router.get('/roles/:id', buscarCategorias);
 
-module.exports = router;
+router.post('/roles', validarRol, crearCategorias);
+
+router.patch('/roles/:id', editarCategorias);
+
+router.delete('/roles/:id', eliminarCategorias);
+
+
+module.exports = router

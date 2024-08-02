@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
 const RolSchema = new mongoose.Schema({
-    //no admitir caracteres especiales para el rol
     nombre : { type: String, required: true, min : 3, max : 30, unique: true, match: /^[a-zA-Z\s]+$/, default: 'usuario' },
     fecha : { type: Date, default: Date.now },
     fechaActualizacion : { type: Date },

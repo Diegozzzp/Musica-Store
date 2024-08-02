@@ -1,6 +1,7 @@
 const Usuarios = require('../Modelos/usuarios');
 const bcrypt = require('bcrypt');
 
+
 exports.obtenerUsuarios = async (req, res) => {
     try{
         const usuarios = await Usuarios.paginate({}, { page: req.query.page || 1, limit: 10 });
@@ -15,7 +16,6 @@ exports.obtenerUsuario = async (req, res) => {
     const usuario = new Usuarios(req.body);
     try{
         const {id , nombre, apellido, telefono, rol, eliminado} = req.query;
-        //crear filtro de busqueda
         const filtro = {};
         if(id){
             filtro._id = id;
@@ -44,21 +44,37 @@ exports.obtenerUsuario = async (req, res) => {
     }
 }
 
+
 exports.crearUsuario = async (req, res) => {
-    try{
-        const { nombre, apellido, telefono, avatar, correo, password, rol } = req.body;
-        const nuevoUsuario = new Usuarios({ nombre, apellido, telefono, avatar, correo, password, rol });
+    try {
+        const { nombre, apellido, telefono, correo, password, rol } = req.body;
+        const avatar = req.file ? req.file.path : null; 
+
+    
+        const nuevoUsuario = new Usuarios({
+            nombre,
+            apellido,
+            telefono,
+            avatar, 
+            correo,
+            password,
+            rol
+        });
+
+
         const salt = await bcrypt.genSalt(10);
         nuevoUsuario.password = await bcrypt.hash(password, salt);
-        await nuevoUsuario.save();
-        res.json({ msg: 'Usuario creado correctamente' });
-    }
-    catch(error){
-        res.status(500).json({ msg: 'Error al crear el usuario' });
-}
-}
 
-//controlador para editar los campos de usuario menos correo
+        await nuevoUsuario.save();
+
+        res.json({ msg: 'Usuario creado correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al crear el usuario' });
+    }
+};
+
+
 exports.editarUsuario = async (req, res) => {
     try{
         const { id } = req.params;
@@ -72,7 +88,6 @@ exports.editarUsuario = async (req, res) => {
     }
 }
 
-//controlador para eliminar un usuario soft delete
 
 exports.eliminarUsuario = async (req, res) => {
     try{

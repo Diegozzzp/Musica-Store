@@ -6,7 +6,7 @@ const cors = require('cors');
 
 app.use(express.json());
 
-//crear coneccion a la base de datos
+
 mongoose.connect('mongodb://localhost:27017/musica-store')
 
 corsOptions = {

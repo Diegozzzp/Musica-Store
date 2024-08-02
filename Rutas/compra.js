@@ -1,12 +1,16 @@
 const router = require('express').Router();
+
 const { obtenerCompras, crearCompra, editarCompra, eliminarCompra } = require('../Controladores/compra');
 
-router.get('/compras', obtenerCompras);
+const { validarCompra } = require('../validaciones/compra');
 
-router.post('/compras', crearCompra);
+
+router.get('/compras',obtenerCompras);
+
+router.post('/compras', validarCompra, crearCompra);
 
 router.patch('/compras/:id', editarCompra);
 
-router.delete('/compras/:id', eliminarCompra);
+router.patch('/compras/:id', eliminarCompra);
 
 module.exports = router;

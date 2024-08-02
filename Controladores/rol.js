@@ -4,7 +4,6 @@ exports.obtenerRol = async (req, res) => {
     const rol = new Rol(req.body);
     try {
         const { id, nombre, fecha, fechaActualizacion, fechaEliminacion, Eliminado } = req.query;
-        //crear filtro de busqueda
         const filtro = {};
         if (id) {
             filtro._id = id;

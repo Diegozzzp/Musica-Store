@@ -1,0 +1,12 @@
+@import "tailwindcss/tailwind.css";
+@import "flowbite";
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  @apply hidden;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  
+  scrollbar-width: none; 
+}

@@ -1,4 +1,5 @@
 const Productos = require('../Modelos/producto');
+const { validationResult } = require('express-validator');
 
 exports.obtenerProductos = async (req, res) => {
     try{
@@ -33,28 +34,49 @@ exports.ObtenerProductoCampo = async (req, res) => {
 }
 
 exports.crearProducto = async (req, res) => {
-    try{
-        const nuevoProducto = new Productos(req.body);
-        await nuevoProducto.save();
-        res.json({ msg: 'Producto creado correctamente' });
-    }
-    catch(error){
-        res.status(500).json({ msg: 'Error al crear el producto' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-}
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ msg: 'La imagen es obligatoria' });
+        }
+        const { nombre, precio, cantidad, categoria, descripcion, descuento } = req.body;
+    
+        const imagenes = req.files.map(file => file.path);
+
+        const nuevoProducto = new Productos({
+            nombre,
+            precio,
+            cantidad,
+            categoria,
+            imagenes,
+            descripcion,
+            descuento
+        });
+        await nuevoProducto.save();
+
+        res.json({ msg: 'Producto creado correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al crear el producto' });
+    }
+};
+
+
+
 exports.editarProducto = async (req, res) => {
     try {
         const { id } = req.params;
         const { nombre, precio, cantidad, categoria, imagenes, descripcion, descuento } = req.body;
-        const producto = await Productos.findByIdAndUpdate(id, { nombre, precio, cantidad, categoria, imagenes, descripcion, descuento }, { new: true });
-        await producto.save();
+        const producto = await Productos.findByIdAndUpdate(id, { nombre,precio, cantidad, categoria, imagenes, descripcion, descuento });
         res.json({ msg: 'Producto actualizado correctamente' });
     } catch (error) {
         res.status(500).json({ msg: 'Error al actualizar el producto' });
     }
 }
-
 
 exports.eliminarProducto = async (req, res) => {
     try {

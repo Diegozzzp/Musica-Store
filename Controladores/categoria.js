@@ -1,5 +1,6 @@
 const Categorias = require('../Modelos/categoria');
 
+
 exports.obtenerCategorias = async (req, res) => {
     try{
         const categorias = await Categorias.paginate({}, { page: req.query.page || 1, limit: 10 });
@@ -10,7 +11,6 @@ exports.obtenerCategorias = async (req, res) => {
     }
 }
 
-//controlador para buscar una categoria por su nombre o parecido
 exports.buscarCategorias = async (req, res) => {
     try{
         const { nombre } = req.query;
@@ -23,16 +23,15 @@ exports.buscarCategorias = async (req, res) => {
 }
 
 exports.crearCategorias = async (req, res) => {
-    try{
+    try {
         const { nombre } = req.body;
-        const nuevoCategorias = new Categorias({ nombre });
-        await nuevoCategorias.save();
-        res.json({ msg: 'Categorias creadas correctamente' });
+        const nuevaCategoria = new Categorias({ nombre });
+        await nuevaCategoria.save();
+        res.json({ msg: 'Categoría creada correctamente' });
+    } catch (error) {
+        res.status(500).json({ msg: 'Error al crear la categoría' });
     }
-    catch(error){
-        res.status(500).json({ msg: 'Error al crear las categorias' });
-    }
-}
+};
 
 exports.editarCategorias = async (req, res) => {
     try{

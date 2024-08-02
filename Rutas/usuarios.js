@@ -1,14 +1,21 @@
 const router = require('express').Router();
-const { obtenerUsuarios, obtenerUsuario, crearUsuario, editarUsuario, eliminarUsuario } = require('../Controladores/usuarios');
+
+const {obtenerUsuarios, obtenerUsuario, crearUsuario, editarUsuario, eliminarUsuario } = require('../Controladores/usuarios');
+
+const { validarUsuario } = require('../validaciones/usuario');
+
+const upload = require('../middlewares/multerconfig');
+
 
 router.get('/usuarios', obtenerUsuarios);
 
-router.get('/usuarios/:id', obtenerUsuario);
+router.get('/buscar/:id',obtenerUsuario);
 
-router.post('/usuarios', crearUsuario);
+router.post('/usuarios', upload.single('avatar') ,validarUsuario, crearUsuario);
 
-router.patch('/usuarios/:id', editarUsuario);
+router.patch('/editarUsuario/:id',validarUsuario, editarUsuario);
 
-router.delete('/usuarios/:id', eliminarUsuario);
+router.patch('/eliminarUsuario/:id',eliminarUsuario);
 
 module.exports = router;
+
