@@ -1,71 +1,88 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import '../index.css';
 
-import product1 from '../images/producto1.png';
+const URL_productos = 'http://localhost:3002/productos';
 
-const products = [
-  { src: product1, alt: 'Product 1', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo'  ,price: '$10.00' },
-  { src: product1, alt: 'Product 2', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo' ,price: '$20.00' },
-  { src: product1, alt: 'Product 3', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo' ,price: '$30.00' },
-  { src: product1, alt: 'Product 4', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo' ,price: '$40.00' },
-  { src: product1, alt: 'Product 5', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo' ,price: '$50.00' },
-  { src: product1, alt: 'Product 6', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo' ,price: '$60.00' },
-  { src: product1, alt: 'Product 7', artist: 'Billie Eilish',  productName: 'Album Happier Than Ever - Version Vinilo' ,price: '$70.00' },
-];
+const Productos = () => {
+    const [data, setData] = useState([]);
 
-const ProductCarousel = () => {
-  const scrollLeft = () => {
-    document.getElementById('product-carousel').scrollBy({
-      left: -200,
-      behavior: 'smooth'
-    });
-  };
+    useEffect(() => {
+        const obtenerProductos = async () => {
+            try {
+                const response = await axios.get(URL_productos);
+                console.log(response.data); // Para verificar la estructura de la respuesta
+                if (response.data && Array.isArray(response.data.docs)) {
+                    setData(response.data.docs);
+                } else {
+                    console.error("Unexpected response data format");
+                }
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+            }
+        };
+        obtenerProductos();
+    }, []);
 
-  const scrollRight = () => {
-    document.getElementById('product-carousel').scrollBy({
-      left: 200,
-      behavior: 'smooth'
-    });
-  };
+    const scrollLeft = () => {
+        document.getElementById('product-carousel').scrollBy({
+            left: -200,
+            behavior: 'smooth'
+        });
+    };
 
-  return (
-  <>
-    <section className="relative w-full pt-24 md:pt-36 lg:pt-48">
-    <p className='text-2xl font-semibold text-center pb-8'>Lo Mas Reciente</p>
-    <p className='text-2xl font-light text-center pb-8' >Albums</p>
-      <div id="product-carousel" className="flex overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide">
-        {products.map((product, index) => (
-          <div
-            key={index}
-            className="flex flex-col  items-center h-96 px-12 pr-8 min-w-[500px] sm:min-w-[250px] md:px-2 md:min-w-[300px] lg:min-w-[400px]  "
-          >
-            <div className="w-full h-72 ">
-              <img src={product.src} alt={product.alt} className="w-full h-full object-cover rounded-lg" />
-            </div>
-            <div className="mt-2 ">
-              <h3 className="text-lg font-semibold">{product.artist}</h3>
-              <p className="text-gray-600">{product.productName}</p>
-              <p className="text-gray-600">{product.price}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full shadow-md"
-        onClick={scrollLeft}
-      >
-        &lt;
-      </button>
-      <button
-        type="button"
-        className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full shadow-md"
-        onClick={scrollRight}
-      >
-        &gt;
-      </button>
-    </section>
-    </>
-  );
+    const scrollRight = () => {
+        document.getElementById('product-carousel').scrollBy({
+            left: 200,
+            behavior: 'smooth'
+        });
+    };
+
+    const fixImagePath = (path) => {
+        return `http://localhost:3002/${path.replace(/\\/g, '/')}`;
+    };
+
+    return (
+        <>
+            <section className="relative w-full pt-24 md:pt-36 lg:pt-48 mb-20">
+                <p className='text-2xl font-semibold text-center pb-8'>Lo Más Reciente</p>
+                <div className='flex items-center justify-around pb-8'>
+                    <button onClick={scrollLeft} className="bg-white rounded-full p-2 text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                    <p className='text-2xl font-light text-center'>Albums</p>
+                    <button onClick={scrollRight} className="bg-white rounded-full p-2 text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="product-carousel" className="flex overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide">
+                    {data.map((producto) => (
+                        <div
+                            key={producto._id}
+                            className="flex flex-col items-center h-96 px-12 pr-8 min-w-[500px] sm:min-w-[400px] md:px-2 md:min-w-[400px] lg:min-w-[500px]"
+                        >
+                            <div className="w-full h-72">
+                                {producto.imagenes && producto.imagenes.length > 0 ? (
+                                    <img src={fixImagePath(producto.imagenes[0])} alt={producto.nombre} className="w-96 h-full object-cover rounded-lg" />
+                                ) : (
+                                    <p>No image available</p>
+                                )}
+                            </div>
+                            <div className="mt-2">
+                                <h3 className="text-lg font-semibold">{producto.nombre}</h3>
+                                <p className="text-gray-600">{producto.descripcion}</p>
+                                <p className="text-gray-600">${producto.precio}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        </>
+    );
 };
 
-export default ProductCarousel;
+export default Productos;

@@ -13,6 +13,7 @@ const App = () => {
       <NavBar />
       <Banner />
       <Component />
+      <Component />
     </div>
   );
 };
