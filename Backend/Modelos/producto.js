@@ -5,7 +5,7 @@ const ProductosSchema = new mongoose.Schema({
     nombre : { type: String, required: true, min : 3, max : 30, unique: true },
     precio : { type: Number, required: true, min : 3, max : 1000000 },
     cantidad : { type: Number, required: true, min : 3, max : 1000000 },
-    categoria : { type: mongoose.Schema.Types.ObjectId, ref: 'categorias', required: true, default : null },
+    categoria: { type: mongoose.Schema.Types.ObjectId, ref: 'categorias', required: true, default: null },
     imagenes : [{ type: String}],
     descripcion : { type: String, required: true, min : 3, max : 300},
     descuento : { type: Number, required: true, min : 0, max : 1000, default : 0 },

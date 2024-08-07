@@ -1,21 +1,23 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Banner from './components/bannerHome';
-
-import Component from './components/sideProductos';
-
-import NavBar from './components/navBar';
-
+import NavBar from './components/navBar.jsx';
+import HomePage from './componentsPages/HomePage';
+import ProductsPage from './componentsPages/ProductsPage'; 
+import Merch from './componentsPages/merchPage.jsx';
 
 const App = () => {
   return (
-    <div className="App">
+    <Router>
       <NavBar />
-      <Banner />
-      <Component />
-      <Component />
-    </div>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductsPage />}  />
+        <Route path="/merch" element={<Merch />} />
+      </Routes>
+    </Router>
   );
 };
 
 export default App;
+
