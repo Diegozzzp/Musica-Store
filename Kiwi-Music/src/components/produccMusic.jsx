@@ -74,8 +74,8 @@ const App = () => {
 
   return (
     <>
-    <p className="text-black text-2xl font-bold  text-center mb-20">Lo mas escuchado esta semana es:</p>
-    <div className="w-full max-w-[500px] mx-auto bg-neutral-800	 shadow-md rounded-lg overflow-hidden dark:bg-zinc-900">
+    <p className="text-black text-2xl font-bold  text-center mb-16">Lo mas escuchado esta semana es:</p>
+    <div className="w-full max-w-[500px] mx-auto bg-neutral-800	 shadow-md rounded-lg overflow-hidden dark:bg-zinc-900 mb-16">
       <div className="flex flex-col items-center px-6 py-4">
         {albumImage && (
           <img src={albumImage} alt={name} className="w-24 h-24 object-cover rounded-full mb-4" />

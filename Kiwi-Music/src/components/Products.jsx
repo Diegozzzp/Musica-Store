@@ -50,7 +50,7 @@ const AlbumsPage = ({ categoriaId, titulo }) => {
 
   return (
     <>
-    <div className="container mx-auto">
+    <div className="w-full h-full mb-44">
       <h1 className="text-3xl font-semibold pt-16 text-center">{titulo}</h1>
       <div className=" text-center flex justify-between items-center">
         <select value={filtro} onChange={handleFiltroChange} className="p-2 rounded border-none focus:outline-none">
@@ -62,9 +62,9 @@ const AlbumsPage = ({ categoriaId, titulo }) => {
         </select>
         <p className="text-gray-700  text-center">Total de productos: {totalProductos}</p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-32">
+      <div className="grid justify-items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-32 ">
         {data.map(producto => (
-          <div key={producto._id} className="p-4 w-[400px] h-[400px]">
+          <div key={producto._id} className="p-4 w-full h-[400px] sm:h-[300px] lg:h-[340px] ">
             <img
               src={fixImagePath(producto.imagenes[0])}
               alt={producto.nombre}

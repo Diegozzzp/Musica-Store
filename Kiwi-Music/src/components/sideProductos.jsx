@@ -16,10 +16,11 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         const obtenerProductos = async () => {
             try {
                 const response = await axios.get(`${URL_productos}${categoriaId}`);
-                if (response.data && Array.isArray(response.data.docs)) {
-                    setData(response.data.docs);
+                // Ajusta para el formato de respuesta del controlador
+                if (response.data && Array.isArray(response.data.productos)) {
+                    setData(response.data.productos);
                 } else {
-                    console.error("Unexpected response data format");
+                    console.error("Unexpected response data format", response.data);
                 }
             } catch (error) {
                 console.error("Error fetching data: ", error);

@@ -5,7 +5,7 @@ import { PiVinylRecord } from "react-icons/pi";
 import { BiWorld } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
 import { HiOutlineShoppingCart, HiOutlineUserCircle, HiMenu, HiX } from "react-icons/hi";
-import { Link } from 'react-router-dom'; // Importa Link
+import { Link } from 'react-router-dom'; 
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +20,7 @@ const NavBar = () => {
         <img src="/path-to-logo.png" alt="Logo" className="h-8 w-8" />
           <Link to="/"><span className="text-xl font-semibold">Kiwi Music</span></Link>
       </div>
-      <div className="hidden md:flex space-x-24 text-lg">
+      <div className="hidden lg:flex space-x-24 text-lg">
         <Link to="/tours" className="hover:text-gray-400 flex items-center">
           <BiWorld />
           Tours
