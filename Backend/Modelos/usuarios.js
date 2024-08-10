@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
-//objetid de mongo
 
 const UsuariosSchema = new mongoose.Schema({
     nombre : { type: String, required: true, min : 3, max : 30, },
@@ -22,7 +21,6 @@ const UsuariosSchema = new mongoose.Schema({
 UsuariosSchema.plugin(mongoosePaginate);
 
 const Usuarios = mongoose.model('usuarios', UsuariosSchema);
-//paginacion
 
 Usuarios.paginate().then({});
 
