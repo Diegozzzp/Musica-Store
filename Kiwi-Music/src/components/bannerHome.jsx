@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'; // Importa los iconos de Heroicons v2
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'; 
 
 import banner1 from '../images/banner1.jpg';
 import banner2 from '../images/banner2.webp';
