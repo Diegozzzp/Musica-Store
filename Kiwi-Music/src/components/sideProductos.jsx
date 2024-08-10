@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; 
+import { Link } from 'react-router-dom'; // Importa Link
 import '../index.css';
 
 const URL_productos = 'http://localhost:3002/productos/categoria/';
@@ -16,7 +17,6 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         const obtenerProductos = async () => {
             try {
                 const response = await axios.get(`${URL_productos}${categoriaId}`);
-                // Ajusta para el formato de respuesta del controlador
                 if (response.data && Array.isArray(response.data.productos)) {
                     setData(response.data.productos);
                 } else {
@@ -114,10 +114,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
                     onTouchEnd={handleTouchEnd}
                 >
                     {data.map((producto) => (
-                        <div
-                            key={producto._id}
-                            className="flex flex-col h-full px-12 pr-8 min-w-[500px] sm:min-w-[500px] md:px-2 md:min-w-[400px] lg:min-w-[400px] px-8 h-full hover:shadow-2xl transition-shadow duration-300"
-                        >
+                        <Link to={`/producto/${producto._id}`} key={producto._id} className="flex flex-col h-full px-12 pr-8 min-w-[500px] sm:min-w-[500px] md:px-2 md:min-w-[400px] lg:min-w-[400px] px-8 h-full hover:shadow-2xl transition-shadow duration-300">
                             <div className="w-full h-72">
                                 {producto.imagenes && producto.imagenes.length > 0 ? (
                                     <img src={fixImagePath(producto.imagenes[0])} alt={producto.nombre} className="w-full h-full object-cover" />
@@ -130,7 +127,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
                                 <p className="text-gray-500 text-sm text-pretty w-64 h-8">{producto.descripcion}</p>
                                 <p className="text-gray-600 pt-4">${producto.precio}</p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </section>

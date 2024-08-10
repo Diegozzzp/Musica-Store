@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+
 const uploadPath = path.join(__dirname, '..', 'uploads');
 
 if (!fs.existsSync(uploadPath)) {
@@ -9,7 +10,7 @@ if (!fs.existsSync(uploadPath)) {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');  
+        cb(null, uploadPath); 
     },
     filename: (req, file, cb) => {
         const filename = Date.now() + path.extname(file.originalname);
@@ -19,22 +20,21 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = [
-        'image/jpeg',   
-        'image/png',    
-        'image/webp',   
-        'image/gif',    
-        'image/svg+xml' 
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+        'image/svg+xml'
     ];
-
     if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true); 
+        cb(null, true);
     } else {
-        cb(new Error('Tipo de archivo no soportado'), false); 
+        cb(new Error('Tipo de archivo no soportado'), false);
     }
 };
 
 const upload = multer({ 
-    storage: storage, 
+    storage: storage,
     fileFilter: fileFilter 
 });
 

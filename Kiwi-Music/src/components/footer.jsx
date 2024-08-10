@@ -2,10 +2,10 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white text-center py-4  border-gray-700  ">
-      <div className="container mx-auto">
-        <p className="text-sm mb-2">&copy; 2024 Tu Empresa. Todos los derechos reservados.</p>
-        <p className="text-sm">Desarrollado por Tu Nombre. Contacto: info@tuempresa.com</p>
+    <footer className="bg-[#594F4F] text-white text-center py-4 border-t border-gray-700">
+      <div className="flex items-center justify-center gap-8">
+        <h1 className="text-2xl font-bold font-mono" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>Kiwi <br/>Music</h1>
+        <p className="text-md text-[#9DE0AD]">Sigue la musica <br/> que te gusta</p>
       </div>
     </footer>
   );
