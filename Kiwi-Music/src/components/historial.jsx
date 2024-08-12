@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const PurchaseHistoryItem = ({ imageUrl, title, version, price }) => (

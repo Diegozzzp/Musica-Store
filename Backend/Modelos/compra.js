@@ -8,7 +8,7 @@ const compraSchema = new mongoose.Schema({
         product : { type: mongoose.Schema.Types.ObjectId, ref: 'productos', required: true },
         cantidad : { type: Number, required: true, min : 1, max : 100}
     }],
-    total : { type: Number, required: true },
+    total : { type: Number, },
     fecha : { type: Date, default: Date.now },
     fechaActualizacion : { type: Date },
     fechaEliminacion : { type: Date },

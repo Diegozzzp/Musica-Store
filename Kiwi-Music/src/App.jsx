@@ -1,14 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import { CartProvider } from './components/carritoContext'
+import { CartProvider } from './components/carritoContexto'
 import NavBar from './components/navBar';
-import HomePage from './componentsPages/homePage';
-import Merch from './componentsPages/merchPage';
-import ProductsPage from './componentsPages/productsPage';
-import ProductPage from './componentsPages/productoPage';
-import UserDashboard from './componentsPages/perfilPage';
+import HomePage from './Pages/homePage';
+import Merch from './Pages/merchPage';
+import ProductsPage from './Pages/productosPage';
+import ProductPage from './Pages/productoPage';
+import UserDashboard from './Pages/perfilPage';
+import CompraRealizar from './Pages/carritoPage';
 import Footer from './components/footer';
+
 
 const App = () => {
   return (
@@ -23,6 +25,7 @@ const App = () => {
             <Route path="/merch" element={<Merch />} />
             <Route path="/producto/:id" element={<ProductPage />} />
             <Route path="/perfil" element={<UserDashboard />} />
+            <Route path="/carritoPage" element={<CompraRealizar />} />
           </Routes>
         </main>
         <Footer />

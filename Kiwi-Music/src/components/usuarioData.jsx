@@ -7,20 +7,20 @@ const UserData = ({ name, lastName, phone }) => {
         <div className="flex gap-5 max-lg:flex-col">
           <div className="flex flex-col w-full max-md:ml-0 max-md:w-full">
             <div className="flex flex-col  items-start text-xl font-light leading-none text-zinc-500 max-md:mt-10">
-              <div className="font-medium text-black ">Tus datos</div>
-                <div className="flex flex-row justify-between w-full lg:w-full pt-8">
+              <div className="font-medium text-black pl-4 ">Tus datos</div>
+                <div className="flex flex-row justify-between w-full lg:w-full pt-8 px-4">
                     <h2>Nombre:</h2>
                     <p>{name}</p>
                 </div>
-                <div className="pt-8 flex flex-row justify-between w-full lg:w-full ">
+                <div className="pt-8 flex flex-row justify-between w-full lg:w-full px-4 ">
                     <h2>Apellido</h2>
                     <p>{lastName}</p>
                 </div>
-                <div className="pt-8 flex flex-row justify-between w-full lg:w-full">
+                <div className="pt-8 flex flex-row justify-between w-full lg:w-full px-4">
                     <h2>Teléfono</h2>
                     <p>{phone}</p>
                 </div>
-                <div className="flex flex-row justify-between w-full lg:w-full pt-8 items-center">
+                <div className="flex flex-row justify-between w-full lg:w-full pt-8 items-center px-4">
                     <h2>Password</h2>
                     <p>********</p>
                 </div>

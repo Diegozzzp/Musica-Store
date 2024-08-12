@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { CartContext } from './carritoContexto';
 
 const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,7 +43,9 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1); 
+  const [message, setMessage] = useState('');  // Nuevo estado para los mensajes
+  const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -70,8 +73,30 @@ const ProductDetailPage = () => {
     return <p className="text-center py-4">Producto no encontrado</p>;
   }
 
-  const increaseQuantity = () => setQuantity(quantity + 1);
-  const decreaseQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+  const increaseQuantity = () => {
+    if (quantity < product.cantidad) {
+      setQuantity(quantity + 1);
+      setMessage('');  // Limpia el mensaje cuando se aumenta la cantidad
+    } else {
+      setMessage('No puedes agregar más de la cantidad disponible.');
+    }
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+      setMessage('');  // Limpia el mensaje cuando se disminuye la cantidad
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (quantity > product.cantidad) {
+      setMessage('No puedes agregar más de la cantidad disponible.');
+      return;
+    }
+    addToCart(product, quantity);
+    setMessage('Producto añadido al carrito.');
+  };
 
   return (
     <>
@@ -98,21 +123,33 @@ const ProductDetailPage = () => {
           <div className="flex flex-col mt-4 mb-">
             <p className="text-lg font-semibold mb-4">Cantidad:</p>
             <div className='flex items-center'>
-            <button 
-              onClick={decreaseQuantity} 
-              className="text-lg font-semibold bg-gray-300 px-4 py-2 rounded-l-lg">
-              -
-            </button>
-            <span className="text-lg font-semibold px-4">{quantity}</span>
-            <button 
-              onClick={increaseQuantity} 
-              className="text-lg font-semibold bg-gray-300 px-4 py-2 rounded-r-lg">
-              +
-            </button>
+              <button 
+                onClick={decreaseQuantity} 
+                className="text-lg font-semibold bg-gray-300 px-4 py-2 rounded-l-lg">
+                -
+              </button>
+              <input
+                type="text"
+                value={quantity}
+                readOnly
+                className="text-lg w-14 font-semibold text-center px-4 py-2 border-none border-gray-300"
+              />
+              <button 
+                onClick={increaseQuantity} 
+                className="text-lg font-semibold bg-gray-300 px-4 py-2 rounded-r-lg">
+                +
+              </button>
             </div>
+            {message && (
+              <p className={`text-lg font-semibold mt-2 ${message.includes('No') ? 'text-red-500' : 'text-green-500'}`}>
+                {message}
+              </p>
+            )}
           </div>
-          <button className="bg-[#9DE0AD] text-white w-32 h-10 py-2 px-4 rounded-lg mt-6">
-            <p className="text-sm text-black font-light w-24 text-center">Enviar al carrito</p>
+          <button 
+            onClick={handleAddToCart} 
+            className="bg-[#9DE0AD] text-white w-32 h-10 py-2 px-4 rounded-lg mt-6">
+            <p className="text-sm text-black font-light w-24 text-center">Añadir al carrito</p>
           </button>
         </div>
       </div>
