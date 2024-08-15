@@ -1,18 +1,19 @@
 import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    // Cargar el carrito desde localStorage al iniciar
     const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
     setCart(storedCart);
   }, []);
 
   useEffect(() => {
-    // Guardar el carrito en localStorage cada vez que cambie
     if (cart.length > 0) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
@@ -45,11 +46,36 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCart([]);
+    localStorage.removeItem('cart');
+  };
+
+  const checkout = async () => {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const total = cart.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+      const response = await axios.post('http://localhost:3002/comprar', {
+        productos: cart,
+        total,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 200) {
+        clearCart(); 
+        navigate('/gracias'); 
+      }
+    } catch (error) {
+      console.error('Error al realizar la compra:', error.response?.data || error.message);
+    }
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, checkout }}>
       {children}
     </CartContext.Provider>
   );
 };
+

@@ -1,13 +1,16 @@
 const router = require('express').Router();
 
-const { obtenerCompras, crearCompra, editarCompra, eliminarCompra } = require('../Controladores/compra');
+const { obtenerCompras, realizarCompra, obtenerHistorialCompras ,editarCompra, eliminarCompra } = require('../Controladores/compra');
 
 const { validarCompra } = require('../validaciones/compra');
 
+const { verificarToken } = require('../middlewares/jwt')
 
 router.get('/compras',obtenerCompras);
 
-router.post('/compras', validarCompra, crearCompra);
+router.post('/comprar', verificarToken, realizarCompra);
+
+router.get('/perfil/compras', verificarToken ,obtenerHistorialCompras);
 
 router.patch('/compras/:id', editarCompra);
 

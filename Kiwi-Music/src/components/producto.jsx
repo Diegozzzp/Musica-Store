@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { CartContext } from './carritoContexto';
+import Component from './sideProductos'
 
 const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -43,7 +44,7 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState('');  // Nuevo estado para los mensajes
+  const [message, setMessage] = useState('');  
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useContext(CartContext);
 
@@ -76,7 +77,7 @@ const ProductDetailPage = () => {
   const increaseQuantity = () => {
     if (quantity < product.cantidad) {
       setQuantity(quantity + 1);
-      setMessage('');  // Limpia el mensaje cuando se aumenta la cantidad
+      setMessage(''); 
     } else {
       setMessage('No puedes agregar más de la cantidad disponible.');
     }
@@ -85,7 +86,7 @@ const ProductDetailPage = () => {
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
-      setMessage('');  // Limpia el mensaje cuando se disminuye la cantidad
+      setMessage(''); 
     }
   };
 
@@ -100,13 +101,13 @@ const ProductDetailPage = () => {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row h-full items-start justify-around">
-        <div className="h-[35rem] pl-4">
+      <div className="flex flex-col md:flex-row h-full items-start justify-around pb-6">
+        <div className="h-[30rem] pl-4 ">
           {product.imagenes && product.imagenes.length > 0 && (
             <Carousel images={product.imagenes} />
           )}
         </div>
-        <div className="flex flex-col pt-20">
+        <div className="flex flex-col pl-4 pb-8 md:mt-20 ">
           <h1 className="text-3xl font-semibold mb-2">{product.nombre}</h1>
           <p className="text-lg mb-4">{product.descripcion}</p>
           <p className="text-xl font-light mb-2">Precio: ${product.precio}</p>
@@ -153,6 +154,7 @@ const ProductDetailPage = () => {
           </button>
         </div>
       </div>
+      <Component categoriaId={'66aba85f829468324fa4ed52'} titulo={'Recomendados'} />
     </>
   );
 };

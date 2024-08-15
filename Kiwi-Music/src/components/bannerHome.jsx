@@ -40,7 +40,7 @@ const Banner = () => {
 
   return (
     <>
-    <div className="relative w-full h-[18rem] md:h-[24rem] lg:h-[38rem] overflow-hidden rounded-lg">
+    <div className="relative w-full h-[18rem] md:h-[24rem] lg:h-[38rem] overflow-hidden ">
       <div className="relative w-full h-full md:h-full lg:h-full">
         {images.map((image, index) => (
           <div

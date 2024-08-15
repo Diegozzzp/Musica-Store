@@ -1,19 +1,79 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../components/carritoContexto';
 import { MdDelete } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify'; 
+import axios from 'axios';
 
 const CompraRealizar = () => {
     const { cart, removeFromCart, clearCart } = useContext(CartContext);
+    const navigate = useNavigate();
 
     const calcularTotal = () => {
         return cart.reduce((acc, product) => acc + (product.precio || 0) * (product.cantidad || 0), 0);
     };
 
-    const handleCompra = () => {
-        console.log("Compra realizada:", cart);
-        clearCart(); 
-        alert("Compra realizada con éxito!");
+    const handleCompra = async () => {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+    
+        try {
+            const response = await axios.post('http://localhost:3002/comprar', {
+                productos: cart.map(item => ({
+                    product: item._id,
+                    cantidad: item.cantidad,
+                })),
+                total: calcularTotal(),
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
+            if (response.status === 201) { // Asegúrate de que el código de estado sea 201 para una creación exitosa
+                toast.success('¡Compra realizada con éxito!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+    
+                clearCart(); // Vacía el carrito
+                localStorage.removeItem('cart'); // Borra el carrito del localStorage
+                navigate('/gracias'); // Redirige a la página de confirmación
+            }
+        } catch (error) {
+            console.error('Error al realizar la compra:', error.response?.data || error.message);
+            if (error.response?.status === 401) {
+                toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                navigate('/login');
+            } else {
+                toast.error('Hubo un problema al realizar la compra. Por favor, inténtalo de nuevo.', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+        }
     };
 
     return (
@@ -59,13 +119,16 @@ const CompraRealizar = () => {
                     </div>
                 </>
             ) : (
-                <p className="text-center">No hay productos en el carrito</p>
+                <div className="text-center mt-20">
+                    <p>No hay productos en el carrito.</p>
+                    <Link to="/products" className="text-blue-500 hover:underline">
+                        Ir a productos
+                    </Link>
+                    <p className="mt-2">
+                        O regresa al <Link to="/" className="text-blue-500 hover:underline">inicio</Link>.
+                    </p>
+                </div>
             )}
-            <div className="text-center mt-6">
-                <Link to="/products" className="text-blue-500 hover:underline">
-                    Seguir comprando
-                </Link>
-            </div>
         </div>
     );
 };

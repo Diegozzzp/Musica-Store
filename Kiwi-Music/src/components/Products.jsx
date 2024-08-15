@@ -53,7 +53,6 @@ const AlbumsPage = ({ categoriaId, titulo }) => {
   };
 
   const handleAddToCart = (producto) => {
-    // Aquí puedes ajustar la cantidad si es necesario
     const cantidad = 1;
     addToCart(producto, cantidad);
   };
@@ -74,17 +73,17 @@ const AlbumsPage = ({ categoriaId, titulo }) => {
         </div>
         <div className="grid justify-items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-32">
           {data.map(producto => (
-            <div key={producto._id} className="p-4 w-full h-[400px] sm:h-[300px] lg:h-[360px]">
+            <div key={producto._id} className="p-4 w-full h-[400px] sm:h-[300px] lg:h-[330px]  ">
               <Link to={`/producto/${producto._id}`}>
                 <img
                   src={fixImagePath(producto.imagenes[0])}
                   alt={producto.nombre}
-                  className="w-full h-full object-cover"
+                  className="object-cover w-full h-full"
                 />
               </Link>
               <h2 className="text-lg font-semibold mb-2">{producto.nombre}</h2>
               <p className="text-gray-700 text-sm mb-2">{producto.descripcion}</p>
-              <div className="text-black font-light flex items-center justify-between w-52">
+              <div className="text-black font-light flex items-center justify-between w-52 ">
                 ${producto.precio}
                 <button 
                   onClick={() => handleAddToCart(producto)}
