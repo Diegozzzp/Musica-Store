@@ -62,11 +62,12 @@ const PerfilPage = () => {
     return (
         <div>
             <UserProfile
+                id={userData._id} // Asegúrate de pasar el ID aquí
                 nombre={userData.nombre}
                 apellido={userData.apellido}
                 correo={userData.correo}
                 telefono={userData.telefono}
-                avatar={userData.avatar} 
+                avatar={userData.avatar}
             />
         </div>
     );

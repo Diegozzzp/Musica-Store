@@ -4,11 +4,11 @@ const secretKey = 'secretKey'; // Clave secreta para el token de acceso
 const refreshSecretKey = 'refreshSecretKey'; 
 
 function signToken(payload) {
-    return jwt.sign(payload, secretKey, { expiresIn: '1h' }); 
+    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
 }
 
 function signRefreshToken(payload) {
-    return jwt.sign(payload, refreshSecretKey, { expiresIn: '7d' }); 
+    return jwt.sign(payload, refreshSecretKey, { expiresIn: '7d' });
 }
 
 function verificarToken(req, res, next) {
@@ -19,7 +19,6 @@ function verificarToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, secretKey);
-        console.log('Token decodificado:', decoded); // Depura aquí
         req.user = decoded;
         next();
     } catch (error) {
@@ -30,13 +29,12 @@ function verificarToken(req, res, next) {
     }
 }
 
-
 function verificarRefreshToken(refreshToken) {
     try {
         const decoded = jwt.verify(refreshToken, refreshSecretKey);
-        return decoded; 
+        return decoded;
     } catch (error) {
-        return null; 
+        return null;
     }
 }
 
@@ -53,7 +51,6 @@ async function refreshAccessToken(req, res) {
     }
 
     const newAccessToken = signToken({ userId: decoded.userId });
-
     res.json({ accessToken: newAccessToken });
 }
 

@@ -19,7 +19,6 @@ app.use(cors());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 const usuarios = require('./Rutas/usuarios');
 const categoria = require('./Rutas/categoria');
 const rol = require('./Rutas/rol');

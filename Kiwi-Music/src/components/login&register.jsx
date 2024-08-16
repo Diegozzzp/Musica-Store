@@ -10,6 +10,7 @@ const Auth = ({ isLogin }) => {
     telefono: '',
     correo: '',
     password: '',
+    avatar: null, // Añadir campo para el avatar
   });
   const [error, setError] = useState({});
   const navigate = useNavigate();
@@ -26,8 +27,14 @@ const Auth = ({ isLogin }) => {
   }, [navigate]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prevForm) => ({ ...prevForm, [name]: value }));
+    const { name, value, files } = e.target;
+    
+    // Si el campo es 'avatar', tomamos el archivo en lugar del valor
+    if (name === 'avatar') {
+      setForm((prevForm) => ({ ...prevForm, avatar: files[0] }));
+    } else {
+      setForm((prevForm) => ({ ...prevForm, [name]: value }));
+    }
   };
 
   const validateForm = () => {
@@ -70,28 +77,41 @@ const Auth = ({ isLogin }) => {
 
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      setError(validationErrors);
-      return;
+        setError(validationErrors);
+        return;
     }
 
     try {
-      if (isLogin) {
-        const response = await axios.post('http://localhost:3002/login', {
-          correo: form.correo,
-          password: form.password,
-        });
-        localStorage.setItem('token', response.data.token);
-        navigate('/perfil');
-      } else {
-        await axios.post('http://localhost:3002/usuario', form);
-        navigate('/login');
-      }
-    } catch (error) {
-      setError({ general: 'Error en la autenticación' });
-      console.error('Error en la autenticación:', error.response?.data || error.message);
-    }
-  };
+        if (isLogin) {
+            const response = await axios.post('http://localhost:3002/login', {
+                correo: form.correo,
+                password: form.password,
+            });
+            localStorage.setItem('token', response.data.token);
+            navigate('/perfil');
+        } else {
+            const formData = new FormData();
+            formData.append('nombre', form.nombre);
+            formData.append('apellido', form.apellido);
+            formData.append('telefono', form.telefono);
+            formData.append('correo', form.correo);
+            formData.append('password', form.password);
+            if (form.avatar) {
+                formData.append('avatar', form.avatar); // Añadir avatar al FormData
+            }
 
+            await axios.post('http://localhost:3002/usuario', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            navigate('/login');
+        }
+    } catch (error) {
+        setError({ general: 'Error en la autenticación' });
+        console.error('Error en la autenticación:', error.response?.data || error.message);
+    }
+};
   return (
     <div className="flex h-screen w-full">
       <div
@@ -139,6 +159,14 @@ const Auth = ({ isLogin }) => {
                 onChange={handleChange}
                 required
                 error={error.telefono}
+              />
+              <InputField
+                id="avatar"
+                label="Avatar"
+                type="file"
+                onChange={handleChange}
+                error={error.avatar}
+                accept="image/*"
               />
             </>
           )}
@@ -189,15 +217,16 @@ const Auth = ({ isLogin }) => {
       <div className="hidden md:flex md:w-1/2 bg-cover bg-center relative">
         <img src={fondologin} alt="Fondo Login" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
-        <div className="absolute inset-0 flex justify-center items-center z-20">
+        <div className="absolute inset-0 flex flex-col items-center justify-center pb-40 z-20">
           <p className="text-white text-4xl font-bold">Kiwi Music</p>
+          <p className="text-white text-lg">Cada nota, Un kiwi</p>
         </div>
       </div>
     </div>
   );
 };
 
-const InputField = ({ id, label, type = "text", value, onChange, required, error }) => (
+const InputField = ({ id, label, type = "text", value, onChange, required, error, accept }) => (
   <div className="relative">
     <input
       placeholder={label}
@@ -206,8 +235,9 @@ const InputField = ({ id, label, type = "text", value, onChange, required, error
       id={id}
       name={id}
       type={type}
-      value={value}
+      value={type === 'file' ? undefined : value}
       onChange={onChange}
+      accept={accept}
     />
     <label
       className="absolute left-0 -top-5 text-gray-700 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-5 peer-focus:text-sm"

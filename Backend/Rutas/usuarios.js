@@ -20,7 +20,7 @@ router.post('/usuario', upload.single('avatar') ,validarUsuario, crearUsuario);
 
 router.patch('/refresh', refreshAccessToken);
 
-router.patch('/editarUsuario/:id',validarUsuario, editarUsuario);
+router.patch('/editarUsuario/:id', verificarToken, upload.single('avatar') ,editarUsuario);
 
 router.patch('/eliminarUsuario/:id',eliminarUsuario);
 

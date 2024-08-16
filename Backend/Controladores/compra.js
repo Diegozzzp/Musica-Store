@@ -47,7 +47,6 @@ exports.realizarCompra = async function (req, res) {
         usuario.compras.push(nuevaCompra._id);
         await usuario.save();
 
-        // Enviar la respuesta
         res.status(201).json({ msg: 'Compra realizada con éxito.', compra: nuevaCompra });
     } catch (error) {
         console.error('Error al realizar la compra:', error);
