@@ -11,6 +11,12 @@ const UsuariosSchema = new mongoose.Schema({
     rol : { type: String,min : 3, max : 30, default: 'usuario' },
     carrito : { type: Array, default: [] },
     compras: [{ type: mongoose.Schema.Types.ObjectId, ref: 'compra' }],
+    resetToken: {
+        type: String,
+    },
+    resetTokenExpira: {
+        type: Date,
+    },
     fecha : { type: Date, default: Date.now },
     fechaActualizacion : { type: Date },
     fechaEliminacion : { type: Date },

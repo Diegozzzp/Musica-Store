@@ -87,7 +87,11 @@ const Auth = ({ isLogin }) => {
                 correo: form.correo,
                 password: form.password,
             });
+            // Guardar el token en el local storage
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('refreshToken', response.data.refreshToken); // Guarda también el refresh token si es proporcionado
+            console.log('Token guardado:', response.data.token);
+            console.log('Refresh token guardado:', response.data.refreshToken);
             navigate('/perfil');
         } else {
             const formData = new FormData();
@@ -112,6 +116,7 @@ const Auth = ({ isLogin }) => {
         console.error('Error en la autenticación:', error.response?.data || error.message);
     }
 };
+
   return (
     <div className="flex h-screen w-full">
       <div
@@ -201,6 +206,10 @@ const Auth = ({ isLogin }) => {
               ¿No tienes una cuenta?{' '}
               <Link to="/register" className="text-purple-300 hover:underline">
                 Crea una cuenta
+              </Link>
+              <br />
+              <Link to="/olvide-password" className="text-purple-300 hover:underline">
+                Olvide mi contraseña
               </Link>
             </>
           ) : (

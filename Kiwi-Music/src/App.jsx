@@ -10,6 +10,8 @@ import ProductPage from './Pages/productoPage';
 import UserDashboard from './Pages/perfilPage';
 import CompraRealizar from './Pages/carritoPage';
 import Auth from './components/login&register';  
+import ResetPasswordRequest from './components/olvidePassword';
+import ResetPassword from './Pages/recuperacionPage';
 import Footer from './components/footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,6 +32,8 @@ const App = () => {
               <Route path="/carritoPage" element={<CompraRealizar />} />
               <Route path="/login" element={<Auth isLogin={true} />} /> 
               <Route path="/register" element={<Auth isLogin={false} />} /> 
+              <Route path="/olvide-password" element={<ResetPasswordRequest />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
             </Routes>
           </main>
           <Footer />

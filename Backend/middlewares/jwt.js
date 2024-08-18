@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const secretKey = 'secretKey'; // Clave secreta para el token de acceso
 const refreshSecretKey = 'refreshSecretKey'; 
@@ -25,18 +26,22 @@ function verificarToken(req, res, next) {
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({ msg: 'Token expirado. Por favor, inicia sesión nuevamente.' });
         }
+        console.error('Error al verificar token:', error); // Registro detallado
         return res.status(401).json({ msg: 'Token no válido.' });
     }
 }
+
 
 function verificarRefreshToken(refreshToken) {
     try {
         const decoded = jwt.verify(refreshToken, refreshSecretKey);
         return decoded;
     } catch (error) {
+        console.error('Error al verificar refresh token:', error); // Registro detallado
         return null;
     }
 }
+
 
 async function refreshAccessToken(req, res) {
     const { refreshToken } = req.body;
@@ -53,6 +58,7 @@ async function refreshAccessToken(req, res) {
     const newAccessToken = signToken({ userId: decoded.userId });
     res.json({ accessToken: newAccessToken });
 }
+
 
 module.exports = {
     signToken,
