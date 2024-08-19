@@ -12,6 +12,7 @@ import CompraRealizar from './Pages/carritoPage';
 import Auth from './components/login&register';  
 import ResetPasswordRequest from './components/olvidePassword';
 import ResetPassword from './Pages/recuperacionPage';
+import AdminPanel from './Pages/AdminPage';
 import Footer from './components/footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,6 +35,7 @@ const App = () => {
               <Route path="/register" element={<Auth isLogin={false} />} /> 
               <Route path="/olvide-password" element={<ResetPasswordRequest />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/admin" element={<AdminPanel />} />
             </Routes>
           </main>
           <Footer />

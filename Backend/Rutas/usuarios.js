@@ -3,7 +3,7 @@ const router = require('express').Router();
 const {
     solicitarRestablecimiento,
     restablecerContrasena,
-    loginUsuarios,
+    loginUsuario,
     obtenerPerfil,
     obtenerUsuarios,
     obtenerUsuario,
@@ -16,10 +16,10 @@ const { validarUsuario } = require('../validaciones/usuario');
 
 const upload = require('../middlewares/multerconfig');
 
-const { verificarToken, refreshAccessToken } = require('../middlewares/jwt');
+const { verificarToken, refreshAccessToken, verificarAdminOPropietario } = require('../middlewares/jwt');
 
 // Ruta para iniciar sesión
-router.post('/login', loginUsuarios);
+router.post('/login', loginUsuario);
 
 // Ruta para solicitar restablecimiento de contraseña
 router.post('/solicitar', solicitarRestablecimiento);
@@ -43,7 +43,7 @@ router.post('/usuario', upload.single('avatar'), validarUsuario, crearUsuario);
 router.patch('/refresh', refreshAccessToken);
 
 // Ruta para editar un usuario (requiere autenticación)
-router.patch('/editarUsuario/:id', verificarToken, upload.single('avatar'), editarUsuario);
+router.patch('/editarUsuario/:id', verificarToken, verificarAdminOPropietario ,upload.single('avatar'), editarUsuario);
 
 // Ruta para eliminar un usuario (requiere autenticación)
 router.patch('/eliminarUsuario/:id', eliminarUsuario);

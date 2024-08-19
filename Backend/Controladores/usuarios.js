@@ -3,10 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const transporter = require('../middlewares/nodemailer'); // Importa el transportador de correo
 const crypto = require('crypto');
-const path = require('path');
-const fs = require('fs');
-
-
+const {signToken} = require('../middlewares/jwt');
 
 exports.solicitarRestablecimiento = async (req, res) => {
     const { email } = req.body;
@@ -76,29 +73,30 @@ exports.restablecerContrasena = async (req, res) => {
 };
 
 
-
-
-exports.loginUsuarios = async (req, res) => {
+exports.loginUsuario = async (req, res) => {
     const { correo, password } = req.body;
-    
+
     try {
+        // Buscar el usuario en la base de datos
         const usuario = await Usuarios.findOne({ correo });
         if (!usuario) {
             return res.status(404).json({ msg: 'Usuario no encontrado' });
         }
 
-        const isMatch = await bcrypt.compare(password, usuario.password);
-        if (!isMatch) {
-            return res.status(400).json({ msg: 'Contraseña incorrecta' });
+        // Comparar la contraseña proporcionada con la almacenada en la base de datos
+        const esMatch = await bcrypt.compare(password, usuario.password);
+        if (!esMatch) {
+            return res.status(401).json({ msg: 'Credenciales incorrectas' });
         }
 
-        const payload = { userId: usuario._id };
-        const token = jwt.sign(payload, 'secretKey', { expiresIn: '1h' });
+        // Generar el token JWT incluyendo el userId y el rol del usuario
+        const token = signToken({ userId: usuario._id, rol: usuario.rol });
 
-        res.json({ token, usuario: { nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
+        // Enviar el token al cliente
+        res.json({ token, msg: 'Inicio de sesión exitoso' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: 'Error en el servidor' });
+        console.error('Error al iniciar sesión:', error);
+        res.status(500).json({ msg: 'Error al iniciar sesión' });
     }
 };
 
@@ -190,14 +188,19 @@ exports.editarUsuario = async (req, res) => {
     try {
         if (!req.user || !req.params.id) {
             return res.status(400).json({ msg: 'Faltan datos necesarios para la actualización.' });
+            
         }
 
         const { id } = req.params;
         const { nombre, apellido, telefono, rol, password } = req.body;
         const avatar = req.file ? req.file.filename : req.body.avatar;
+        console.log('User in request:', req.user);
+        console.log('Requested user ID:', req.params.id);
 
-        if (req.user.userId !== id) {
+
+        if (req.user.rol !== 'admin' && req.user.userId !== id) {
             return res.status(403).json({ msg: 'No tienes permiso para editar este usuario' });
+            
         }
 
         const usuario = await Usuarios.findById(id);

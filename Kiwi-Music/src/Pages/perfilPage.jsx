@@ -40,22 +40,22 @@ const PerfilPage = () => {
         try {
             const refreshToken = localStorage.getItem('refreshToken');
             if (!refreshToken) throw new Error('No se proporcionó refresh token.');
-
-            const response = await axios.post('http://localhost:3002/refresh', {
+    
+            const response = await axios.patch('http://localhost:3002/refresh', {
                 refreshToken
             });
-
+    
             // Guardar el nuevo access token en localStorage
             localStorage.setItem('token', response.data.accessToken);
             // Volver a intentar la solicitud de datos del usuario
-            fetchUserData();
+            await fetchUserData();
         } catch (error) {
             console.error('Error al refrescar el token:', error);
-            // Redirigir a la página de inicio de sesión si el refresh token también falló
-            navigate('/login');
+            localStorage.removeItem('token'); // Elimina tokens viejos
+            localStorage.removeItem('refreshToken'); // Elimina el refresh token
+            navigate('/login'); // Redirige al login
         }
     };
-
     // Efecto para cargar los datos del usuario al montar el componente
     useEffect(() => {
         fetchUserData();
