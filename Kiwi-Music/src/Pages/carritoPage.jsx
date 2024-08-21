@@ -23,16 +23,17 @@ const CompraRealizar = () => {
     
         try {
             const response = await axios.post('http://localhost:3002/comprar', {
-                productos: cart.map(item => ({
-                    product: item._id,
-                    cantidad: item.cantidad,
-                })),
-                total: calcularTotal(),
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            productos: cart.map(item => ({
+                producto: item._id, // Asegúrate de que este campo se llama 'producto'
+                cantidad: item.cantidad, // Asegúrate de que la cantidad sea correcta
+                    })),
+            total: calcularTotal(),
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+            
     
             if (response.status === 201) { // Asegúrate de que el código de estado sea 201 para una creación exitosa
                 toast.success('¡Compra realizada con éxito!', {

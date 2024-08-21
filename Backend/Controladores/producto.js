@@ -48,7 +48,7 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
         if (!id) {
             return res.status(400).json({ msg: 'ID de categoría es requerido' });
         }
-        const { page = 1, limit = 10, sort } = req.query;
+        const { page = 1, limit = 12, sort } = req.query;
         const sortOptions = {
             'mas-antiguos': { createdAt: 1 },
             'mas-recientes': { createdAt: -1 },
@@ -59,8 +59,8 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
         };
         const sortOption = sortOptions[sort] || sortOptions.default;
         const options = {
-            page: parseInt(page, 10),
-            limit: parseInt(limit, 10),
+            page: parseInt(page, 12),
+            limit: parseInt(limit, 12),
             sort: sortOption,
             populate: 'categoria',
             select: 'nombre precio cantidad categoria imagenes descripcion descuento ventas popularidad createdAt'

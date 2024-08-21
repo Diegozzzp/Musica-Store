@@ -239,7 +239,7 @@ const InputField = ({ id, label, type = "text", value, onChange, required, error
   <div className="relative">
     <input
       placeholder={label}
-      className={`h-10 w-full border-b-2 ${error ? 'border-red-500' : 'border-gray-300'} text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500`}
+      className={"h-10 w-full border-b-2 ${error ? 'border-red-500' : 'border-gray-300'} text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"}
       required={required}
       id={id}
       name={id}

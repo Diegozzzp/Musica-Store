@@ -22,7 +22,7 @@ exports.obtenerCompras = async function (req, res) {
 exports.realizarCompra = async function (req, res) {
     try {
         const { productos, total } = req.body;
-        const userId = req.user.userId; 
+        const userId = req.user.userId;
 
         if (!productos || !Array.isArray(productos) || productos.length === 0) {
             return res.status(400).json({ msg: 'No se proporcionaron productos.' });
@@ -36,9 +36,32 @@ exports.realizarCompra = async function (req, res) {
             return res.status(404).json({ msg: 'Usuario no encontrado.' });
         }
 
+        // Verificar y procesar los productos
+        for (const item of productos) {
+            if (!item.producto || !item.cantidad) {
+                return res.status(400).json({ msg: 'Datos del producto inválidos.' });
+            }
+
+            const producto = await Producto.findById(item.producto);
+
+            if (!producto) {
+                return res.status(404).json({ msg: `Producto con ID ${item.producto} no encontrado.` });
+            }
+
+            if (producto.cantidad < item.cantidad) {
+                return res.status(400).json({ msg: `No hay suficiente stock para el producto ${producto.nombre}.` });
+            }
+
+            producto.cantidad -= item.cantidad;
+            await producto.save();
+        }
+
         const nuevaCompra = new Compra({
             usuario: userId,
-            productos,
+            productos: productos.map(item => ({
+                producto: item.producto,
+                cantidad: item.cantidad
+            })),
             total
         });
 
@@ -52,13 +75,14 @@ exports.realizarCompra = async function (req, res) {
         console.error('Error al realizar la compra:', error);
         res.status(500).json({ msg: 'Error en el servidor.' });
     }
-}
+};
+
 
 exports.obtenerHistorialCompras = async function (req, res) {
     try {
         const userId = req.user.userId; 
 
-        const compras = await Compra.find({ usuario: userId }).populate('productos.product');
+        const compras = await Compra.find({ usuario: userId }).populate('productos.producto');
         
         res.status(200).json(compras);
     } catch (error) {

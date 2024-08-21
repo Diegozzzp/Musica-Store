@@ -45,13 +45,13 @@ const NavBar = () => {
           Merch
         </Link>
       </div>
-      <div className="hidden md:flex space-x-8">
+      <div className="md:flex space-x-8">
         <a href="#search" className="hover:text-gray-400 flex items-center">
-          <CiSearch className="w-6 h-6" />
+          <CiSearch className="w-6 h-6 hidden md:flex" />
         </a>
         <div className="relative">
-          <button onClick={toggleCart} aria-label="Shopping Cart" className="hover:text-gray-400 flex items-center relative">
-            <HiOutlineShoppingCart className="w-6 h-6" />
+          <button onClick={toggleCart} aria-label="Shopping Cart" className="hover:text-gray-400 flex items-center relative cursor-pointer ml-60 sm:ml-50 md:ml-0">
+            <HiOutlineShoppingCart className="w-6 h-6 " />
             {cart.length > 0 && (
               <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {cart.length}
@@ -93,7 +93,7 @@ const NavBar = () => {
           )}
         </div>
         <Link to="/login" className="hover:text-gray-400 flex items-center">
-          <HiOutlineUserCircle className="w-6 h-6" aria-label="User Login" />
+          <HiOutlineUserCircle className="w-6 h-6 hidden md:flex" aria-label="User Login" />
         </Link>
       </div>
       <div className="md:hidden flex items-center">

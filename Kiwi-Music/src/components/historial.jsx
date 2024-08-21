@@ -4,9 +4,16 @@ import axios from 'axios';
 const CompraCard = ({ compra }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+ 
+  // Verifica si `compra.productos` está definido y es un array
+  if (!compra || !Array.isArray(compra.productos)) {
+      return <div>No hay productos disponibles</div>;
+  }
+
 
   return (
     <div className="border p-4 mb-4 rounded-md shadow-sm">
@@ -23,15 +30,15 @@ const CompraCard = ({ compra }) => {
         <div className="transition-all duration-300 ease-in-out">
           <h4 className="text-sm font-semibold mt-2">Productos:</h4>
           <ul>
-            {compra.productos.map(producto => (
-              <li key={producto.product._id} className="flex items-center space-x-2 mb-2">
+            {compra.productos.map(item => (
+              <li key={item.producto._id} className="flex items-center space-x-2 mb-2">
                 <img
-                  src={`http://localhost:3002/uploads/${producto.product.imagenes[0]}`} // Ruta a la primera imagen del array
-                  alt={producto.product.nombre}
+                  src={`http://localhost:3002/uploads/${item.producto.imagenes[0]}`} // Ruta a la primera imagen del array
+                  alt={item.producto.nombre}
                   className="w-10 h-10 object-cover rounded"
                 />
-                <span className="text-sm">{producto.product.nombre}</span>
-                <span className="text-sm">x {producto.cantidad}</span>
+                <span className="text-sm">{item.producto.nombre}</span>
+                <span className="text-sm">x {item.cantidad}</span>
               </li>
             ))}
           </ul>
@@ -42,7 +49,7 @@ const CompraCard = ({ compra }) => {
 };
 
 const CompraHistorial = () => {
-  const [compras, setCompras] = useState([]);
+  const [compra, setCompras] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,11 +73,11 @@ const CompraHistorial = () => {
 
   if (loading) return <div>Cargando compras...</div>;
   if (error) return <div>{error}</div>;
-  if (compras.length === 0) return <div>No has realizado ninguna compra.</div>;
+  if (compra.length === 0) return <div>No has realizado ninguna compra.</div>;
 
   return (
     <div className="w-full h-96 overflow-y-auto bg-white p-4 rounded-md ">
-      {compras.map(compra => (
+      {compra.map(compra => (
         <CompraCard key={compra._id} compra={compra} />
       ))}
     </div>

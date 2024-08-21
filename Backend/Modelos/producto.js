@@ -7,7 +7,7 @@ const ProductosSchema = new mongoose.Schema({
     cantidad : { type: Number, required: true, min : 3, max : 1000000 },
     categoria: { type: mongoose.Schema.Types.ObjectId, ref: 'categorias', required: true, default: null },
     tallas: { type: [String], enum: ['S', 'M', 'L', 'XL'], default: [] },
-    tipo: { type: String, enum: ['ropa', 'otros'], required: true },
+    tipo: { type: String, enum: ['ropa', 'otros'] },
     imagenes : [{ type: String}],
     descripcion : { type: String, required: true, min : 3, max : 300},
     descuento : { type: Number, required: true, min : 0, max : 1000, default : 0 },
