@@ -11,11 +11,12 @@ Bienvenido a **MusicStore**, tu tienda en línea para todo lo relacionado con la
 - **Pagos seguros**: Realiza tus compras con total seguridad a través de nuestra pasarela de pagos.
 
 ## 🚀 Tecnologías Utilizadas
-
+<div >
 - **Node.js & Express**: Backend robusto para manejar la lógica del servidor, enrutamiento y API.
 - **React**: Framework de JavaScript para construir interfaces de usuario dinámicas y responsivas.
 - **Tailwind CSS**: Framework CSS que permite diseñar una interfaz moderna y personalizada con facilidad.
 - **MongoDB**: Base de datos NoSQL para almacenar y gestionar la información de los productos, usuarios y pedidos.
+</div>
 
 
 ## 📦 Instalación y Configuración
