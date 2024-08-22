@@ -53,7 +53,7 @@ Bienvenido a **MusicStore**, tu tienda en línea para todo lo relacionado con la
 Si tienes alguna pregunta o sugerencia, no dudes en ponerte en contacto con los colaboradores:
 
 - **Correo**: diegoadan.mejias@gmail.com / davidconz@gmail.com
-- **GitHub**: [@Diegozzzp](https://github.com/Diegozzzp) / [@davidrp9](https://github.com/davidrp9)
+- **GitHub**: [@Diegozzzp](https://github.com/Diegozzzp) / [@adavidramirez](https://github.com/adavidramirez)
 
 ---
 
