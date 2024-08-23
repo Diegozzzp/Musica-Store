@@ -7,7 +7,10 @@ module.exports = {
       height: {
         '128': '32rem',
     },
+    colors: {
+      'kiwi': '#9DE0AD',
   },
   plugins: [ require('flowbite/plugin')],
+}
 }
 }

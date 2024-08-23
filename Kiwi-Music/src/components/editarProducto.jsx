@@ -6,6 +6,8 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
         precio: '',
         descripcion: '',
         cantidad: '',
+        categoria: '',
+        descuento: '', // Añadir el campo de descuento aquí
         imagen: null
     });
 
@@ -19,7 +21,9 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                 precio: productData.precio || '',
                 descripcion: productData.descripcion || '',
                 cantidad: productData.cantidad || '',
-                imagen: null
+                categoria: productData.categoria || '',
+                descuento: productData.descuento || '', // Cargar el descuento si está presente
+                imagenes: null
             });
         }
     }, [productData]);
@@ -35,7 +39,7 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
     };
 
     const handleChange = (e) => {
-        if (e.target.name === 'imagen') {
+        if (e.target.name === 'imagenes') {
             setFile(e.target.files[0]);
         } else {
             setFormData({
@@ -54,8 +58,10 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
         formDataToSend.append('precio', formData.precio);
         formDataToSend.append('descripcion', formData.descripcion);
         formDataToSend.append('cantidad', formData.cantidad);
+        formDataToSend.append('categoria', formData.categoria);
+        formDataToSend.append('descuento', formData.descuento || ''); // Asegúrate de incluir el descuento si no está vacío
         if (file) {
-            formDataToSend.append('imagen', file);
+            formDataToSend.append('imagenes', file);
         }
 
         onSave(productData._id, formDataToSend);
@@ -69,9 +75,9 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                 <h2 className="text-2xl mb-4">Editar Producto</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-700">Nombre</label>
                         <input
                             type="text"
+                            placeholder="Nombre"
                             name="nombre"
                             value={formData.nombre}
                             onChange={handleChange}
@@ -80,9 +86,9 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                         {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre}</p>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700">Precio</label>
                         <input
                             type="number"
+                            placeholder="Precio"
                             name="precio"
                             value={formData.precio}
                             onChange={handleChange}
@@ -91,7 +97,6 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                         {errors.precio && <p className="text-red-500 text-sm">{errors.precio}</p>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700">Descripción</label>
                         <textarea
                             name="descripcion"
                             value={formData.descripcion}
@@ -101,9 +106,10 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                         {errors.descripcion && <p className="text-red-500 text-sm">{errors.descripcion}</p>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700">Cantidad</label>
-                        <textarea
-                            name="descripcion"
+                        <input
+                            type="number"
+                            placeholder="Cantidad"
+                            name="cantidad"
                             value={formData.cantidad}
                             onChange={handleChange}
                             className={`w-full p-2 border border-gray-300 rounded mt-1 ${errors.cantidad ? 'border-red-500' : ''}`}
@@ -111,10 +117,31 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                         {errors.cantidad && <p className="text-red-500 text-sm">{errors.cantidad}</p>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700">Imagen</label>
+                        <input
+                            type="string"
+                            placeholder="Categoria"
+                            name="categoria"
+                            value={formData.categoria}
+                            onChange={handleChange}
+                            className={`w-full p-2 border border-gray-300 rounded mt-1`}
+                        
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <input
+                            type="number"
+                            name="descuento"
+                            value={formData.descuento}
+                            onChange={handleChange}
+                            placeholder="Opcional"
+                            className={`w-full p-2 border border-gray-300 rounded mt-1 ${errors.descuento ? 'border-red-500' : ''}`}
+                        />
+                        {errors.descuento && <p className="text-red-500 text-sm">{errors.descuento}</p>}
+                    </div>
+                    <div className="mb-4">
                         <input
                             type="file"
-                            name="imagen"
+                            name="imagenes"
                             onChange={handleChange}
                             accept="image/*"
                             className="w-full p-2 border border-gray-300 rounded mt-1"

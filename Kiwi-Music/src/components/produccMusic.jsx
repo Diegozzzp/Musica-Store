@@ -4,7 +4,7 @@ import { FaPlay, FaPause, FaForward, FaBackward } from 'react-icons/fa';
 import { FcMusic } from "react-icons/fc";
 import 'tailwindcss/tailwind.css';
 
-const API_KEY = '75f1a782afmsh018ec0dc00359a7p171ae0jsn0f386a250157';
+const API_KEY = '4619f4cbf2mshd6a2e2d71c5fab1p1aeba8jsne2dd9f9ae550';
 const BASE_URL = 'https://spotify23.p.rapidapi.com';
 
 const getRandomFamousSongs = async () => {

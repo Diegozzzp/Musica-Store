@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CompraCard = ({ compra }) => {
+  // Define un estado para controlar el estado de expandido
   const [isExpanded, setIsExpanded] = useState(false);
 
 
@@ -49,6 +50,7 @@ const CompraCard = ({ compra }) => {
 };
 
 const CompraHistorial = () => {
+  // Variables de estado para la lista de compras y sus detalles de productos basado en el token de inicio de sesión de usuario
   const [compra, setCompras] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);

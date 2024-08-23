@@ -8,7 +8,7 @@ const upload = require('../middlewares/multerconfig');
 
 router.get('/productos', obtenerProductos);
 
-router.get('/productos/campos/:id', ObtenerProductoCampo);
+router.get('/productos/campos', ObtenerProductoCampo);
 
 router.get('/productos/categoria/:id', obtenerProductosPorCategoria);
 

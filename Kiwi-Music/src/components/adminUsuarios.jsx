@@ -5,6 +5,7 @@ import EditarUsuario from './editarUsuario';
 import CrearUsuario from './crearUsuario'; // Importa el nuevo componente
 
 const AdminUsers = () => {
+  // Variables de estado para la paginación y la lista de usuarios y sus detalles
   const [usuarios, setUsuarios] = useState([]);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -14,6 +15,7 @@ const AdminUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
+    // Función para obtener los usuarios y sus detalles 
     const fetchUsuarios = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -54,7 +56,8 @@ const AdminUsers = () => {
     setSelectedUser(user);
     setEditModalOpen(true);
   };
-
+ 
+  // Función para actualizar el perfil del usuario
   const handleSave = async (userId, formData) => {
     try {
         const token = localStorage.getItem('token');
@@ -71,7 +74,7 @@ const AdminUsers = () => {
             }
         );
 
-        // Re-fetch usuarios to ensure the updated data is displayed
+        //re-fetch para actualizar los datos del usuario
         await fetchUsuarios(); // Utiliza la función de fetch de usuarios
 
         setEditModalOpen(false);
@@ -94,7 +97,7 @@ const AdminUsers = () => {
             },
         });
 
-        // Re-fetch usuarios to ensure the new data is displayed
+        // Re-fetch usuarios para mostrar el nuevo usuario en la lista
         await fetchUsuarios(); // Utiliza la función de fetch de usuarios
 
         setCreateModalOpen(false);
@@ -118,7 +121,7 @@ const AdminUsers = () => {
             },
         });
 
-        // Re-fetch usuarios to ensure the deleted data is no longer displayed
+        //re-fetch para actualizar los datos del usuario
         await fetchUsuarios(); // Utiliza la función de fetch de usuarios
     } catch (error) {
         console.error('Error al eliminar el usuario:', error);
@@ -157,12 +160,12 @@ const AdminUsers = () => {
         <h2 className="text-xl font-bold mb-4">Lista de Usuarios</h2>
         <button
           onClick={() => setCreateModalOpen(true)} // Abre el modal de creación
-          className="px-2 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition duration-300 mb-4 flex items-center"
+          className="px-2 py-2 bg-[#9DE0AD] text-white font-semibold rounded-lg hover:bg-green-700 transition duration-300 mb-4 flex items-center"
         >
           <FaPlus className="inline-block mr-2" /> Crear Usuario
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {usuarios.map((user) => (
           <div key={user._id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
@@ -192,12 +195,12 @@ const AdminUsers = () => {
               <p className="mt-2 text-gray-600">
                 <FaEdit className="inline-block mr-2" /> {user.rol}
               </p>
-              <div className="mt-4 flex justify-between">
+              <div className="mt-4 flex justify-between gap-2">
                 <button
                   onClick={() => handleEditClick(user)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-300"
+                  className="px-4 py-2 bg-[#547980] text-white rounded-lg transition duration-300"
                 >
-                  <FaEdit className="inline-block mr-2" /> Editar Perfil
+                  <FaEdit className="inline-block " /> Editar Perfil
                 </button>
                 <button
                   onClick={() => handleDelete(user._id)}

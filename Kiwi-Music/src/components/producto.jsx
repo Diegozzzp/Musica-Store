@@ -5,32 +5,38 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { CartContext } from './carritoContexto';
 import Component from './sideProductos';
 
+// Componente de carrusel de imágenes
 const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Función para ir a la imagen anterior
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) =>
+    setCurrentIndex(prevIndex =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
+  // Función para ir a la imagen siguiente
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
+    setCurrentIndex(prevIndex =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   return (
     <div className="relative w-full h-full">
+      {/* Botón de imagen anterior */}
       <FaArrowLeft
         className="absolute top-1/2 left-0 transform -translate-y-1/2 text-3xl text-gray-500 cursor-pointer"
         onClick={handlePrev}
       />
+      {/* Imagen actual */}
       <img
         src={`http://localhost:3002/uploads/${images[currentIndex]}`}
         alt={`Imagen ${currentIndex + 1}`}
         className="w-full h-full object-cover rounded-lg"
       />
+      {/* Botón de imagen siguiente */}
       <FaArrowRight
         className="absolute top-1/2 right-0 transform -translate-y-1/2 text-3xl text-gray-500 cursor-pointer"
         onClick={handleNext}
@@ -39,15 +45,17 @@ const Carousel = ({ images }) => {
   );
 };
 
+// Componente de página de detalle del producto
 const ProductDetailPage = () => {
-  const { id } = useParams();
-  const [producto, setProducto] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState('');  
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useContext(CartContext);
+  const { id } = useParams(); // Obtiene el id del producto desde los parámetros de la ruta
+  const [producto, setProducto] = useState(null); // Estado para el producto
+  const [loading, setLoading] = useState(true); // Estado para el estado de carga
+  const [error, setError] = useState(null); // Estado para errores
+  const [message, setMessage] = useState(''); // Mensaje para mostrar información al usuario
+  const [quantity, setQuantity] = useState(1); // Estado para la cantidad de producto
+  const { addToCart } = useContext(CartContext); // Contexto para agregar al carrito
 
+  // Efecto para cargar el producto desde la API
   useEffect(() => {
     const fetchProducto = async () => {
       try {
@@ -67,29 +75,30 @@ const ProductDetailPage = () => {
     fetchProducto();
   }, [id]);
 
+  // Muestra un mensaje de carga o error mientras se obtienen los datos
   if (loading) return <p className="text-center py-4">Cargando...</p>;
   if (error) return <p className="text-center py-4">{error}</p>;
+  if (!producto) return <p className="text-center py-4">Producto no encontrado</p>;
 
-  if (!producto) {
-    return <p className="text-center py-4">Producto no encontrado</p>;
-  }
-
+  // Función para aumentar la cantidad del producto
   const increaseQuantity = () => {
     if (quantity < producto.cantidad) {
       setQuantity(quantity + 1);
-      setMessage(''); 
+      setMessage('');
     } else {
       setMessage('No puedes agregar más de la cantidad disponible.');
     }
   };
 
+  // Función para disminuir la cantidad del producto
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
-      setMessage(''); 
+      setMessage('');
     }
   };
 
+  // Función para manejar el agregado al carrito
   const handleAddToCart = () => {
     if (quantity > producto.cantidad) {
       setMessage('No puedes agregar más de la cantidad disponible.');
@@ -102,25 +111,34 @@ const ProductDetailPage = () => {
   return (
     <>
       <div className="flex flex-col md:flex-row h-full items-start justify-around pb-6">
-        <div className="h-[30rem] pl-4 ">
+        {/* Sección de imagen del producto */}
+        <div className="h-[30rem] pl-4">
           {producto.imagenes && producto.imagenes.length > 0 && (
             <Carousel images={producto.imagenes} />
           )}
         </div>
-        <div className="flex flex-col pl-4 pb-8 md:mt-20 ">
+
+        {/* Sección de detalles del producto */}
+        <div className="flex flex-col pl-4 pb-8 md:mt-20">
           <h1 className="text-3xl font-semibold mb-2">{producto.nombre}</h1>
-          <p className="text-lg mb-4">{producto.descripcion}</p>
-          <p className="text-xl font-light mb-2">Precio: ${producto.precio}</p>
+          <p className="text-lg mb-4 w-2/3">{producto.descripcion}</p>
+          {producto.precio && (
+            <p className="text-lg font-semibold mb-4">Precio: ${producto.precio}</p>
+          )}
+          {producto.descuento && (
+            <p className="text-sm font-light mb-4">Descuento: {producto.descuento}%</p>
+          )}
           {producto.tipo === 'ropa' && producto.tallas && producto.tallas.length > 0 && (
             <div className="pt-6">
               <h2 className="text-lg font-semibold mb-4">Tallas Disponibles:</h2>
-              <div className="flex gap-8 items-center justify-center ">
+              <div className="flex gap-8 items-center justify-center">
                 {producto.tallas.map((talla, index) => (
                   <p key={index} className="text-md bg-gray-200 p-6 rounded-lg h-10 flex items-center">{talla}</p>
                 ))}
               </div>
             </div>
           )}
+          {/* Control de cantidad y botón de agregar al carrito */}
           <div className="flex flex-col mt-4 mb-">
             <p className="text-lg font-semibold mb-4">Cantidad:</p>
             <div className='flex items-center'>
@@ -153,10 +171,11 @@ const ProductDetailPage = () => {
             <p className="text-sm text-black font-light w-24 text-center">Añadir al carrito</p>
           </button>
           {producto.cantidad === 0 && (
-            <p className="text-lg font-semibold mt-4">No hay stock disponible</p>
+            <p className="text-lg font-semibold mt-4 text-red-500">No hay más stock disponible</p>
           )}
         </div>
       </div>
+      {/* Componente de productos recomendados */}
       <Component categoriaId={'66aba85f829468324fa4ed52'} titulo={'Recomendados'} />
     </>
   );

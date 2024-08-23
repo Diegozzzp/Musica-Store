@@ -4,39 +4,36 @@ import axios from 'axios';
 import fondologin from '../images/fondologin.png';
 
 const Auth = ({ isLogin }) => {
+  // Estado para almacenar los datos del formulario y los errores
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
     telefono: '',
     correo: '',
     password: '',
-    avatar: null, // Añadir campo para el avatar
+    avatar: null,
   });
   const [error, setError] = useState({});
   const navigate = useNavigate();
 
+  // Efecto para redirigir al usuario autenticado a la página de perfil
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        navigate('/perfil');
-      }
-    };
-
-    checkAuth();
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/perfil');
+    }
   }, [navigate]);
 
+  // Maneja los cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    
-    // Si el campo es 'avatar', tomamos el archivo en lugar del valor
-    if (name === 'avatar') {
-      setForm((prevForm) => ({ ...prevForm, avatar: files[0] }));
-    } else {
-      setForm((prevForm) => ({ ...prevForm, [name]: value }));
-    }
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: name === 'avatar' ? files[0] : value,
+    }));
   };
 
+  // Valida el formulario y devuelve un objeto de errores
   const validateForm = () => {
     const newError = {};
 
@@ -44,19 +41,23 @@ const Auth = ({ isLogin }) => {
       newError.correo = 'Correo y contraseña son obligatorios';
     }
 
+    // Validación de correo electrónico
     if (!/^\S+@\S+\.\S+$/.test(form.correo)) {
       newError.correo = 'Correo electrónico no válido';
     }
 
+    // Validación de contraseña
     if (form.password.length < 6) {
       newError.password = 'La contraseña debe tener al menos 6 caracteres';
     }
 
+    // Validaciones adicionales para el registro
     if (!isLogin) {
       if (!form.nombre || !form.apellido || !form.telefono) {
         newError.nombre = 'Todos los campos son obligatorios';
       }
 
+      // Validación del nombre y apellido
       if (!/^[a-zA-Z]+$/.test(form.nombre)) {
         newError.nombre = 'El nombre solo debe contener letras';
       }
@@ -64,6 +65,7 @@ const Auth = ({ isLogin }) => {
         newError.apellido = 'El apellido solo debe contener letras';
       }
 
+      // Validación del teléfono
       if (!/^\+?\d+$/.test(form.telefono)) {
         newError.telefono = 'El teléfono debe contener solo números y puede comenzar con el símbolo +';
       }
@@ -72,70 +74,67 @@ const Auth = ({ isLogin }) => {
     return newError;
   };
 
+  // Maneja el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validar el formulario
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-        setError(validationErrors);
-        return;
+      setError(validationErrors);
+      return;
     }
 
     try {
-        if (isLogin) {
-            const response = await axios.post('http://localhost:3002/login', {
-                correo: form.correo,
-                password: form.password,
-            });
-            // Guardar el token en el local storage
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('refreshToken', response.data.refreshToken); // Guarda también el refresh token si es proporcionado
-            console.log('Token guardado:', response.data.token);
-            console.log('Refresh token guardado:', response.data.refreshToken);
-            navigate('/perfil');
-        } else {
-            const formData = new FormData();
-            formData.append('nombre', form.nombre);
-            formData.append('apellido', form.apellido);
-            formData.append('telefono', form.telefono);
-            formData.append('correo', form.correo);
-            formData.append('password', form.password);
-            if (form.avatar) {
-                formData.append('avatar', form.avatar); // Añadir avatar al FormData
-            }
+      if (isLogin) {
+        // Enviar datos de inicio de sesión
+        const response = await axios.post('http://localhost:3002/login', {
+          correo: form.correo,
+          password: form.password,
+        });
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        navigate('/perfil');
+      } else {
+        // Preparar datos para el registro
+        const formData = new FormData();
+        Object.keys(form).forEach((key) => formData.append(key, form[key]));
 
-            await axios.post('http://localhost:3002/usuario', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            navigate('/login');
-        }
+        // Enviar datos de registro
+        await axios.post('http://localhost:3002/usuario', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        navigate('/login');
+      }
     } catch (error) {
-        setError({ general: 'Error en la autenticación' });
-        console.error('Error en la autenticación:', error.response?.data || error.message);
+      setError({ general: 'Error en la autenticación' });
+      console.error('Error en la autenticación:', error.response?.data || error.message);
     }
-};
+  };
 
   return (
     <div className="flex h-screen w-full">
-      <div
-        style={{ animation: 'slideInFromLeft 1s ease-out' }}
-        className="flex flex-col justify-center items-center w-full md:w-1/2 bg-gradient-to-r from-[#547980] to-[#45ADA8] shadow-2xl p-8 space-y-8"
-      >
-        <h2
-          style={{ animation: 'appear 2s ease-out' }}
-          className="text-center text-4xl font-extrabold text-white"
-        >
-          {isLogin ? 'Bienvenido de vuelta' : 'Crea una Cuenta'}
+      {/* Sección de fondo para pantallas grandes */}
+      <div className="hidden md:flex md:w-2/3 bg-cover bg-center relative">
+        <img src={fondologin} alt="Fondo Login" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pb-40 z-20">
+          <p className="text-white text-4xl font-bold">Kiwi Music</p>
+          <p className="text-white text-lg">Cada nota, un kiwi</p>
+        </div>
+      </div>
+      {/* Sección de formulario de inicio de sesión/registro */}
+      <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-6 space-y-6">
+        <h2 className="text-center text-4xl font-semibold pt-10 text-[#9DE0AD]">
+          {isLogin ? 'Bienvenido de vuelta' : 'Crea una cuenta'}
         </h2>
-        <p
-          style={{ animation: 'appear 3s ease-out' }}
-          className="text-center text-gray-200"
-        >
+        <p className="text-center text-black">
           {isLogin ? 'Inicia sesión con tu cuenta' : 'Regístrate con una cuenta nueva'}
         </p>
         <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-sm">
+          {/* Campos adicionales para registro */}
           {!isLogin && (
             <>
               <InputField
@@ -170,7 +169,6 @@ const Auth = ({ isLogin }) => {
                 label="Avatar"
                 type="file"
                 onChange={handleChange}
-                error={error.avatar}
                 accept="image/*"
               />
             </>
@@ -194,13 +192,13 @@ const Auth = ({ isLogin }) => {
             error={error.password}
           />
           <button
-            className="w-full py-2 px-4 bg-purple-500 hover:bg-purple-700 rounded-md shadow-lg text-white font-semibold transition duration-200"
+            className="w-full py-2 px-4 bg-green-300 text-[#547980] rounded-md shadow-lg font-semibold"
             type="submit"
           >
             {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
           </button>
         </form>
-        <div className="text-center text-gray-300">
+        <div className="text-center text-black">
           {isLogin ? (
             <>
               ¿No tienes una cuenta?{' '}
@@ -208,38 +206,31 @@ const Auth = ({ isLogin }) => {
                 Crea una cuenta
               </Link>
               <br />
-              <Link to="/olvide-password" className="text-purple-300 hover:underline">
-                Olvide mi contraseña
+              <Link to="/olvide-password" className="text-blue-300 hover:underline">
+                Olvidé mi contraseña
               </Link>
             </>
           ) : (
             <>
               ¿Ya tienes una cuenta?{' '}
-              <Link to="/login" className="text-purple-300 hover:underline">
+              <Link to="/login" className="text-blue-500 hover:underline">
                 Inicia sesión
               </Link>
             </>
           )}
         </div>
-        {error.general && <p className="text-red-500 text-center mt-4">{error.general}</p>}
-      </div>
-      <div className="hidden md:flex md:w-1/2 bg-cover bg-center relative">
-        <img src={fondologin} alt="Fondo Login" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
-        <div className="absolute inset-0 flex flex-col items-center justify-center pb-40 z-20">
-          <p className="text-white text-4xl font-bold">Kiwi Music</p>
-          <p className="text-white text-lg">Cada nota, Un kiwi</p>
-        </div>
+        {error.general && <p className="text-red-500 text-center">{error.general}</p>}
       </div>
     </div>
   );
 };
 
+// Componente reutilizable para campos de entrada
 const InputField = ({ id, label, type = "text", value, onChange, required, error, accept }) => (
   <div className="relative">
     <input
       placeholder={label}
-      className={"h-10 w-full border-b-2 ${error ? 'border-red-500' : 'border-gray-300'} text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"}
+      className={`h-10 w-full border-b-2 ${error ? 'border-red-500' : 'border-black-300'} text-black bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500`}
       required={required}
       id={id}
       name={id}

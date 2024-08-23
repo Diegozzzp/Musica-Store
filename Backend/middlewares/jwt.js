@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 const secretKey = 'secretKey'; // Clave secreta para el token de acceso
 const refreshSecretKey = 'refreshSecretKey'; 
 
 function signToken(payload) {
-    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+    return jwt.sign(payload, secretKey, { expiresIn: '7d' });
 }
 
 // Otros métodos...

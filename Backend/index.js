@@ -24,9 +24,9 @@ const categoria = require('./Rutas/categoria');
 const rol = require('./Rutas/rol');
 const compra = require('./Rutas/compra');
 const producto = require('./Rutas/producto');
-
+const reportes = require('./Rutas/reportes');
 //usar las rutas
-app.use(usuarios, categoria, rol, compra, producto);
+app.use(usuarios, categoria, rol, compra, producto, reportes);
 
 
 app.listen(port, () => {

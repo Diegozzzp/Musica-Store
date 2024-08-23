@@ -3,8 +3,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const transporter = require('../middlewares/nodemailer'); // Importa el transportador de correo
 const crypto = require('crypto');
-const {signToken} = require('../middlewares/jwt');
+const { signToken } = require('../middlewares/jwt');
 
+// Solicita un restablecimiento de contraseña
 exports.solicitarRestablecimiento = async (req, res) => {
     const { email } = req.body;
   
@@ -41,8 +42,7 @@ exports.solicitarRestablecimiento = async (req, res) => {
     }
 };
 
-
-// Controladores/usuarios.js
+// Restablece la contraseña del usuario
 exports.restablecerContrasena = async (req, res) => {
     const { token, nuevaContrasena } = req.body;
 
@@ -72,7 +72,7 @@ exports.restablecerContrasena = async (req, res) => {
     }
 };
 
-
+// Inicia sesión del usuario
 exports.loginUsuario = async (req, res) => {
     const { correo, password } = req.body;
 
@@ -100,6 +100,7 @@ exports.loginUsuario = async (req, res) => {
     }
 };
 
+// Obtiene el perfil del usuario autenticado
 exports.obtenerPerfil = async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
@@ -117,6 +118,7 @@ exports.obtenerPerfil = async (req, res) => {
     }
 };
 
+// Obtiene una lista de usuarios con paginación
 exports.obtenerUsuarios = async (req, res) => {
     try {
         const usuarios = await Usuarios.paginate({}, { page: req.query.page || 1, limit: 10 });
@@ -126,6 +128,7 @@ exports.obtenerUsuarios = async (req, res) => {
     }
 };
 
+// Obtiene un usuario específico o una lista de usuarios basados en los filtros proporcionados
 exports.obtenerUsuario = async (req, res) => {
     const { id, nombre, apellido, telefono, rol, eliminado } = req.query;
     try {
@@ -144,6 +147,7 @@ exports.obtenerUsuario = async (req, res) => {
     }
 };
 
+// Crea un nuevo usuario
 exports.crearUsuario = async (req, res) => {
     try {
         const { nombre, apellido, telefono, correo, password, rol } = req.body;
@@ -184,11 +188,11 @@ exports.crearUsuario = async (req, res) => {
     }
 };
 
+// Edita la información de un usuario existente
 exports.editarUsuario = async (req, res) => {
     try {
         if (!req.user || !req.params.id) {
             return res.status(400).json({ msg: 'Faltan datos necesarios para la actualización.' });
-            
         }
 
         const { id } = req.params;
@@ -197,10 +201,8 @@ exports.editarUsuario = async (req, res) => {
         console.log('User in request:', req.user);
         console.log('Requested user ID:', req.params.id);
 
-
         if (req.user.rol !== 'admin' && req.user.userId !== id) {
             return res.status(403).json({ msg: 'No tienes permiso para editar este usuario' });
-            
         }
 
         const usuario = await Usuarios.findById(id);
@@ -231,6 +233,7 @@ exports.editarUsuario = async (req, res) => {
     }
 };
 
+// Marca un usuario como eliminado
 exports.eliminarUsuario = async (req, res) => {
     try {
         const { id } = req.params;

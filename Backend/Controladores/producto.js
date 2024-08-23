@@ -3,52 +3,66 @@ const { validationResult } = require('express-validator');
 const path = require('path');
 const fs = require('fs');
 
+// Función para manejar errores y enviar respuestas adecuadas
 const handleError = (res, message, error) => {
     console.error(message, error);
     res.status(500).json({ msg: message, error: error.message });
 };
 
+// Controlador para obtener una lista paginada de productos
 exports.obtenerProductos = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const { page = 1, limit = 10, categoria } = req.query; // Obtener parámetros de paginación y categoría
         const options = {
-            page: parseInt(page, 10),
-            limit: parseInt(limit, 10),
-            populate: 'categoria',
-            select: 'nombre precio cantidad categoria imagenes descripcion descuento'
+            page: parseInt(page, 10), // Número de página
+            limit: parseInt(limit, 10), // Cantidad de resultados por página
+            populate: 'categoria', // Incluir información de la categoría
+            select: 'nombre precio cantidad categoria imagenes descripcion descuento' // Campos a seleccionar
         };
-        const productos = await Productos.paginate({}, options);
+
+        // Crear el filtro para la búsqueda
+        const query = {};
+
+        if (categoria) {
+            query.categoria = categoria; // Filtrar por ID de categoría si se proporciona
+        }
+
+        // Obtener productos con paginación y opciones especificadas
+        const productos = await Productos.paginate(query, options);
         if (!productos.docs.length) {
             return res.status(404).json({ msg: 'No se encontraron productos' });
         }
-        res.json(productos);
+        res.json(productos); // Enviar los productos como respuesta
     } catch (error) {
-        handleError(res, 'Error al obtener productos', error);
+        handleError(res, 'Error al obtener productos', error); // Manejar errores
     }
 };
 
+// Controlador para obtener productos basados en varios campos de filtro
 exports.ObtenerProductoCampo = async (req, res) => {
     try {
-        const { id, nombre, categoria, descripcion } = req.query;
+        const { id, nombre, categoria, descripcion } = req.query; // Obtener parámetros de consulta
         const filtro = {};
         if (id) filtro._id = id;
-        if (nombre) filtro.nombre = { $regex: new RegExp(nombre, 'i') };
+        if (nombre) filtro.nombre = { $regex: new RegExp(nombre, 'i') }; // Búsqueda insensible a mayúsculas/minúsculas
         if (categoria) filtro.categoria = categoria;
         if (descripcion) filtro.descripcion = { $regex: new RegExp(descripcion, 'i') };
+        // Buscar productos que coincidan con los filtros especificados
         const producto = await Productos.find(filtro);
-        res.json(producto);
+        res.json(producto); // Enviar los productos como respuesta
     } catch (error) {
-        handleError(res, 'Error al obtener el producto', error);
+        handleError(res, 'Error al obtener el producto', error); // Manejar errores
     }
 };
 
+// Controlador para obtener productos por categoría
 exports.obtenerProductosPorCategoria = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; // Obtener ID de categoría desde parámetros
         if (!id) {
             return res.status(400).json({ msg: 'ID de categoría es requerido' });
         }
-        const { page = 1, limit = 12, sort } = req.query;
+        const { page = 1, limit = 12, sort } = req.query; // Obtener parámetros de paginación y ordenamiento
         const sortOptions = {
             'mas-antiguos': { createdAt: 1 },
             'mas-recientes': { createdAt: -1 },
@@ -59,84 +73,100 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
         };
         const sortOption = sortOptions[sort] || sortOptions.default;
         const options = {
-            page: parseInt(page, 12),
-            limit: parseInt(limit, 12),
-            sort: sortOption,
-            populate: 'categoria',
-            select: 'nombre precio cantidad categoria imagenes descripcion descuento ventas popularidad createdAt'
+            page: parseInt(page, 10), // Número de página
+            limit: parseInt(limit, 10), // Cantidad de resultados por página
+            sort: sortOption, // Ordenar según opción seleccionada
+            populate: 'categoria', // Incluir información de la categoría
+            select: 'nombre precio cantidad categoria imagenes descripcion descuento ventas popularidad createdAt' // Campos a seleccionar
         };
+        // Obtener productos por categoría con paginación y opciones especificadas
         const productos = await Productos.paginate({ categoria: id }, options);
         if (!productos.docs.length) {
             return res.status(404).json({ msg: 'No se encontraron productos para la categoría especificada' });
         }
-        const totalProductos = await Productos.countDocuments({ categoria: id });
+        const totalProductos = await Productos.countDocuments({ categoria: id }); // Contar el total de productos en la categoría
         res.json({
             productos: productos.docs,
             totalProductos,
             totalPages: productos.totalPages,
             currentPage: productos.page
-        });
+        }); // Enviar respuesta con detalles de los productos
     } catch (error) {
-        handleError(res, 'Error al obtener productos', error);
+        handleError(res, 'Error al obtener productos', error); // Manejar errores
     }
 };
 
+// Controlador para obtener un producto por su ID
 exports.obtenerProductoPorId = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; // Obtener ID del producto desde parámetros
+        // Buscar el producto por ID e incluir la información de la categoría
         const producto = await Productos.findById(id).populate('categoria');
         if (!producto) {
             return res.status(404).json({ msg: 'Producto no encontrado' });
         }
-        res.json(producto);
+        res.json(producto); // Enviar el producto como respuesta
     } catch (error) {
-        handleError(res, 'Error al obtener el producto', error);
+        handleError(res, 'Error al obtener el producto', error); // Manejar errores
     }
 };
 
+// Controlador para crear un nuevo producto
 exports.crearProducto = async (req, res) => {
-    const errors = validationResult(req);
+    const errors = validationResult(req); // Validar datos del formulario
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ errors: errors.array() }); // Devolver errores de validación
     }
 
     try {
         const { nombre, precio, cantidad, categoria, descripcion, descuento, tipo, tallas } = req.body;
-        const imagenes = req.files.map(file => file.filename);
+        const imagenes = req.files.map(file => file.filename); // Obtener nombres de los archivos subidos
 
+        let precioFinal = parseFloat(precio);
+        if (descuento) {
+            const descuentoPorcentaje = parseFloat(descuento);
+            if (descuentoPorcentaje > -1 && descuentoPorcentaje <= 100) {
+                precioFinal = precioFinal - (precioFinal * (descuentoPorcentaje / 100)); // Aplicar descuento
+            } else {
+                return res.status(400).json({ msg: 'El descuento debe ser un porcentaje válido entre 0 y 100' });
+            }
+        }
+
+        // Crear el nuevo producto con los datos proporcionados
         const nuevoProducto = new Productos({
             nombre,
-            precio,
+            precio: precioFinal, // Aplicar el precio con descuento si aplica
             cantidad,
             categoria,
             imagenes,
             descripcion,
-            descuento,
+            descuento: descuento || 0, // Guardar el descuento como porcentaje
             tipo,
-            tallas: tipo === 'ropa' ? tallas : []  
+            tallas: tipo === 'ropa' ? tallas : []  // Solo asignar tallas si el tipo es 'ropa'
         });
 
-        await nuevoProducto.save();
-        res.json({ msg: 'Producto creado correctamente' });
+        await nuevoProducto.save(); // Guardar el nuevo producto en la base de datos
+        res.json({ msg: 'Producto creado correctamente' }); // Responder con éxito
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: 'Error al crear el producto' });
+        res.status(500).json({ msg: 'Error al crear el producto' }); // Manejar errores
     }
 };
 
+// Controlador para actualizar un producto existente
 exports.editarProducto = async (req, res) => {
     try {
-        const { id } = req.params;
-        const producto = await Productos.findById(id);
+        const { id } = req.params; // Obtener ID del producto desde parámetros
+        const producto = await Productos.findById(id); // Buscar el producto por ID
 
         if (!producto) {
-            return res.status(404).json({ msg: 'Producto no encontrado' });
+            return res.status(404).json({ msg: 'Producto no encontrado' }); // Manejar caso de producto no encontrado
         }
 
-        let imagenes = producto.imagenes;
+        let imagenes = producto.imagenes; // Obtener imágenes actuales del producto
 
         if (req.files && req.files.length > 0) {
-
+            // Si se subieron nuevas imágenes, eliminar las antiguas
             imagenes.forEach(imagen => {
                 const filePath = path.join(__dirname, '..', 'uploads', imagen);
                 if (fs.existsSync(filePath)) {
@@ -144,34 +174,48 @@ exports.editarProducto = async (req, res) => {
                 }
             });
 
+            // Asignar nuevas imágenes
             imagenes = req.files.map(file => file.filename);
         }
 
-        const updateData = { ...req.body, imagenes };
+        const updateData = { ...req.body, imagenes }; // Preparar datos de actualización
 
+        // Aplicar descuento si está presente en la solicitud
+        if (updateData.descuento) {
+            const descuentoPorcentaje = parseFloat(updateData.descuento);
+            const precioOriginal = producto.precio;
+
+            if (!isNaN(descuentoPorcentaje) && descuentoPorcentaje >= 0 && descuentoPorcentaje <= 100) {
+                updateData.precio = precioOriginal - (precioOriginal * (descuentoPorcentaje / 100)); // Calcular precio con descuento
+            } else {
+                return res.status(400).json({ msg: 'El descuento debe ser un porcentaje válido entre 0 y 100' });
+            }
+        }
+
+        // Ajustar tallas si el tipo es 'ropa'
         if (updateData.tipo === 'ropa') {
-
             updateData.tallas = Array.isArray(updateData.tallas) ? updateData.tallas : [];
         } else {
             updateData.tallas = [];
         }
 
- 
+        // Actualizar el producto en la base de datos
         const productoActualizado = await Productos.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
-        res.json({ msg: 'Producto actualizado correctamente', producto: productoActualizado });
+        res.json({ msg: 'Producto actualizado correctamente', producto: productoActualizado }); // Responder con éxito
     } catch (error) {
-
-        res.status(500).json({ msg: 'Error al actualizar el producto', error: error.message });
+        console.error(error);
+        res.status(500).json({ msg: 'Error al actualizar el producto', error: error.message }); // Manejar errores
     }
 };
 
+// Controlador para eliminar un producto
 exports.eliminarProducto = async (req, res) => {
     try {
-        const { id } = req.params;
-        await Productos.findByIdAndDelete(id);
-        res.json({ msg: 'Producto eliminado correctamente' });
+        const { id } = req.params; // Obtener ID del producto desde parámetros
+        await Productos.findByIdAndDelete(id); // Eliminar el producto de la base de datos
+        res.json({ msg: 'Producto eliminado correctamente' }); // Responder con éxito
     } catch (error) {
-        handleError(res, 'Error al eliminar el producto', error);
+        handleError(res, 'Error al eliminar el producto', error); // Manejar errores
     }
 };

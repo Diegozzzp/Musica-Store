@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Compras = () => {
+    // Variables de estado para la paginación y la lista de compras y sus detalles de productos 
     const [compras, setCompras] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,6 +12,7 @@ const Compras = () => {
     const [productDetails, setProductDetails] = useState({}); // Guardar detalles de productos
 
     useEffect(() => {
+        // Función para obtener las compras
         const fetchCompras = async () => {
             try {
                 setLoading(true);
@@ -32,6 +34,7 @@ const Compras = () => {
     }, [page]);
 
     useEffect(() => {
+        // Función para obtener los detalles de los productos
         const fetchProductDetails = async () => {
             try {
                 const allProductDetails = await Promise.all(
@@ -67,10 +70,11 @@ const Compras = () => {
         }
     }, [compras]);
 
+    // Función para cambiar la paginación
     const handlePageChange = (newPage) => {
         setPage(newPage);
     };
-
+    // Función para controlar la expansión de las compras 
     const toggleExpand = (compraId) => {
         setExpandedCompraId(expandedCompraId === compraId ? null : compraId);
     };

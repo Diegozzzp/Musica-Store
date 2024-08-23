@@ -8,6 +8,7 @@ const ResetPasswordRequest = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
+  // Manejar el envío de formulario para solicitar un enlace de restablecimiento de contraseña
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto';
 import { FiPlayCircle } from "react-icons/fi";
 
-const URL_albums = 'http://localhost:3002/productos/categoria/';
+const URL_albums = 'http://localhost:3002/productos';
 
-const AlbumsPage = ({ categoriaId, titulo }) => {
+const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalProductos, setTotalProductos] = useState(0);
@@ -25,22 +25,26 @@ const AlbumsPage = ({ categoriaId, titulo }) => {
   useEffect(() => {
     const obtenerProductos = async () => {
       try {
-        const response = await axios.get(`${URL_albums}${categoriaId}`, {
-          params: {
-            sort: filtro,
-            page: paginaActual,
-            limit: 10
-          }
-        });
+        const params = {
+          sort: filtro,
+          page: paginaActual,
+          limit: 10
+        };
 
-        // Verifica el formato de respuesta
-        if (response.data && Array.isArray(response.data.productos)) {
-          setData(response.data.productos);
-          setTotalProductos(response.data.totalProductos);
+        // Solo agrega la categoría si el ID de la categoría se ha proporcionado
+        if (categoriaId) {
+          params.categoria = categoriaId;
+        }
+
+        const response = await axios.get(URL_albums, { params });
+
+        if (response.data && Array.isArray(response.data.docs)) {
+          setData(response.data.docs);
+          setTotalProductos(response.data.totalDocs);
           setTotalPaginas(response.data.totalPages);
-          setPaginaActual(response.data.currentPage);
-          setHasPrevPage(response.data.currentPage > 1);
-          setHasNextPage(response.data.currentPage < response.data.totalPages);
+          setPaginaActual(response.data.page);
+          setHasPrevPage(response.data.page > 1);
+          setHasNextPage(response.data.page < response.data.totalPages);
         } else {
           console.error("Unexpected response data format", response.data);
         }
@@ -51,9 +55,7 @@ const AlbumsPage = ({ categoriaId, titulo }) => {
       }
     };
 
-    if (categoriaId) {
-      obtenerProductos();
-    }
+    obtenerProductos();
   }, [categoriaId, filtro, paginaActual]);
 
   if (loading) {

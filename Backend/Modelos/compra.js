@@ -5,7 +5,7 @@ const compraSchema = new mongoose.Schema({
     usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'usuarios', required: true },
     productos: [{
         producto: { type: mongoose.Schema.Types.ObjectId, ref: 'productos', required: true },
-        cantidad: { type: Number, required: true, min: 1 }
+        cantidad: { type: Number, required: true, min: 1}
     }],
     total: { type: Number, required: true },
     fecha: { type: Date, default: Date.now },

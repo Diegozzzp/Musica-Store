@@ -1,6 +1,6 @@
 const Categorias = require('../Modelos/categoria');
 
-
+// Obtener todas las categorias 
 exports.obtenerCategorias = async (req, res) => {
     try{
         const categorias = await Categorias.paginate({}, { page: req.query.page || 1, limit: 10 });
@@ -11,6 +11,7 @@ exports.obtenerCategorias = async (req, res) => {
     }
 }
 
+// Buscar categorias por nombre 
 exports.buscarCategorias = async (req, res) => {
     try{
         const { nombre } = req.query;
@@ -22,6 +23,7 @@ exports.buscarCategorias = async (req, res) => {
     }
 }
 
+// Crear categorias 
 exports.crearCategorias = async (req, res) => {
     try {
         const { nombre } = req.body;
@@ -33,6 +35,7 @@ exports.crearCategorias = async (req, res) => {
     }
 };
 
+// se puede eliminar o actualizar categorias en las siguientes controlladores
 exports.editarCategorias = async (req, res) => {
     try{
         const { id } = req.params;

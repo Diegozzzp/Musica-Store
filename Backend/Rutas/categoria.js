@@ -9,7 +9,7 @@ router.get('/categorias', obtenerCategorias);
 
 router.get('/categorias/:id', buscarCategorias);
 
-router.post('/categorias', validarCategoria, crearCategorias);
+router.post('/categorias',  crearCategorias);
 
 router.patch('/categorias/:id', editarCategorias);
 

@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 export const CartContext = createContext();
 
+
 export const CartProvider = ({ children }) => {
+  //usa el context para el carrito de compras es decir el carrito de compras del usuario guardandolo en el local storage
   const [cart, setCart] = useState([]);
   const navigate = useNavigate(); 
 
@@ -49,6 +50,7 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem('cart');
   };
 
+  // Función para realizar la compra, almacenando el token en el local storage y redireccionando a la página de gracias
   const checkout = async () => {
     const token = localStorage.getItem('token');
     

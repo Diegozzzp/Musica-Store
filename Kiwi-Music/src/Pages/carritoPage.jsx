@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { CartContext } from '../components/carritoContexto';
 import { MdDelete } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,74 +6,65 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const CompraRealizar = () => {
+    // Obtener el contexto del carrito de compras
     const { cart, removeFromCart, clearCart } = useContext(CartContext);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Hook para navegar programáticamente
+    const [loading, setLoading] = useState(false); // Estado para gestionar la carga de la compra
 
-    const calcularTotal = () => {
+    // Memoriza el cálculo del total para evitar recalculaciones innecesarias
+    const total = useMemo(() => {
         return cart.reduce((acc, product) => acc + (product.precio || 0) * (product.cantidad || 0), 0);
-    };
+    }, [cart]);
 
+    // Función para manejar la realización de la compra
     const handleCompra = async () => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); // Obtener el token de autenticación del almacenamiento local
         
         if (!token) {
+            // Si no hay token, redirigir al usuario a la página de inicio de sesión
             navigate('/login');
             return;
         }
     
         try {
+            setLoading(true); // Activar el estado de carga
             const response = await axios.post('http://localhost:3002/comprar', {
-            productos: cart.map(item => ({
-                producto: item._id, // Asegúrate de que este campo se llama 'producto'
-                cantidad: item.cantidad, // Asegúrate de que la cantidad sea correcta
-                    })),
-            total: calcularTotal(),
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+                productos: cart.map(item => ({
+                    producto: item._id,
+                    cantidad: item.cantidad,
+                })),
+                total: total,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             
-    
-            if (response.status === 201) { // Asegúrate de que el código de estado sea 201 para una creación exitosa
+            if (response.status === 201) {
+                // Mostrar un mensaje de éxito si la compra fue realizada correctamente
                 toast.success('¡Compra realizada con éxito!', {
                     position: "top-right",
                     autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
                 });
-    
-                clearCart(); // Vacía el carrito
-                localStorage.removeItem('cart'); // Borra el carrito del localStorage
-                navigate('/gracias'); // Redirige a la página de confirmación
+
+                clearCart(); // Limpiar el carrito después de la compra
             }
         } catch (error) {
-            console.error('Error al realizar la compra:', error.response?.data || error.message);
+            // Mensaje de error según el estado de la respuesta
+            const errorMsg = error.response?.status === 401
+                ? 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.'
+                : 'Hubo un problema al realizar la compra. Por favor, inténtalo de nuevo.';
+
+            toast.error(errorMsg, {
+                position: "top-right",
+                autoClose: 5000,
+            });
+
             if (error.response?.status === 401) {
-                toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                navigate('/login');
-            } else {
-                toast.error('Hubo un problema al realizar la compra. Por favor, inténtalo de nuevo.', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+                navigate('/login'); // Redirigir a la página de inicio de sesión en caso de sesión expirada
             }
+        } finally {
+            setLoading(false); // Desactivar el estado de carga
         }
     };
 
@@ -82,11 +73,13 @@ const CompraRealizar = () => {
             <h1 className="text-2xl font-bold mb-4">Resumen de la Compra</h1>
             {cart.length > 0 ? (
                 <>
+                    {/* Lista de productos en el carrito */}
                     <ul className="mb-4">
                         {cart.map((product, index) => (
                             <li key={index} className="border-b border-gray-200 py-4 flex justify-between items-center">
                                 <div className="flex items-center">
                                     <Link to={`/producto/${product._id}`}>
+                                        {/* Imagen del producto con enlace a la página del producto */}
                                         <img
                                             src={`http://localhost:3002/uploads/${product.imagenes[0]}`}
                                             alt={product.nombre}
@@ -101,7 +94,9 @@ const CompraRealizar = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center">
+                                    {/* Precio total por producto */}
                                     <p className="text-lg font-semibold mr-4">${(product.precio || 0) * (product.cantidad || 0)}</p>
+                                    {/* Botón para eliminar un producto del carrito */}
                                     <button onClick={() => removeFromCart(product._id)} className="text-red-500 hover:text-red-700">
                                         <MdDelete className="w-6 h-6" />
                                     </button>
@@ -110,12 +105,15 @@ const CompraRealizar = () => {
                         ))}
                     </ul>
                     <div className="text-right">
-                        <p className="text-xl font-bold">Total: ${calcularTotal().toFixed(2)}</p>
+                        {/* Monto total de la compra */}
+                        <p className="text-xl font-bold">Total: ${total.toFixed(2)}</p>
+                        {/* Botón para realizar la compra */}
                         <button 
                             onClick={handleCompra} 
-                            className="bg-blue-500 text-white px-6 py-2 rounded-md mt-4 hover:bg-blue-700"
+                            className={`bg-blue-500 text-white px-6 py-2 rounded-md mt-4 hover:bg-blue-700 ${loading ? 'cursor-not-allowed' : ''}`}
+                            disabled={loading}
                         >
-                            Realizar Compra
+                            {loading ? 'Procesando...' : 'Realizar Compra'}
                         </button>
                     </div>
                 </>

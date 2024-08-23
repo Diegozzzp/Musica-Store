@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCamera, FaMailchimp, FaPhone } from 'react-icons/fa';
+import { FaMailchimp, FaPhone } from 'react-icons/fa';
 import Logout from '../components/cerrar-sesion';
 import CompraHistorial from './historial';
 import EditarUsuario from './editarUsuario';
@@ -25,9 +25,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
   
-        console.log(response.data); // Ver qué devuelve la API
-  
-        // Buscar el usuario específico en el array
+        // Verificar si el usuario existe
         const usuario = response.data.find(u => u._id === id);
         if (usuario) {
           setIsAdmin(usuario.rol === 'admin');
@@ -42,7 +40,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
     fetchUserRole();
   }, [id]);
   
-
+ // Función para actualizar el perfil del usuario
   const handleSave = async (userId, formData) => {
     try {
       const token = localStorage.getItem('token');
@@ -123,20 +121,17 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
       {/* Historial de compras */}
       <div className="flex flex-col w-[40%] max-md:ml-0 max-lg:w-full rounded-2xl lg:pl-4 pt-6">
         <CompraHistorial />
-      </div>
-
-      {/* Botón para el Panel de Administración */}
-      {isAdmin && (
+        {isAdmin && (
         <div className="flex flex-col mt-6 lg:pl-4">
           <button
-            className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-md"
+            className="py-2  bg-blue-500 hover:bg-blue-700 text-white rounded-md mb-8"
             onClick={() => navigate('/admin')}
           >
             Ir al Panel de Administración
           </button>
         </div>
       )}
-
+      </div>
       {/* Modal de edición del usuario */}
       <EditarUsuario 
         isOpen={isEditModalOpen} 

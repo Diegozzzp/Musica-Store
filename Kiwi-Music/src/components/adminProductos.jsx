@@ -5,6 +5,7 @@ import EditarProducto from './editarProducto';
 import CrearProducto from './crearProductos';
 
 const AdminProductos = () => {
+    // Variables de estado para la paginación y la lista de productos y sus detalles de productos 
     const [productos, setProductos] = useState([]);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,7 +17,7 @@ const AdminProductos = () => {
     useEffect(() => {
         fetchProductos();
     }, [currentPage]);
-
+    // Función para obtener los productos y sus detalles
     const fetchProductos = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -55,11 +56,12 @@ const AdminProductos = () => {
         setEditModalOpen(true);
     };
 
+    // Función para editar un producto (requiere autenticación)
     const handleSave = async (productId, formData) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No se proporcionó token.');
-
+    
             const response = await axios.patch(
                 `http://localhost:3002/productos/${productId}`,
                 formData,
@@ -70,18 +72,18 @@ const AdminProductos = () => {
                     },
                 }
             );
-
-            console.log('Producto actualizado:', response.data);
             fetchProductos(); // Recargar la lista de productos actualizados
             setEditModalOpen(false);
             setSelectedProduct(null);
+    
+            console.log('Producto actualizado:');
         } catch (error) {
             console.error('Error al actualizar el producto:', error);
-            setError('Hubo un problema al actualizar el producto.');
         }
     };
 
 
+    // Función para crear un nuevo producto
     const handleCreateProduct = async (formData) => {
         try {
             await axios.post('http://localhost:3002/productos', formData, {
@@ -100,6 +102,7 @@ const AdminProductos = () => {
         }
     };
 
+    // Función para eliminar un producto (requiere autenticación)
     const handleDelete = async (productId) => {
         const confirmDelete = window.confirm('¿Estás seguro de que quieres eliminar este producto?');
         if (!confirmDelete) return;
@@ -127,11 +130,11 @@ const AdminProductos = () => {
         <div>
             <div className='flex justify-between items-center'>
                 <h2 className="text-xl font-bold mb-4">Lista de Productos</h2>
-                <button onClick={() => setCreateModalOpen(true)}>Crear Producto</button>
+                <button onClick={() => setCreateModalOpen(true)} className='bg-blue-500 hover:bg-blue-700 text-white font-light py-2 px-2 rounded flex items-center gap-2 '> <FaPlus className="text-xl" /> Crear Producto</button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {productos.map((product) => (
-                    <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden pt-6">
                         <img
                             className="h-48 w-full object-cover"
                             src={product.imagenes ? `http://localhost:3002/uploads/${product.imagenes[0]}` : '/default-image.png'}
@@ -142,13 +145,13 @@ const AdminProductos = () => {
                                 {product.nombre}
                             </h3>
                             <p className="mt-2 text-gray-600">Precio: ${product.precio}</p>
-                            <p className="mt-2 text-gray-600">Descripción: {product.descripcion}</p>
+                            <p className="mt-2 text-gray-600 text-sm">Descripción: {product.descripcion}</p>
                             <div className="mt-4 flex justify-between">
                                 <button
                                     onClick={() => handleEditClick(product)}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-300"
+                                    className="px-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-300 flex items-center"
                                 >
-                                    <FaEdit className="inline-block mr-2" /> Editar Producto
+                                    <FaEdit className="inline-block mr-2 hidden sm:block" /> Editar Producto
                                 </button>
                                 <button
                                     onClick={() => handleDelete(product._id)}
