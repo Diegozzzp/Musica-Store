@@ -31,6 +31,14 @@ const CrearUsuario = ({ isOpen, onClose, onSave }) => {
       newError.general = 'Todos los campos son obligatorios';
     }
 
+    if (!/^[a-zA-Z]+$/.test(form.nombre)) {
+      newError.nombre = 'El nombre solo debe contener letras';
+    }
+
+    if (!/^[a-zA-Z]+$/.test(form.apellido)) {
+      newError.apellido = 'El apellido solo debe contener letras';
+    }
+
     if (!/^\S+@\S+\.\S+$/.test(form.correo)) {
       newError.correo = 'Correo electrónico no válido';
     }

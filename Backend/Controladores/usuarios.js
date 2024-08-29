@@ -135,17 +135,19 @@ exports.obtenerUsuario = async (req, res) => {
         const filtro = {};
         if (id) filtro._id = id;
         if (nombre) filtro.nombre = { $regex: new RegExp(nombre, 'i') };
-        if (apellido) filtro.apellido = apellido;
+        if (apellido) filtro.apellido = { $regex: new RegExp(apellido, 'i') }; // Manejo flexible para apellido
         if (telefono) filtro.telefono = telefono;
         if (rol) filtro.rol = rol;
-        if (eliminado) filtro.eliminado = eliminado;
-       
+        if (eliminado !== undefined) filtro.eliminado = eliminado === 'true'; // Convertir a booleano si es necesario
+        
         const usuario = await Usuarios.find(filtro);
         res.json(usuario);
     } catch (error) {
+        console.error(error); // Log para detalles de error
         res.status(500).json({ msg: 'Error al obtener el usuario' });
     }
 };
+
 
 // Crea un nuevo usuario
 exports.crearUsuario = async (req, res) => {
@@ -198,8 +200,10 @@ exports.editarUsuario = async (req, res) => {
         const { id } = req.params;
         const { nombre, apellido, telefono, rol, password } = req.body;
         const avatar = req.file ? req.file.filename : req.body.avatar;
+
         console.log('User in request:', req.user);
         console.log('Requested user ID:', req.params.id);
+        console.log('Request Body:', req.body); // Agregar este log
 
         if (req.user.rol !== 'admin' && req.user.userId !== id) {
             return res.status(403).json({ msg: 'No tienes permiso para editar este usuario' });
@@ -216,10 +220,13 @@ exports.editarUsuario = async (req, res) => {
             updateData.rol = rol;
         }
 
-        if (password) {
+        if (password && password.trim() !== '') {
+            console.log('Updating password:', password); // Agregar este log
             const salt = await bcrypt.genSalt(10);
             updateData.password = await bcrypt.hash(password, salt);
         }
+
+        console.log('Update Data:', updateData); // Agregar este log
 
         const usuarioActualizado = await Usuarios.findByIdAndUpdate(id, updateData, { new: true });
         if (!usuarioActualizado) {

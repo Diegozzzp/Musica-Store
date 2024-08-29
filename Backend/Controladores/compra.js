@@ -22,6 +22,35 @@ exports.obtenerCompras = async function (req, res) {
     }
 }
 
+// Controlador para buscar una compra específica por ID
+exports.buscarCompraEspecifica = async (req, res) => {
+    try {
+        const { id } = req.query; // Obtener el id de los parámetros de consulta
+
+        // Verificar si se ha proporcionado un id
+        if (!id) {
+            return res.status(400).json({ msg: 'El parámetro id es requerido.' });
+        }
+
+        // Buscar la compra por id
+        const compra = await Compra.findById(id);
+
+        // Verificar si se encontró la compra
+        if (!compra) {
+            return res.status(404).json({ msg: 'Compra no encontrada.' });
+        }
+
+        // Enviar la respuesta con la compra encontrada
+        res.json(compra);
+    } catch (error) {
+        console.error('Error al buscar la compra:', error);
+        res.status(500).json({ msg: 'Error al buscar la compra' });
+    }
+};
+
+
+
+
 // Controlador para realizar una nueva compra
 exports.realizarCompra = async function (req, res) {
     try {

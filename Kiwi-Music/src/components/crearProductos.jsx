@@ -47,6 +47,14 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
       newError.tallas = 'Las tallas son obligatorias para productos de tipo ropa';
     }
 
+    // Validar formato de tallas si es ropa
+    if (form.tipo === 'ropa' && form.tallas) {
+      const tallasArray = form.tallas.split(',').map(talla => talla.trim());
+      if (!tallasArray.every(talla => ['S', 'M', 'L', 'XL'].includes(talla))) {
+        newError.tallas = 'Las tallas deben ser S, M, L, XL y separadas por comas';
+      }
+    }
+
     return newError;
   };
 
@@ -67,9 +75,13 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
     data.append('descripcion', form.descripcion);
     data.append('descuento', form.descuento);
     data.append('tipo', form.tipo);
+    
+    // Convertir tallas a array si es necesario
     if (form.tipo === 'ropa') {
-      data.append('tallas', form.tallas);
+      const tallasArray = form.tallas.split(',').map(talla => talla.trim());
+      tallasArray.forEach(talla => data.append('tallas[]', talla));
     }
+
     selectedFiles.forEach(file => {
       data.append('imagenes', file);
     });

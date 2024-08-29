@@ -11,7 +11,7 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalProductos, setTotalProductos] = useState(0);
-  const [filtro, setFiltro] = useState('mas-recientes');
+  const [filtro, setFiltro] = useState('masReciente'); // Cambiar a coincidencia exacta con backend
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [hasPrevPage, setHasPrevPage] = useState(false);
@@ -19,14 +19,16 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const { addToCart } = useContext(CartContext);
 
   const fixImagePath = (path) => {
+    if (!path) return 'ruta-a-imagen-por-defecto'; // Ruta a una imagen por defecto si no hay imágenes disponibles
     return `http://localhost:3002/uploads/${path.replace(/\\/g, '/')}`;
   };
 
   useEffect(() => {
     const obtenerProductos = async () => {
+      setLoading(true); // Iniciar con carga activa al hacer nueva petición
       try {
         const params = {
-          sort: filtro,
+          ordenarPor: filtro, // Cambiar a ordenarPor para coincidir con el controlador
           page: paginaActual,
           limit: 10
         };
@@ -94,11 +96,11 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
         <h1 className="text-3xl font-semibold pt-16 text-center">{titulo}</h1>
         <div className="text-center flex justify-between items-center px-8">
           <select value={filtro} onChange={handleFiltroChange} className="p-2 rounded border-none focus:outline-none">
-            <option value="mas-recientes">Más recientes</option>
-            <option value="mas-antiguos">Más antiguos</option>
-            <option value="mas-vendidos">Más vendidos</option>
-            <option value="orden-alfabetico">Orden alfabético</option>
-            <option value="mas-populares">Más populares</option>
+            <option value="masReciente">Más recientes</option>
+            <option value="masAntiguos">Más antiguos</option>
+            <option value="masVendidos">Más vendidos</option>
+            <option value="ordenAlfabetico">Orden alfabético</option>
+            <option value="masPopulares">Más populares</option>
           </select>
           <p className="text-gray-700 text-center">Total de productos: {totalProductos}</p>
         </div>

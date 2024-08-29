@@ -47,8 +47,8 @@ const Auth = ({ isLogin }) => {
     }
 
     // Validación de contraseña
-    if (form.password.length < 6) {
-      newError.password = 'La contraseña debe tener al menos 6 caracteres';
+    if (form.password.length < 8) {
+      newError.password = 'La contraseña debe tener al menos 8 caracteres';
     }
 
     // Validaciones adicionales para el registro

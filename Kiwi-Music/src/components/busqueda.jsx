@@ -1,11 +1,12 @@
+// UserSearchResults.js
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const SearchResults = () => {
-  // hace la busqueda y muestra los resultados de la busqueda basados en el nombre del producto en la URL de la barra de busqueda
+const UserSearchResults = () => {
   const location = useLocation();
   const [results, setResults] = useState([]);
+  const [error, setError] = useState(null);
 
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get('nombre');
@@ -13,7 +14,7 @@ const SearchResults = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/productos/campos`, {
+        const response = await axios.get('http://localhost:3002/productos/campos', {
           params: { nombre: searchTerm }
         });
 
@@ -23,6 +24,7 @@ const SearchResults = () => {
           console.error('Unexpected response data:', response.data);
         }
       } catch (error) {
+        setError('Error fetching search results');
         console.error('Error fetching search results:', error);
       }
     };
@@ -35,6 +37,7 @@ const SearchResults = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold mb-4">Resultados de Búsqueda para "{searchTerm}"</h1>
+      {error && <p className="text-red-500">{error}</p>}
       {results.length > 0 ? (
         <ul>
           {results.map((producto) => (
@@ -60,4 +63,4 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults;
+export default UserSearchResults;

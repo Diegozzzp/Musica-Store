@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const EditarUsuario = ({ isOpen, onClose, userData, onSave, userId, isAdmin }) => {
     const [formData, setFormData] = useState({
@@ -26,10 +27,20 @@ const EditarUsuario = ({ isOpen, onClose, userData, onSave, userId, isAdmin }) =
 
     const validateForm = () => {
         const newErrors = {};
+
+        const nameRegex = /^[a-zA-Z\s]+$/;
         if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es obligatorio';
+        else if (!nameRegex.test(formData.nombre)) newErrors.nombre = 'El nombre no debe contener caracteres especiales';
+
         if (!formData.apellido.trim()) newErrors.apellido = 'El apellido es obligatorio';
+        else if (!nameRegex.test(formData.apellido)) newErrors.apellido = 'El apellido no debe contener caracteres especiales';
+
+        const phoneRegex = /^\+\d+$/;
         if (!formData.telefono.trim()) newErrors.telefono = 'El teléfono es obligatorio';
+        else if (!phoneRegex.test(formData.telefono)) newErrors.telefono = 'El teléfono debe comenzar con + seguido de números';
+
         if (isAdmin && !formData.rol.trim()) newErrors.rol = 'El rol es obligatorio';
+
         // Puedes agregar más validaciones aquí, por ejemplo, formato del teléfono
         
         setErrors(newErrors);
@@ -144,6 +155,13 @@ const EditarUsuario = ({ isOpen, onClose, userData, onSave, userId, isAdmin }) =
                             className="w-full p-2 border border-gray-300 rounded mt-1"
                         />
                     </div>
+                    <div className="flex items-center justify-center pb-8">
+                        <Link to="/olvide-password">
+                            <button type="button" className="bg-gray-500 text-white py-2 px-4 rounded mr-2">
+                                Solicitar cambio de contraseña
+                            </button>
+                        </Link>
+                    </div>
                     <div className="flex justify-between">
                         <button 
                             type="button" 
@@ -156,7 +174,7 @@ const EditarUsuario = ({ isOpen, onClose, userData, onSave, userId, isAdmin }) =
                             type="submit" 
                             className="bg-blue-500 text-white py-2 px-4 rounded"
                         >
-                            Guardar
+                            <p>Guardar</p>
                         </button>
                     </div>
                 </form>

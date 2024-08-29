@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { CartContext } from './carritoContexto';
-import Component from './sideProductos';
+import RandomsIntereses from './interesesRandom';
 
 // Componente de carrusel de imágenes
 const Carousel = ({ images }) => {
@@ -121,7 +121,7 @@ const ProductDetailPage = () => {
         {/* Sección de detalles del producto */}
         <div className="flex flex-col pl-4 pb-8 md:mt-20">
           <h1 className="text-3xl font-semibold mb-2">{producto.nombre}</h1>
-          <p className="text-lg mb-4 w-2/3">{producto.descripcion}</p>
+          <p className="text-lg mb-4 w-80 lg:w-96">{producto.descripcion}</p>
           {producto.precio && (
             <p className="text-lg font-semibold mb-4">Precio: ${producto.precio}</p>
           )}
@@ -176,7 +176,7 @@ const ProductDetailPage = () => {
         </div>
       </div>
       {/* Componente de productos recomendados */}
-      <Component categoriaId={'66aba85f829468324fa4ed52'} titulo={'Recomendados'} />
+      <RandomsIntereses titulo={'Productos Recomendados'} />
     </>
   );
 };

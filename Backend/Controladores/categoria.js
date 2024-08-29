@@ -11,17 +11,33 @@ exports.obtenerCategorias = async (req, res) => {
     }
 }
 
-// Buscar categorias por nombre 
 exports.buscarCategorias = async (req, res) => {
-    try{
-        const { nombre } = req.query;
-        const categorias = await Categorias.find({ $or: [{ nombre: { $regex: new RegExp(nombre, 'i') } }] });
+    try {
+        const { nombre, id } = req.query;
+        
+        // Definir criterios de búsqueda
+        let query = {};
+        
+        if (nombre) {
+            query.nombre = { $regex: new RegExp(nombre, 'i') };
+        }
+        
+        if (id) {
+            query._id = id;
+        }
+
+        // Buscar categorías usando los criterios definidos
+        const categorias = await Categorias.find(query);
+
+        // Enviar respuesta con los resultados encontrados
         res.json(categorias);
+    } catch (error) {
+        // Manejo de errores
+        console.error('Error al buscar las categorías:', error);
+        res.status(500).json({ msg: 'Error al buscar las categorías' });
     }
-    catch(error){
-        res.status(500).json({ msg: 'Error al buscar las categorias' });
-    }
-}
+};
+
 
 // Crear categorias 
 exports.crearCategorias = async (req, res) => {

@@ -64,7 +64,7 @@ const Banner = () => {
         <ChevronRightIcon className="h-6 w-6" />
       </button>
     </div>
-    <p className='text-2xl font-semibold text-center pt-24'>Lo más reciente</p>
+    <p className='text-2xl font-semibold text-center pt-16'>Lo más reciente</p>
     </>
   );
 };

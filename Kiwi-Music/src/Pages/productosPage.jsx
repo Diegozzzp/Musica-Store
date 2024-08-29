@@ -5,7 +5,7 @@ import AlbumsPage from "../components/Products";
 
 const ProductosPage = () => {
   return (
-    <AlbumsPage titulo={"Albums"}  />
+    <AlbumsPage titulo={"Todos los Productos"}  />
   );
 };
 

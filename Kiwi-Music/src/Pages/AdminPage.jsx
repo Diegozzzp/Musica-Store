@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense, useMemo } from 'react';
-import { FaArrowLeft, FaUsersCog, FaBoxOpen, FaBookmark, FaShoppingCart, FaChartLine } from 'react-icons/fa';
+import { FaArrowLeft, FaUsersCog, FaBoxOpen, FaBookmark, FaShoppingCart, FaChartLine, FaSearch } from 'react-icons/fa';
 
 // Importación diferida de componentes: Cargar componentes solo cuando se necesiten para optimizar el rendimiento
 const AdminUsers = lazy(() => import('../components/adminUsuarios'));
@@ -7,6 +7,7 @@ const AdminProductos = lazy(() => import('../components/adminProductos'));
 const Compras = lazy(() => import('../components/adminCompras'));
 const CategoriasComponent = lazy(() => import('../components/adminCategorias'));
 const Reportes = lazy(() => import('../components/reporteVentas'));
+const AdminSearchResults = lazy(() => import('../components/adminSearch'));
 
 // Componente de botón reutilizable
 // Este componente renderiza un botón con un ícono y una etiqueta
@@ -40,6 +41,8 @@ const AdminPanelPage = () => {
         return <Compras />;
       case 'reportes':
         return <Reportes />;
+      case 'search':
+        return <AdminSearchResults />; // Añadido para la sección de búsqueda
       default:
         return null;
     }
@@ -67,6 +70,7 @@ const AdminPanelPage = () => {
           <AdminButton onClick={() => setActiveSection('categorias')} Icon={FaBookmark} label="Gestionar Categorías" />
           <AdminButton onClick={() => setActiveSection('compras')} Icon={FaShoppingCart} label="Gestionar Compras" />
           <AdminButton onClick={() => setActiveSection('reportes')} Icon={FaChartLine} label="Reportes" />
+          <AdminButton onClick={() => setActiveSection('search')} Icon={FaSearch} label="Buscar" /> {/* Añadido botón de búsqueda */}
         </div>
       ) : (
         // Mostrar el componente correspondiente a la sección activa

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { obtenerProductos, ObtenerProductoCampo, obtenerProductosPorCategoria, obtenerProductoPorId ,crearProducto, editarProducto, eliminarProducto } = require('../Controladores/producto');
+const { obtenerProductos, randomProductos, obtenerProductosPorCategoria, obtenerProductoPorId ,crearProducto, editarProducto, eliminarProducto } = require('../Controladores/producto');
 
 const { validarProducto } = require('../validaciones/producto');
 
@@ -8,7 +8,7 @@ const upload = require('../middlewares/multerconfig');
 
 router.get('/productos', obtenerProductos);
 
-router.get('/productos/campos', ObtenerProductoCampo);
+router.get('/productos/random', randomProductos);
 
 router.get('/productos/categoria/:id', obtenerProductosPorCategoria);
 

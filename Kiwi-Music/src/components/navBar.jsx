@@ -1,10 +1,9 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react'; // Added useEffect here
 import { useNavigate } from 'react-router-dom';  // Importa useNavigate para redirección
-import { FaChild, FaTshirt } from "react-icons/fa";
-import { PiVinylRecord } from "react-icons/pi";
-import { BiWorld } from "react-icons/bi";
-import { CiSearch } from "react-icons/ci";
-import { HiOutlineShoppingCart, HiOutlineUserCircle, HiMenu, HiX } from "react-icons/hi";
+import { FaEarthAmericas, FaXmark, FaBars } from "react-icons/fa6";
+import { FaRegUserCircle, FaSearch, FaTshirt } from 'react-icons/fa';
+import { TbVinyl } from "react-icons/tb";
+import { HiOutlineShoppingCart } from "react-icons/hi";
 import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto'; 
 import { MdDelete } from 'react-icons/md'; 
@@ -15,6 +14,7 @@ const NavBar = () => {
   const [isAlbumsOpen, setIsAlbumsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);  // Estado para controlar la visibilidad del div de búsqueda
   const [searchTerm, setSearchTerm] = useState('');  // Agrega un estado para el término de búsqueda
+  const [isScrolled, setIsScrolled] = useState(false);  // Estado para controlar si se ha hecho scroll
   const { cart, removeFromCart } = useContext(CartContext);
   const navigate = useNavigate();  // Hook para redirección
 
@@ -42,24 +42,41 @@ const NavBar = () => {
     }
   };
 
-  return (
-    <nav className=" w-full bg-[#547980] text-white p-6 flex justify-between items-center sticky top-0 z-50">
-      <div className="flex items-center space-x-2 pl-8">
-        <Link to="/"><span className="text-xl font-semibold">Kiwi <br/> Music</span></Link>
-      </div>
+  // Use useEffect to add scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (scrollPosition > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
 
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  return (
+    <nav className={`w-full p-4 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300 ${isScrolled ? 'bg-[#547980] text-white' : 'bg-transparent text-white'}`}>
+      <div className="flex items-center pl-8">
+        <Link to="/"><span className="text-xl font-semibold ">Kiwi <br/> Music</span></Link>
+      </div>
       <div className="hidden lg:flex space-x-24 text-lg">
-        <Link to="/tours" className="hover:text-gray-400 flex items-center">
-          <BiWorld className='text-[#9DE0AD]' />
+        <Link to="/tours" className="hover:text-gray-400 flex items-center gap-2 hover:border-b border-[#9DE0AD] hover:transition hover:ease-in hover:duration-300 hover:transform hover:scale-105">
+          <FaEarthAmericas className='text-[#9DE0AD]' />
           Tours
         </Link>
         <div className="relative">
           <button
             onClick={toggleAlbums}
-            className="flex items-center hover:text-gray-400"
+            className="flex items-center hover:text-gray-400 gap-2 hover:border-b border-[#9DE0AD] hover:transition hover:ease-in hover:duration-300 hover:transform hover:scale-105"
           >
-            <PiVinylRecord className='text-[#9DE0AD]' />
-            Albums
+            <TbVinyl className='text-[#9DE0AD]' />
+              Albums
           </button>
           {isAlbumsOpen && (
             <div className="absolute top-full right-0 mt-2 bg-[#547980] text-white rounded-lg shadow-lg w-48">
@@ -71,16 +88,15 @@ const NavBar = () => {
             </div>
           )}
         </div>
-        <Link to="/merch" className="hover:text-gray-400 flex items-center">
-          <FaTshirt className='text-[#9DE0AD]' />
+        <Link to="/merch" className="hover:text-gray-400 flex items-center gap-2 hover:border-b border-[#9DE0AD] hover:transition hover:ease-in hover:duration-300 hover:transform hover:scale-105">
+          <FaTshirt className='text-[#9DE0AD] ' />
           Merch
         </Link>
       </div>
-
       <div className="flex md:flex space-x-8 items-center">
         <div className="lg:block flex items-center">
           <button onClick={toggleSearch} className="relative cursor-pointer">
-            <CiSearch className="w-6 h-6 text-white" />
+            <FaSearch className="w-4 h-4 text-white hover:text-gray-400" />
           </button>
           {isSearchOpen && (
             <div className="absolute top-full right-0 mt-2 bg-white text-black rounded-lg shadow-lg p-4 w-48">
@@ -144,11 +160,11 @@ const NavBar = () => {
           )} 
         </div>
         <Link to="/login" className=" hidden lg:block hover:text-gray-400 flex items-center">
-          <HiOutlineUserCircle className="w-6 h-6" aria-label="User Login" />
+          <FaRegUserCircle className="w-6 h-6" aria-label="User Login" />
         </Link>
         <div className="lg:hidden flex items-center">
         <button onClick={toggleMenu} aria-label="Menu" className="focus:outline-none">
-          {isOpen ? <HiX className="w-8 h-8" /> : <HiMenu className="w-8 h-8" />}
+          {isOpen ? <FaXmark className="w-8 h-8" /> : <FaBars className="w-8 h-8" />}
         </button>
       </div>     
       </div>
@@ -157,13 +173,13 @@ const NavBar = () => {
       <div className={`fixed top-0 right-0 h-full bg-[#547980] text-white w-64 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
         <div className="flex justify-end p-4">
           <button onClick={toggleMenu} aria-label="Close Menu">
-            <HiX className="w-8 h-8" />
+            <FaXmark className="w-8 h-8" />
           </button>
         </div>
         <nav className="flex flex-col space-y-8 p-4">
           <p className="text-2xl font-bold">Menu</p>
           <Link to="/tours" className="hover:text-gray-400 flex items-center gap-2" onClick={toggleMenu}>
-            <BiWorld className='text-[#9DE0AD]' />
+            <FaEarthAmericas className='text-[#9DE0AD]' />
             Tours
           </Link>
           <div className="relative">
@@ -171,7 +187,7 @@ const NavBar = () => {
               onClick={toggleAlbums}
               className="flex items-center hover:text-gray-400 gap-2"
             >
-              <PiVinylRecord className='text-[#9DE0AD]' />
+              <TbVinyl className='text-[#9DE0AD]' />
               Albums
             </button>
             {isAlbumsOpen && (
@@ -199,7 +215,7 @@ const NavBar = () => {
             Merch
           </Link>
           <Link to="/login" className="block gap-2 py-2 hover:text-gray-600 flex" onClick={toggleMenu}>
-            <HiOutlineUserCircle className="w-6 h-6 text-[#9DE0AD]" aria-label="User Login" />    Perfil
+            <FaRegUserCircle className="w-6 h-6 text-[#9DE0AD]" aria-label="User Login" />    Perfil
           </Link>
         </nav>
       </div>

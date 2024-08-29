@@ -12,13 +12,28 @@ const handleError = (res, message, error) => {
 // Controlador para obtener una lista paginada de productos
 exports.obtenerProductos = async (req, res) => {
     try {
-        const { page = 1, limit = 10, categoria } = req.query; // Obtener parámetros de paginación y categoría
+        const { page = 1, limit = 10, categoria, ordenarPor } = req.query; // Obtener parámetros de paginación, categoría y orden
+
+        // Validación de parámetros
+        const validSortOptions = ['masVendidos', 'ordenAlfabetico', 'masAntiguos', 'masReciente'];
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+
+        if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+            return res.status(400).json({ msg: 'Parámetros de paginación inválidos' });
+        }
+
+        if (ordenarPor && !validSortOptions.includes(ordenarPor)) {
+            return res.status(400).json({ msg: 'Parámetro de ordenamiento inválido' });
+        }
+
         const options = {
-            page: parseInt(page, 10), // Número de página
-            limit: parseInt(limit, 10), // Cantidad de resultados por página
+            page: pageNumber, // Número de página
+           limit: limitNumber, // Cantidad de resultados por página
             populate: 'categoria', // Incluir información de la categoría
-            select: 'nombre precio cantidad categoria imagenes descripcion descuento' // Campos a seleccionar
-        };
+            select: 'nombre precio cantidad categoria imagenes descripcion descuento cantidadVendida fecha', // Campos a seleccionar
+            sort: {} // Opciones de ordenamiento
+        }; 
 
         // Crear el filtro para la búsqueda
         const query = {};
@@ -27,11 +42,23 @@ exports.obtenerProductos = async (req, res) => {
             query.categoria = categoria; // Filtrar por ID de categoría si se proporciona
         }
 
+        // Aplicar ordenamiento según el criterio especificado
+        const sortOptions = {
+            masVendidos: { cantidadVendida: -1 }, // Ordenar por más vendidos
+            ordenAlfabetico: { nombre: 1 }, // Ordenar alfabéticamente
+            masAntiguos: { fecha: 1 }, // Ordenar por más antiguos
+            masReciente: { fecha: -1 } // Ordenar por más recientes
+        };
+
+        options.sort = sortOptions[ordenarPor] || { fecha: -1 }; // Valor por defecto: más recientes
+
         // Obtener productos con paginación y opciones especificadas
         const productos = await Productos.paginate(query, options);
+
         if (!productos.docs.length) {
             return res.status(404).json({ msg: 'No se encontraron productos' });
         }
+
         res.json(productos); // Enviar los productos como respuesta
     } catch (error) {
         handleError(res, 'Error al obtener productos', error); // Manejar errores
@@ -39,21 +66,23 @@ exports.obtenerProductos = async (req, res) => {
 };
 
 // Controlador para obtener productos basados en varios campos de filtro
-exports.ObtenerProductoCampo = async (req, res) => {
+exports.randomProductos = async (req, res) => {
     try {
-        const { id, nombre, categoria, descripcion } = req.query; // Obtener parámetros de consulta
-        const filtro = {};
-        if (id) filtro._id = id;
-        if (nombre) filtro.nombre = { $regex: new RegExp(nombre, 'i') }; // Búsqueda insensible a mayúsculas/minúsculas
-        if (categoria) filtro.categoria = categoria;
-        if (descripcion) filtro.descripcion = { $regex: new RegExp(descripcion, 'i') };
-        // Buscar productos que coincidan con los filtros especificados
-        const producto = await Productos.find(filtro);
-        res.json(producto); // Enviar los productos como respuesta
+        // Puedes ajustar el número de productos aleatorios a devolver
+        const numProducts = parseInt(req.query.limit) || 10; // Por defecto devolver 10 productos aleatorios
+
+        // Buscar productos aleatorios usando el operador $sample
+        const productos = await Productos.aggregate([
+            { $sample: { size: numProducts } } // Cambia 'numProducts' por el número de productos aleatorios deseado
+        ]);
+
+        res.json(productos); // Enviar los productos aleatorios como respuesta
     } catch (error) {
-        handleError(res, 'Error al obtener el producto', error); // Manejar errores
+        console.error('Error al obtener productos aleatorios:', error);
+        res.status(500).json({ msg: 'Error al obtener productos aleatorios' });
     }
 };
+
 
 // Controlador para obtener productos por categoría
 exports.obtenerProductosPorCategoria = async (req, res) => {
@@ -120,7 +149,7 @@ exports.crearProducto = async (req, res) => {
 
     try {
         const { nombre, precio, cantidad, categoria, descripcion, descuento, tipo, tallas } = req.body;
-        const imagenes = req.files.map(file => file.filename); // Obtener nombres de los archivos subidos
+        const imagenes = req.files ? req.files.map(file => file.filename) : []; // Obtener nombres de los archivos subidos
 
         let precioFinal = parseFloat(precio);
         if (descuento) {
@@ -132,6 +161,22 @@ exports.crearProducto = async (req, res) => {
             }
         }
 
+        // Si 'tallas' es una cadena, convertirla en un array
+        const tallasArray = Array.isArray(tallas) ? tallas : tallas.split(',').map(talla => talla.trim());
+
+        // Log para depuración
+        console.log('Creando producto con los siguientes datos:', {
+            nombre,
+            precio: precioFinal,
+            cantidad,
+            categoria,
+            imagenes,
+            descripcion,
+            descuento: descuento || 0,
+            tipo,
+            tallas: tipo === 'ropa' ? tallasArray : []  // Solo asignar tallas si el tipo es 'ropa'
+        });
+
         // Crear el nuevo producto con los datos proporcionados
         const nuevoProducto = new Productos({
             nombre,
@@ -142,14 +187,14 @@ exports.crearProducto = async (req, res) => {
             descripcion,
             descuento: descuento || 0, // Guardar el descuento como porcentaje
             tipo,
-            tallas: tipo === 'ropa' ? tallas : []  // Solo asignar tallas si el tipo es 'ropa'
+            tallas: tipo === 'ropa' ? tallasArray : []  // Solo asignar tallas si el tipo es 'ropa'
         });
 
         await nuevoProducto.save(); // Guardar el nuevo producto en la base de datos
         res.json({ msg: 'Producto creado correctamente' }); // Responder con éxito
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: 'Error al crear el producto' }); // Manejar errores
+        console.error('Error al crear producto:', error.message, error.stack);
+        res.status(500).json({ msg: 'Error al crear el producto', error: error.message }); // Manejar errores
     }
 };
 
