@@ -61,7 +61,7 @@ const NavBar = () => {
   }, []);
 
   return (
-    <nav className={`w-full p-4 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300 ${isScrolled ? 'bg-[#547980] text-white' : 'bg-transparent text-white'}`}>
+    <nav className={`w-full p-4 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300 ${isScrolled ? 'bg-[#547980] text-white' : 'bg-[#5a8a99] text-white'}`}>
       <div className="flex items-center pl-8">
         <Link to="/"><span className="text-xl font-semibold ">Kiwi <br/> Music</span></Link>
       </div>

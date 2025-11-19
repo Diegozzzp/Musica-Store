@@ -82,84 +82,108 @@ const App = () => {
 
   return (
     <>
-      <p className=" text-4xl font-bold text-center mb-8 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
-      <div className="w-3/4 mx-auto bg-[#547980] shadow-lg rounded-lg overflow-hidden mb-8">
-        {/* Información y control de la canción actual */}
-        <div className="flex flex-row px-6 py-4 pt-8 ">
-          {albumImage && (
-            <img src={albumImage} alt={name} className="w-52 h-48 object-cover mb-4 shadow-lg" />
-          )}
-          <div className="pl-8">
-            <h3 className="text-lg font-medium text-white mb-1 flex items-center justify-around"> <p>{name}</p> <div className=""><FaSpotify size={20} /> </div>  </h3>
-            <p className="text-gray-400">{artists.map(({ name }) => name).join(', ')} </p>
-          </div>
-        </div>
-        <audio
-          ref={audioRef}
-          onTimeUpdate={updateProgress}
-          onEnded={() => changeSong(1)}
-          className="hidden"
-        />
-        {/* Controles de reproducción */}
-        <div className="flex items-center justify-end bg-[#547980] p-4 w-full">
-          <button
-            onClick={() => changeSong(-1)}
-            className="h-10 w-10 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200"
-          >
-            <FaBackward size={20} />
-          </button>
-          <button
-            onClick={togglePlayPause}
-            className="h-10 w-10 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200 mx-4"
-          >
-            {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
-          </button>
-          <button
-            onClick={() => changeSong(1)}
-            className="h-10 w-10 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200"
-          >
-            <FaForward size={20} />
-          </button>
-        </div>
-        {/* Barra de progreso */}
-        <div className="px-6 py-4">
-          <div className="flex items-center">
-            <div className="w-full mx-3">
-              <div className="relative h-2 bg-gray-700 rounded overflow-hidden">
-                <div className="absolute top-0 left-0 h-full bg-yellow-500" style={{ width: `${progress}%` }}></div>
+      <p className="text-4xl font-bold text-center mb-12 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
+      <div className="w-full lg:w-3/4 mx-auto px-4 mb-8">
+        {/* Contenedor principal del reproductor */}
+        <div className="bg-gradient-to-br from-[#547980] to-[#3d5a66] shadow-2xl rounded-2xl overflow-hidden mb-8 backdrop-blur-sm border border-[#9DE0AD] border-opacity-20">
+          
+          {/* Sección superior: Información de la canción */}
+          <div className="bg-gradient-to-r from-[#547980] to-[#4a6f7a] p-6 lg:p-8">
+            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+              {/* Imagen del álbum */}
+              {albumImage && (
+                <div className="flex-shrink-0">
+                  <img 
+                    src={albumImage} 
+                    alt={name} 
+                    className="w-40 h-40 lg:w-48 lg:h-48 object-cover rounded-xl shadow-2xl transform hover:scale-105 transition duration-300" 
+                  />
+                </div>
+              )}
+              
+              {/* Información de la canción */}
+              <div className="flex-1 text-center lg:text-left">
+                <div className="flex items-center justify-center lg:justify-start gap-3 mb-3">
+                  <FaSpotify size={24} className="text-[#9DE0AD]" />
+                  <h3 className="text-2xl lg:text-3xl font-bold text-white truncate">{name}</h3>
+                </div>
+                <p className="text-gray-300 text-sm lg:text-base mb-4">
+                  {artists.map(({ name }) => name).join(', ')}
+                </p>
+                
+                {/* Barra de progreso mejorada */}
+                <div className="mt-6">
+                  <div className="relative h-1.5 bg-gray-600 rounded-full overflow-hidden cursor-pointer hover:h-2 transition-all duration-200">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#9DE0AD] to-[#7bc97f] rounded-full shadow-lg" 
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span>{formatTime((progress / 100) * duration)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <p className="text-sm text-black ml-3">
-              {formatTime((progress / 100) * duration)}
-            </p>
           </div>
-          <div className="flex justify-between text-sm text-black mt-2">
-            <span>00:00</span>
-            <span>{formatTime(duration)}</span>
-          </div>
-        </div>
 
-        {/* Lista de canciones con scroll */}
-        <div className="h-64 overflow-y-scroll bg-[#547980] scrollbar-hide">
-          <ul className="divide-y divide-gray-700">
-            {songs.map((song, index) => (
-              <li
-                key={song.id}
-                className={`p-4 flex items-center justify-between cursor-pointer ${currentSongIndex === index ? 'bg-gray-700' : ''}`}
-                onClick={() => selectSong(index)}
-              >
-                <div>
-                  <p className="text-white">{song.name}</p>
-                  <p className="text-gray-400 text-sm">{song.artists.map(({ name }) => name).join(', ')}</p>
-                </div>
-                <button
-                  className="h-8 w-8 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200"
+          {/* Controles de reproducción */}
+          <div className="flex items-center justify-center gap-4 lg:gap-6 bg-[#547980] px-6 py-8">
+            <button
+              onClick={() => changeSong(-1)}
+              className="h-12 w-12 lg:h-14 lg:w-14 flex items-center justify-center rounded-full bg-[#9DE0AD] text-[#547980] shadow-lg hover:shadow-xl hover:scale-110 transform transition duration-200 font-bold"
+            >
+              <FaBackward size={20} />
+            </button>
+            <button
+              onClick={togglePlayPause}
+              className="h-14 w-14 lg:h-16 lg:w-16 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9DE0AD] to-[#7bc97f] text-[#547980] shadow-xl hover:shadow-2xl hover:scale-110 transform transition duration-200 font-bold"
+            >
+              {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
+            </button>
+            <button
+              onClick={() => changeSong(1)}
+              className="h-12 w-12 lg:h-14 lg:w-14 flex items-center justify-center rounded-full bg-[#9DE0AD] text-[#547980] shadow-lg hover:shadow-xl hover:scale-110 transform transition duration-200 font-bold"
+            >
+              <FaForward size={20} />
+            </button>
+          </div>
+
+          {/* Lista de canciones con scroll */}
+          <div className="h-64 lg:h-80 overflow-y-auto bg-[#3d5a66] scrollbar-hide">
+            <ul className="divide-y divide-gray-700">
+              {songs.map((song, index) => (
+                <li
+                  key={song.id}
+                  className={`p-4 flex items-center justify-between cursor-pointer transition-all duration-200 ${
+                    currentSongIndex === index 
+                      ? 'bg-gradient-to-r from-[#9DE0AD] from-20% to-[#547980] border-l-4 border-[#9DE0AD]' 
+                      : 'hover:bg-[#4a6f7a]'
+                  }`}
+                  onClick={() => selectSong(index)}
                 >
-                  {currentSongIndex === index && isPlaying ? <FaPause size={16} /> : <FaPlay size={16} />}
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-semibold truncate ${currentSongIndex === index ? 'text-[#547980]' : 'text-white'}`}>
+                      {song.name}
+                    </p>
+                    <p className={`text-xs truncate ${currentSongIndex === index ? 'text-[#547980] opacity-80' : 'text-gray-400'}`}>
+                      {song.artists.map(({ name }) => name).join(', ')}
+                    </p>
+                  </div>
+                  <button
+                    className={`ml-4 h-8 w-8 flex items-center justify-center rounded-full shadow-md transition duration-200 flex-shrink-0 ${
+                      currentSongIndex === index 
+                        ? 'bg-[#547980] text-[#9DE0AD]' 
+                        : 'bg-[#9DE0AD] text-[#547980] hover:scale-110'
+                    }`}
+                  >
+                    {currentSongIndex === index && isPlaying ? <FaPause size={14} /> : <FaPlay size={14} />}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </>
