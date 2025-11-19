@@ -104,8 +104,8 @@ const App = () => {
 
   return (
     <>
-      <p className="text-4xl font-bold text-center mb-12 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
-      <div className="w-full lg:w-3/4 mx-auto px-4 mb-8">
+      <p className="text-3xl font-bold text-center mb-8 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
+      <div className="w-full lg:w-2/3 mx-auto px-4 mb-8">
         {/* Contenedor principal del reproductor */}
         <div className="bg-gradient-to-br from-[#547980] to-[#3d5a66] shadow-2xl rounded-2xl overflow-hidden mb-8 backdrop-blur-sm border border-[#9DE0AD] border-opacity-20">
           
@@ -172,13 +172,13 @@ const App = () => {
             </button>
           </div>
 
-          {/* Lista de canciones con scroll - MÁS GRANDE */}
-          <div className="h-96 lg:h-[500px] overflow-y-auto bg-[#3d5a66] scrollbar-hide">
+          {/* Lista de canciones con scroll - TAMAÑO BALANCEADO */}
+          <div className="h-72 lg:h-80 overflow-y-auto bg-[#3d5a66] scrollbar-hide">
             <ul className="divide-y divide-gray-700">
               {songs.map((song, index) => (
                 <li
                   key={song.id}
-                  className={`p-5 flex items-center justify-between cursor-pointer transition-all duration-200 hover:scale-102 ${
+                  className={`p-3 flex items-center justify-between cursor-pointer transition-all duration-200 ${
                     currentSongIndex === index 
                       ? 'bg-gradient-to-r from-[#9DE0AD] from-20% to-[#547980] border-l-4 border-[#9DE0AD]' 
                       : 'hover:bg-[#4a6f7a]'
@@ -186,7 +186,7 @@ const App = () => {
                   onClick={() => selectSong(index)}
                 >
                   <div className="flex-1 min-w-0">
-                    <p className={`font-semibold truncate text-sm lg:text-base ${currentSongIndex === index ? 'text-[#547980]' : 'text-white'}`}>
+                    <p className={`font-semibold truncate text-xs lg:text-sm ${currentSongIndex === index ? 'text-[#547980]' : 'text-white'}`}>
                       {song.name}
                     </p>
                     <p className={`text-xs truncate ${currentSongIndex === index ? 'text-[#547980] opacity-80' : 'text-gray-400'}`}>
@@ -194,13 +194,13 @@ const App = () => {
                     </p>
                   </div>
                   <button
-                    className={`ml-4 h-10 w-10 flex items-center justify-center rounded-full shadow-md transition duration-200 flex-shrink-0 font-bold ${
+                    className={`ml-3 h-8 w-8 flex items-center justify-center rounded-full shadow-md transition duration-200 flex-shrink-0 font-bold ${
                       currentSongIndex === index 
                         ? 'bg-[#547980] text-[#9DE0AD] scale-110 shadow-lg' 
                         : 'bg-[#9DE0AD] text-[#547980] hover:scale-125 hover:shadow-lg'
                     }`}
                   >
-                    {currentSongIndex === index && isPlaying ? <FaPause size={16} /> : <FaPlay size={16} />}
+                    {currentSongIndex === index && isPlaying ? <FaPause size={14} /> : <FaPlay size={14} />}
                   </button>
                 </li>
               ))}
