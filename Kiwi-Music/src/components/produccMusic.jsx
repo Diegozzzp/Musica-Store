@@ -28,10 +28,13 @@ const getRandomFamousSongs = async () => {
 const App = () => {
   const [songs, setSongs] = useState([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0); // 0-100
   const [isPlaying, setIsPlaying] = useState(false);
+  const [durationSec, setDurationSec] = useState(0);
+  const [currentSec, setCurrentSec] = useState(0);
 
   const audioRef = useRef(null);
+  const progressBarRef = useRef(null);
 
   useEffect(() => {
     const fetchSongs = async () => setSongs(await getRandomFamousSongs());
@@ -40,15 +43,42 @@ const App = () => {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.src = songs[currentSongIndex]?.preview_url || '';
-      isPlaying ? audioRef.current.play() : audioRef.current.pause();
+      const audio = audioRef.current;
+      audio.src = songs[currentSongIndex]?.preview_url || '';
+      // reset states when song changes
+      setProgress(0);
+      setCurrentSec(0);
+      setDurationSec(0);
+      if (isPlaying && audio.src) {
+        audio.play().catch(() => {});
+      } else {
+        audio.pause();
+      }
     }
   }, [currentSongIndex, isPlaying, songs]);
 
   const updateProgress = () => {
-    if (audioRef.current) {
-      const { currentTime, duration } = audioRef.current;
-      setProgress((currentTime / duration) * 100);
+    const audio = audioRef.current;
+    if (!audio) return;
+    const { currentTime, duration } = audio;
+    if (Number.isFinite(duration) && duration > 0) {
+      setProgress(Math.min(100, Math.max(0, (currentTime / duration) * 100)));
+      setCurrentSec(currentTime);
+    } else {
+      // duration unknown yet
+      setProgress(0);
+      setCurrentSec(currentTime || 0);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const { duration } = audio;
+    if (Number.isFinite(duration) && duration > 0) {
+      setDurationSec(duration);
+    } else {
+      setDurationSec(0);
     }
   };
 
@@ -70,6 +100,7 @@ const App = () => {
   };
 
   const formatTime = (seconds) => {
+    if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
@@ -78,7 +109,22 @@ const App = () => {
   const { name = 'Loading...', artists = [], duration_ms = 0, album = {} } = songs[currentSongIndex] || {};
   const { images = [] } = album;
   const albumImage = images.length > 0 ? images[0].url : ''; 
-  const duration = Math.floor(duration_ms / 1000);
+  // Use audio element duration if available (Spotify previews are ~30s)
+  const duration = durationSec > 0 ? Math.floor(durationSec) : Math.floor(duration_ms / 1000) || 0;
+
+  const handleSeek = (e) => {
+    const bar = progressBarRef.current;
+    const audio = audioRef.current;
+    if (!bar || !audio) return;
+    const rect = bar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const ratio = Math.min(1, Math.max(0, clickX / rect.width));
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      audio.currentTime = ratio * audio.duration;
+      setCurrentSec(audio.currentTime);
+      setProgress(ratio * 100);
+    }
+  };
 
   return (
     <>
@@ -97,6 +143,7 @@ const App = () => {
         <audio
           ref={audioRef}
           onTimeUpdate={updateProgress}
+          onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => changeSong(1)}
           className="hidden"
         />
@@ -125,12 +172,17 @@ const App = () => {
         <div className="px-6 py-4">
           <div className="flex items-center">
             <div className="w-full mx-3">
-              <div className="relative h-2 bg-gray-700 rounded overflow-hidden">
+              <div
+                ref={progressBarRef}
+                onClick={handleSeek}
+                className="relative h-2 bg-gray-700 rounded overflow-hidden cursor-pointer"
+                title="Click para adelantar/retroceder"
+              >
                 <div className="absolute top-0 left-0 h-full bg-yellow-500" style={{ width: `${progress}%` }}></div>
               </div>
             </div>
-            <p className="text-sm text-black ml-3">
-              {formatTime((progress / 100) * duration)}
+            <p className="text-sm text-black ml-3 min-w-[48px] text-right">
+              {formatTime(currentSec)}
             </p>
           </div>
           <div className="flex justify-between text-sm text-black mt-2">
