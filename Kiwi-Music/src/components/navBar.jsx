@@ -61,12 +61,12 @@ const NavBar = () => {
   }, []);
 
   return (
-    <nav className={`w-full p-4 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${
+    <nav className={`w-full px-4 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${
       isScrolled
         ? 'bg-[#547980]/90 text-white shadow-md backdrop-blur-sm'
         : 'bg-[#547980]/40 text-white backdrop-blur-0'
     }`}>
-      <div className="flex items-center pl-8">
+      <div className="flex items-center pl-2 md:pl-8">
         <Link to="/"><span className="text-xl font-semibold ">Kiwi <br/> Music</span></Link>
       </div>
       <div className="hidden lg:flex space-x-24 text-lg">
@@ -83,7 +83,7 @@ const NavBar = () => {
               Albums
           </button>
           {isAlbumsOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-[#547980] text-white rounded-lg shadow-lg w-48">
+            <div className="absolute top-full right-0 mt-2 bg-[#547980] text-white rounded-lg shadow-lg w-48 z-50">
               <Link to="/products" className="block px-4 py-2 hover:bg-gray-600">Todos los Productos</Link>
               <Link to="/cassetes" className="block px-4 py-2 hover:bg-gray-600">Cassetes</Link>
               <Link to="/discos" className="block px-4 py-2 hover:bg-gray-600">Vinilos & CDs</Link>
@@ -103,7 +103,7 @@ const NavBar = () => {
             <FaSearch className="w-4 h-4 text-white hover:text-gray-400" />
           </button>
           {isSearchOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-white text-black rounded-lg shadow-lg p-4 w-48">
+            <div className="absolute top-full right-0 mt-2 bg-white text-black rounded-lg shadow-lg p-4 w-56 z-50">
               <input
                 type="text"
                 placeholder="Buscar..."
@@ -129,7 +129,7 @@ const NavBar = () => {
             )}
           </button>
           {isCartOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-white text-black rounded-lg shadow-lg p-4 max-h-64 overflow-y-auto">
+            <div className="absolute right-0 mt-2 w-72 bg-white text-black rounded-lg shadow-lg p-4 max-h-64 overflow-y-auto z-50">
               {cart.length > 0 ? (
                 <>
                   <ul>
@@ -195,7 +195,7 @@ const NavBar = () => {
               Albums
             </button>
             {isAlbumsOpen && (
-              <div className="bg-[#547980] text-white rounded-lg shadow-lg mt-2">
+              <div className="bg-[#547980] text-white rounded-lg shadow-lg mt-2 z-50">
                 <Link to="/products" className="block px-4 py-2 hover:bg-gray-600" onClick={toggleMenu}>
                   Todos los Productos
                 </Link>
