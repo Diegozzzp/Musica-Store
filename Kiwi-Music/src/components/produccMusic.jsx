@@ -128,16 +128,16 @@ const App = () => {
 
   return (
     <>
-      <p className="text-2xl md:text-4xl font-bold text-center mb-6 md:mb-8 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
-      <div className="w-full max-w-5xl mx-auto bg-[#547980] shadow-lg rounded-lg overflow-hidden mb-8 px-3 sm:px-4">
+      <p className=" text-4xl font-bold text-center mb-8 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
+      <div className="w-3/4 mx-auto bg-[#547980] shadow-lg rounded-lg overflow-hidden mb-8">
         {/* Información y control de la canción actual */}
-        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 px-3 sm:px-6 py-4 pt-6">
+        <div className="flex flex-row px-6 py-4 pt-8 ">
           {albumImage && (
-            <img src={albumImage} alt={name} className="w-32 h-32 md:w-52 md:h-48 object-cover rounded mb-2 md:mb-0 shadow-lg" />
+            <img src={albumImage} alt={name} className="w-52 h-48 object-cover mb-4 shadow-lg" />
           )}
-          <div className="md:pl-4">
-            <h3 className="text-base md:text-lg font-medium text-white mb-1 flex items-center gap-2"><span className="truncate max-w-[60vw] md:max-w-none">{name}</span> <FaSpotify size={18} className="opacity-90" /></h3>
-            <p className="text-gray-200 text-sm md:text-base">{artists.map(({ name }) => name).join(', ')} </p>
+          <div className="pl-8">
+            <h3 className="text-lg font-medium text-white mb-1 flex items-center justify-around"> <p>{name}</p> <div className=""><FaSpotify size={20} /> </div>  </h3>
+            <p className="text-gray-400">{artists.map(({ name }) => name).join(', ')} </p>
           </div>
         </div>
         <audio
@@ -148,7 +148,7 @@ const App = () => {
           className="hidden"
         />
         {/* Controles de reproducción */}
-        <div className="flex items-center justify-end bg-[#547980] p-3 sm:p-4 w-full">
+        <div className="flex items-center justify-end bg-[#547980] p-4 w-full">
           <button
             onClick={() => changeSong(-1)}
             className="h-10 w-10 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200"
@@ -169,7 +169,7 @@ const App = () => {
           </button>
         </div>
         {/* Barra de progreso */}
-        <div className="px-3 sm:px-6 py-3 sm:py-4">
+        <div className="px-6 py-4">
           <div className="flex items-center">
             <div className="w-full mx-3">
               <div
@@ -181,31 +181,31 @@ const App = () => {
                 <div className="absolute top-0 left-0 h-full bg-yellow-500" style={{ width: `${progress}%` }}></div>
               </div>
             </div>
-            <p className="text-xs sm:text-sm text-black ml-3 min-w-[48px] text-right">
+            <p className="text-sm text-black ml-3 min-w-[48px] text-right">
               {formatTime(currentSec)}
             </p>
           </div>
-          <div className="flex justify-between text-xs sm:text-sm text-black mt-2">
+          <div className="flex justify-between text-sm text-black mt-2">
             <span>00:00</span>
             <span>{formatTime(duration)}</span>
           </div>
         </div>
 
         {/* Lista de canciones con scroll */}
-        <div className="h-56 sm:h-64 overflow-y-auto bg-[#547980]">
+        <div className="h-64 overflow-y-scroll bg-[#547980] scrollbar-hide">
           <ul className="divide-y divide-gray-700">
             {songs.map((song, index) => (
               <li
                 key={song.id}
-                className={`p-3 sm:p-4 flex items-center justify-between cursor-pointer ${currentSongIndex === index ? 'bg-gray-700/50' : ''}`}
+                className={`p-4 flex items-center justify-between cursor-pointer ${currentSongIndex === index ? 'bg-gray-700' : ''}`}
                 onClick={() => selectSong(index)}
               >
                 <div>
-                  <p className="text-white text-sm sm:text-base">{song.name}</p>
-                  <p className="text-gray-300 text-xs sm:text-sm">{song.artists.map(({ name }) => name).join(', ')}</p>
+                  <p className="text-white">{song.name}</p>
+                  <p className="text-gray-400 text-sm">{song.artists.map(({ name }) => name).join(', ')}</p>
                 </div>
                 <button
-                  className="h-8 w-8 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200 flex-shrink-0"
+                  className="h-8 w-8 flex items-center justify-center rounded-full bg-[#9DE0AD] text-white shadow-md hover:bg-blue-700 transition duration-200"
                 >
                   {currentSongIndex === index && isPlaying ? <FaPause size={16} /> : <FaPlay size={16} />}
                 </button>
