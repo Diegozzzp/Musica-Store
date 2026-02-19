@@ -21,7 +21,7 @@ const AdminUsers = () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No se proporcionó token.');
 
-        const response = await axios.get(`musica-store-production.up.railway.app/usuarios?page=${currentPage}`, {
+        const response = await axios.get(`https://musica-store-production.up.railway.app/usuarios?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -64,7 +64,7 @@ const AdminUsers = () => {
         if (!token) throw new Error('No se proporcionó token.');
 
         await axios.patch(
-            `musica-store-production.up.railway.app/editarUsuario/${userId}`,
+            `https://musica-store-production.up.railway.app/editarUsuario/${userId}`,
             formData,
             {
                 headers: { 
@@ -90,7 +90,7 @@ const AdminUsers = () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No se proporcionó token.');
 
-        await axios.post('musica-store-production.up.railway.app/usuario', formData, {
+        await axios.post('https://musica-store-production.up.railway.app/usuario', formData, {
             headers: { 
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data'
@@ -115,7 +115,7 @@ const AdminUsers = () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No se proporcionó token.');
 
-        await axios.patch(`musica-store-production.up.railway.app/eliminarUsuario/${userId}`, {}, {
+        await axios.patch(`https://musica-store-production.up.railway.app/eliminarUsuario/${userId}`, {}, {
             headers: { 
                 Authorization: `Bearer ${token}`,
             },
@@ -134,7 +134,7 @@ const AdminUsers = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No se proporcionó token.');
 
-      const response = await axios.get(`musica-store-production.up.railway.app/usuarios?page=${currentPage}`, {
+      const response = await axios.get(`https://musica-store-production.up.railway.app/usuarios?page=${currentPage}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -170,7 +170,7 @@ const AdminUsers = () => {
           <div key={user._id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
               className="h-48 w-full object-cover"
-              src={user.avatar ? `musica-store-production.up.railway.app/uploads/${user.avatar[0]}` : '/default-avatar.png'}
+              src={user.avatar ? `https://musica-store-production.up.railway.app/uploads/${user.avatar[0]}` : '/default-avatar.png'}
               alt={`${user.nombre} ${user.apellido}`}
             />
             <div className="p-6">

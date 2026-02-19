@@ -133,7 +133,7 @@ const NavBar = () => {
                       <li key={index} className="border-b border-gray-200 py-2 flex items-start justify-between pt-4">
                         <div className="flex"> 
                           <img
-                            src={`musica-store-production.up.railway.app/uploads/${product.imagenes[0]}`}
+                            src={`https://https://musica-store-production.up.railway.app/uploads/${product.imagenes[0]}`}
                             alt={product.nombre}
                             className="w-12 h-12 object-cover mr-4"
                           />

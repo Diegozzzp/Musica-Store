@@ -11,7 +11,7 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        await axios.patch('musica-store-production.up.railway.app/restablecer-contrasena', { token, nuevaContrasena });
+        await axios.patch('https://musica-store-production.up.railway.app/restablecer-contrasena', { token, nuevaContrasena });
         setSuccess('Contraseña actualizada correctamente.');
     } catch (error) {
         setError(error.response.data.msg || 'Error al restablecer la contraseña.');

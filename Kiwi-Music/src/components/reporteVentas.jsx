@@ -18,11 +18,11 @@ const Reportes = () => {
                 const year = today.getFullYear();
 
                 const urls = {
-                    diario: `musica-store-production.up.railway.app/ventas-diarias?fecha=${todayString}`,
-                    semanal: `musica-store-production.up.railway.app/ventas-semanales?fecha=${todayString}`,
-                    anual: `musica-store-production.up.railway.app/ventas-anuales?año=${year}`,
-                    masVendidos: `musica-store-production.up.railway.app/productos-mas-vendidos`,
-                    menosVendidos: `musica-store-production.up.railway.app/productos-menos-vendidos`
+                    diario: `https://musica-store-production.up.railway.app/ventas-diarias?fecha=${todayString}`,
+                    semanal: `https://musica-store-production.up.railway.app/ventas-semanales?fecha=${todayString}`,
+                    anual: `https://musica-store-production.up.railway.app/ventas-anuales?año=${year}`,
+                    masVendidos: `https://musica-store-production.up.railway.app/productos-mas-vendidos`,
+                    menosVendidos: `https://musica-store-production.up.railway.app/productos-menos-vendidos`
                 };
 
                 const responses = await Promise.all(Object.values(urls).map(url => axios.get(url)));

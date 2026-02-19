@@ -32,7 +32,7 @@ const Carousel = ({ images }) => {
       />
       {/* Imagen actual */}
       <img
-        src={`musica-store-production.up.railway.app/uploads/${images[currentIndex]}`}
+        src={`https://musica-store-production.up.railway.app/uploads/${images[currentIndex]}`}
         alt={`Imagen ${currentIndex + 1}`}
         className="w-full h-full object-cover rounded-lg"
       />
@@ -59,7 +59,7 @@ const ProductDetailPage = () => {
   useEffect(() => {
     const fetchProducto = async () => {
       try {
-        const response = await axios.get(`musica-store-production.up.railway.app/productos/${id}`);
+        const response = await axios.get(`https://musica-store-production.up.railway.app/productos/${id}`);
         if (response.data) {
           setProducto(response.data);
         } else {

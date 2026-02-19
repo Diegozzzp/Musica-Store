@@ -23,7 +23,7 @@ const AdminProductos = () => {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No se proporcionó token.');
 
-            const response = await axios.get(`musica-store-production.up.railway.app/productos?page=${currentPage}`, {
+            const response = await axios.get(`https://musica-store-production.up.railway.app/productos?page=${currentPage}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -63,7 +63,7 @@ const AdminProductos = () => {
             if (!token) throw new Error('No se proporcionó token.');
     
             const response = await axios.patch(
-                `musica-store-production.up.railway.app/productos/${productId}`,
+                `https://musica-store-production.up.railway.app/productos/${productId}`,
                 formData,
                 {
                     headers: { 
@@ -86,7 +86,7 @@ const AdminProductos = () => {
     // Función para crear un nuevo producto
     const handleCreateProduct = async (formData) => {
         try {
-            await axios.post('musica-store-production.up.railway.app/productos', formData, {
+            await axios.post('https://musica-store-production.up.railway.app/productos', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -111,7 +111,7 @@ const AdminProductos = () => {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No se proporcionó token.');
 
-            await axios.patch(`musica-store-production.up.railway.app/eliminarProducto/${productId}`, {}, {
+            await axios.patch(`https://musica-store-production.up.railway.app/eliminarProducto/${productId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -137,7 +137,7 @@ const AdminProductos = () => {
                     <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden pt-6">
                         <img
                             className="h-48 w-full object-cover"
-                            src={product.imagenes ? `musica-store-production.up.railway.app/uploads/${product.imagenes[0]}` : '/default-image.png'}
+                            src={product.imagenes ? `https://musica-store-production.up.railway.app/uploads/${product.imagenes[0]}` : '/default-image.png'}
                             alt={product.nombre}
                         />
                         <div className="p-6">

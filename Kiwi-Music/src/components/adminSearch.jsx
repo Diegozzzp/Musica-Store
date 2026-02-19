@@ -29,19 +29,19 @@ const AdminSearchResults = () => {
 
         switch (searchType) {
           case 'categorias':
-            url = `musica-store-production.up.railway.app/categorias/${searchTerm}`;
+            url = `https://musica-store-production.up.railway.app/categorias/${searchTerm}`;
             params.id = searchTerm; // Usar 'nombre' para buscar categorías
             break;
           case 'productos':
-            url = `musica-store-production.up.railway.app/productos/campos`;
+            url = `https://musica-store-production.up.railway.app/productos/campos`;
             params.id = searchTerm; // Usar 'nombre' para buscar productos
             break;
           case 'usuarios':
-            url = `musica-store-production.up.railway.app/usuario/${searchTerm}`;
+            url = `https://musica-store-production.up.railway.app/usuario/${searchTerm}`;
             params.id = searchTerm; // Puedes añadir más parámetros según sea necesario
             break;
           default:
-            url = `musica-store-production.up.railway.app/productos/campos`;
+            url = `https://musica-store-production.up.railway.app/productos/campos`;
         }
 
         const response = await axios.get(url, { params });

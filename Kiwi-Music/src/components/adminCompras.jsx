@@ -16,7 +16,7 @@ const Compras = () => {
         const fetchCompras = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`musica-store-production.up.railway.app/compras?page=${page}&limit=10`);
+                const response = await axios.get(`https://musica-store-production.up.railway.app/compras?page=${page}&limit=10`);
 
                 // Log para ver la estructura completa de las compras
                 console.log('Estructura de compras:', response.data.docs);
@@ -41,7 +41,7 @@ const Compras = () => {
                     compras.flatMap(compra =>
                         compra.productos.map(async (item) => {
                             try {
-                                const response = await axios.get(`musica-store-production.up.railway.app/productos/${item.producto}`);
+                                const response = await axios.get(`https://musica-store-production.up.railway.app/productos/${item.producto}`);
                                 return { productoId: item.producto, details: response.data };
                             } catch (error) {
                                 console.error(`Error al obtener el producto ${item.producto}:`, error);
@@ -97,7 +97,7 @@ const Compras = () => {
                         >
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={`musica-store-production.up.railway.app/uploads/${compra.usuario.avatar?.[0] || 'default-avatar.png'}`}
+                                    src={`https://musica-store-production.up.railway.app/uploads/${compra.usuario.avatar?.[0] || 'default-avatar.png'}`}
                                     alt={`${compra.usuario.nombre} ${compra.usuario.apellido}`}
                                     className="w-12 h-12 rounded-full object-cover"
                                 />
@@ -117,7 +117,7 @@ const Compras = () => {
                                             return (
                                                 <li key={index} className="flex items-center space-x-2">
                                                     <img
-                                                        src={`musica-store-production.up.railway.app/uploads/${product.imagenes?.[0] || 'default-product.png'}`}
+                                                        src={`https://musica-store-production.up.railway.app/uploads/${product.imagenes?.[0] || 'default-product.png'}`}
                                                         alt={product.nombre}
                                                         className="w-10 h-10 rounded object-cover"
                                                     />

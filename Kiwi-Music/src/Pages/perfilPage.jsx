@@ -18,7 +18,7 @@ const PerfilPage = () => {
                 return;
             }
 
-            const response = await axios.get('musica-store-production.up.railway.app/perfil', {
+            const response = await axios.get('https://musica-store-production.up.railway.app/perfil', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -41,7 +41,7 @@ const PerfilPage = () => {
             const refreshToken = localStorage.getItem('refreshToken');
             if (!refreshToken) throw new Error('No se proporcionó refresh token.');
     
-            const response = await axios.patch('musica-store-production.up.railway.app/refresh', {
+            const response = await axios.patch('https://musica-store-production.up.railway.app/refresh', {
                 refreshToken
             });
     

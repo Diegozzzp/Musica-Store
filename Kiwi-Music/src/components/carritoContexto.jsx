@@ -56,7 +56,7 @@ export const CartProvider = ({ children }) => {
     
     try {
       const total = cart.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
-      const response = await axios.post('musica-store-production.up.railway.app/comprar', {
+      const response = await axios.post('https://musica-store-production.up.railway.app/comprar', {
         productos: cart,
         total,
       }, {
