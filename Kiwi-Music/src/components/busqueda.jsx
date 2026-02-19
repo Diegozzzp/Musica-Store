@@ -14,7 +14,7 @@ const UserSearchResults = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await axios.get('http://localhost:3002/productos/campos', {
+        const response = await axios.get('musica-store-production.up.railway.app/productos/campos', {
           params: { nombre: searchTerm }
         });
 
@@ -44,7 +44,7 @@ const UserSearchResults = () => {
             <li key={producto._id} className="border-b border-gray-200 py-2 flex items-center">
               <Link to={`/producto/${producto._id}`}>
                 <img
-                  src={`http://localhost:3002/uploads/${producto.imagenes[0]}`}
+                  src={`musica-store-production.up.railway.app/uploads/${producto.imagenes[0]}`}
                   alt={producto.nombre}
                   className="w-12 h-12 object-cover mr-4"
                 />

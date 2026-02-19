@@ -34,7 +34,7 @@ const CompraCard = ({ compra }) => {
             {compra.productos.map(item => (
               <li key={item.producto._id} className="flex items-center space-x-2 mb-2">
                 <img
-                  src={`http://localhost:3002/uploads/${item.producto.imagenes[0]}`} // Ruta a la primera imagen del array
+                  src={`musica-store-production.up.railway.app/uploads/${item.producto.imagenes[0]}`} // Ruta a la primera imagen del array
                   alt={item.producto.nombre}
                   className="w-10 h-10 object-cover rounded"
                 />
@@ -59,7 +59,7 @@ const CompraHistorial = () => {
     const fetchCompras = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:3002/perfil/compras', {
+        const response = await axios.get('musica-store-production.up.railway.app/perfil/compras', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCompras(response.data);

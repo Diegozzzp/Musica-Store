@@ -88,7 +88,7 @@ const Auth = ({ isLogin }) => {
     try {
       if (isLogin) {
         // Enviar datos de inicio de sesión
-        const response = await axios.post('http://localhost:3002/login', {
+        const response = await axios.post('musica-store-production.up.railway.app/login', {
           correo: form.correo,
           password: form.password,
         });
@@ -101,7 +101,7 @@ const Auth = ({ isLogin }) => {
         Object.keys(form).forEach((key) => formData.append(key, form[key]));
 
         // Enviar datos de registro
-        await axios.post('http://localhost:3002/usuario', formData, {
+        await axios.post('musica-store-production.up.railway.app/usuario', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

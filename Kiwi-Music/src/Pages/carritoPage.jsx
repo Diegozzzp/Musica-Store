@@ -28,7 +28,7 @@ const CompraRealizar = () => {
     
         try {
             setLoading(true); // Activar el estado de carga
-            const response = await axios.post('http://localhost:3002/comprar', {
+            const response = await axios.post('musica-store-production.up.railway.app/comprar', {
                 productos: cart.map(item => ({
                     producto: item._id,
                     cantidad: item.cantidad,
@@ -81,7 +81,7 @@ const CompraRealizar = () => {
                                     <Link to={`/producto/${product._id}`}>
                                         {/* Imagen del producto con enlace a la página del producto */}
                                         <img
-                                            src={`http://localhost:3002/uploads/${product.imagenes[0]}`}
+                                            src={`musica-store-production.up.railway.app/uploads/${product.imagenes[0]}`}
                                             alt={product.nombre}
                                             className="w-20 h-20 object-cover mr-4"
                                         />

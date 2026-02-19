@@ -12,7 +12,7 @@ const ResetPasswordRequest = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3002/solicitar', { email });
+      await axios.post('musica-store-production.up.railway.app/solicitar', { email });
       setSuccess('Se ha enviado un enlace para restablecer tu contraseña a tu correo electrónico.');
       setTimeout(() => navigate('/login'), 5000); // Redirige después de 5 segundos
     } catch (error) {

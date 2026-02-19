@@ -4,7 +4,7 @@ const ProductCard = ({ item }) => (
     <li className="border-b border-gray-200 py-2 flex items-center">
       <Link to={`/producto/${item._id}`}>
         <img
-          src={`http://localhost:3002/uploads/${item.imagenes ? item.imagenes[0] : 'default.jpg'}`}
+          src={`musica-store-production.up.railway.app/uploads/${item.imagenes ? item.imagenes[0] : 'default.jpg'}`}
           alt={item.nombre}
           className="w-12 h-12 object-cover mr-4"
         />
@@ -23,7 +23,7 @@ const ProductCard = ({ item }) => (
     <li className="border-b border-gray-200 py-2 flex items-center">
       <Link to={`/usuarios/${item._id}`}>
         <img
-          src={`http://localhost:3002/uploads/${item.avatar || 'default.jpg'}`}
+          src={`musica-store-production.up.railway.app/uploads/${item.avatar || 'default.jpg'}`}
           alt={item.nombre}
           className="w-12 h-12 object-cover mr-4"
         />

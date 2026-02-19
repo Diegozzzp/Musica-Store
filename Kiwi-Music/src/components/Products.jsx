@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto';
 import { FiPlayCircle } from "react-icons/fi";
 
-const URL_albums = 'http://localhost:3002/productos';
+const URL_albums = 'musica-store-production.up.railway.app/productos';
 
 const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const [data, setData] = useState([]);
@@ -20,7 +20,7 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
 
   const fixImagePath = (path) => {
     if (!path) return 'ruta-a-imagen-por-defecto'; // Ruta a una imagen por defecto si no hay imágenes disponibles
-    return `http://localhost:3002/uploads/${path.replace(/\\/g, '/')}`;
+    return `musica-store-production.up.railway.app/uploads/${path.replace(/\\/g, '/')}`;
   };
 
   useEffect(() => {

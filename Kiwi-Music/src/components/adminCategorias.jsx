@@ -18,7 +18,7 @@ const CategoriasComponent = () => {
 // Función para obtener las categorías
     const fetchCategorias = async () => {
         try {
-            const response = await axios.get(`http://localhost:3002/categorias?page=${page}`);
+            const response = await axios.get(`musica-store-production.up.railway.app/categorias?page=${page}`);
             const { docs, hasPrevPage, hasNextPage, totalPages } = response.data;
             setCategorias(docs || []);
             setTotalPages(totalPages || 1);
@@ -32,7 +32,7 @@ const CategoriasComponent = () => {
     // Funciones para crear, editar y eliminar categorías
     const handleCreateCategoria = async () => {
         try {
-            await axios.post('http://localhost:3002/categorias', { nombre });
+            await axios.post('musica-store-production.up.railway.app/categorias', { nombre });
             fetchCategorias();
             setNombre('');
             setModalOpen(false); // Cerrar el modal después de crear
@@ -43,7 +43,7 @@ const CategoriasComponent = () => {
 
     const handleEditCategoria = async (id) => {
         try {
-            await axios.patch(`http://localhost:3002/categorias/${id}`, { nombre });
+            await axios.patch(`musica-store-production.up.railway.app/categorias/${id}`, { nombre });
             fetchCategorias();
             setNombre('');
             setEditingId(null);
@@ -55,7 +55,7 @@ const CategoriasComponent = () => {
 
     const handleDeleteCategoria = async (id) => {
         try {
-            await axios.delete(`http://localhost:3002/categorias/${id}`);
+            await axios.delete(`musica-store-production.up.railway.app/categorias/${id}`);
             fetchCategorias();
         } catch (error) {
             console.error('Error al eliminar la categoría', error);

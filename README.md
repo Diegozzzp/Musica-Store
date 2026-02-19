@@ -44,7 +44,7 @@ Bienvenido a **MusicStore**, tu tienda en línea para todo lo relacionado con la
     npm run dev
     ```
 
-    La aplicación debería estar corriendo en `http://localhost:5173` y el backend en `http://localhost:3002`.
+    La aplicación debería estar corriendo en `http://localhost:5173` y el backend en `musica-store-production.up.railway.app`.
 
 
 ## 📧 Contacto

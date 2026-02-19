@@ -12,7 +12,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
   const [isAdmin, setIsAdmin] = useState(false); // Nuevo estado para el rol del usuario
   const navigate = useNavigate();
 
-  const avatarUrl = avatar ? `http://localhost:3002/uploads/${avatar}` : '';
+  const avatarUrl = avatar ? `musica-store-production.up.railway.app/uploads/${avatar}` : '';
 
   useEffect(() => {
     // Obtener el rol del usuario desde el backend
@@ -21,7 +21,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No se proporcionó token.');
   
-        const response = await axios.get(`http://localhost:3002/usuario/${id}`, {
+        const response = await axios.get(`musica-store-production.up.railway.app/usuario/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
   
@@ -47,7 +47,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
       if (!token) throw new Error('No se proporcionó token.');
 
       const response = await axios.patch(
-        `http://localhost:3002/editarUsuario/${userId}`,
+        `musica-store-production.up.railway.app/editarUsuario/${userId}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
