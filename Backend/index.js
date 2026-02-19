@@ -11,7 +11,7 @@ app.use(express.json());
 mongoose.connect('mongodb://mongo:xKIkoivTsGDxgAOldkVjUIRUpgeyfQdK@mongodb.railway.internal:27017')
 
 corsOptions = {
-    origin: 'http://localhost:3002',
+    origin: 'https://kiwi-stores.netlify.app',
     optionsSuccessStatus: 200
 }
 
