@@ -8,7 +8,7 @@ const path = require('path');
 app.use(express.json());
 
 
-mongoose.connect('mongodb://localhost:27017/musica-store')
+mongoose.connect('mongodb://mongo:xKIkoivTsGDxgAOldkVjUIRUpgeyfQdK@mongodb.railway.internal:27017')
 
 corsOptions = {
     origin: 'http://localhost:3002',
