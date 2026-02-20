@@ -111,7 +111,7 @@ const AdminProductos = () => {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No se proporcionó token.');
 
-            await axios.delete(`https://musica-store-production.up.railway.app/eliminarProducto/${productId}`, {}, {
+            await axios.delete(`https://musica-store-production.up.railway.app/productos/${productId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
