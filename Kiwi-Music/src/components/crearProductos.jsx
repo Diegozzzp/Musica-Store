@@ -169,9 +169,10 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
                 name="categoria"
                 value={form.categoria}
                 onChange={handleChange}
+                required
                 className={`w-full p-3 border rounded ${error.categoria ? 'border-red-500' : 'border-gray-300'}`}
               >
-                <option value="">Selecciona una categoría</option>
+                <option value="" disabled>Selecciona una categoría</option>
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat._id}>
                     {cat.nombre}
