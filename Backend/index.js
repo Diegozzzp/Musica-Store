@@ -17,6 +17,8 @@ corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.options('*', cors(corsOptions));
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const usuarios = require('./Rutas/usuarios');
