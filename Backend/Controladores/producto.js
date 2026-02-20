@@ -55,10 +55,6 @@ exports.obtenerProductos = async (req, res) => {
         // Obtener productos con paginación y opciones especificadas
         const productos = await Productos.paginate(query, options);
 
-        if (!productos.docs.length) {
-            return res.status(404).json({ msg: 'No se encontraron productos' });
-        }
-
         res.json(productos); // Enviar los productos como respuesta
     } catch (error) {
         handleError(res, 'Error al obtener productos', error); // Manejar errores
