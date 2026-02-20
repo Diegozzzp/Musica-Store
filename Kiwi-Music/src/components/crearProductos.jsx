@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import axios from 'axios';
-
-const API_BASE = 'https://musica-store-production.up.railway.app';
 
 const CrearProducto = ({ isOpen, onClose, onSave }) => {
   const [form, setForm] = useState({
@@ -18,27 +15,8 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
   });
   const [error, setError] = useState({});
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchCategories();
-    }
-  }, [isOpen]);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${API_BASE}/categorias`);
-      if (response.data && response.data.docs) {
-        setCategories(response.data.docs);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    } finally {
-      setLoadingCategories(false);
-    }
-  };
+  if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -162,24 +140,13 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">Categoría</label>
-            {loadingCategories ? (
-              <p>Cargando categorías...</p>
-            ) : (
-              <select
-                name="categoria"
-                value={form.categoria}
-                onChange={handleChange}
-                required
-                className={`w-full p-3 border rounded ${error.categoria ? 'border-red-500' : 'border-gray-300'}`}
-              >
-                <option value="" disabled>Selecciona una categoría</option>
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.nombre}
-                  </option>
-                ))}
-              </select>
-            )}
+            <input
+              type="text"
+              name="categoria"
+              value={form.categoria}
+              onChange={handleChange}
+              className={`w-full p-3 border rounded ${error.categoria ? 'border-red-500' : 'border-gray-300'}`}
+            />
             {error.categoria && <p className="text-red-500 text-sm mt-1">{error.categoria}</p>}
           </div>
 
