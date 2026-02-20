@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 const cors = require('cors');
 const path = require('path');
 
@@ -9,6 +9,8 @@ app.use(express.json());
 
 
 mongoose.connect('mongodb://mongo:xKIkoivTsGDxgAOldkVjUIRUpgeyfQdK@mongodb.railway.internal:27017')
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch(err => console.error('Error conectando a MongoDB:', err));
 
 corsOptions = {
     origin: 'https://kiwi-stores.netlify.app',

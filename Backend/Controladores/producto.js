@@ -158,7 +158,10 @@ exports.crearProducto = async (req, res) => {
         }
 
         // Si 'tallas' es una cadena, convertirla en un array
-        const tallasArray = Array.isArray(tallas) ? tallas : tallas.split(',').map(talla => talla.trim());
+        let tallasArray = [];
+        if (tallas) {
+            tallasArray = Array.isArray(tallas) ? tallas : tallas.split(',').map(talla => talla.trim());
+        }
 
         // Log para depuración
         console.log('Creando producto con los siguientes datos:', {
