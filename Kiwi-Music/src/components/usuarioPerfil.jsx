@@ -12,7 +12,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
   const [isAdmin, setIsAdmin] = useState(false); // Nuevo estado para el rol del usuario
   const navigate = useNavigate();
 
-  const avatarUrl = avatar && avatar[0] ? (avatar[0].startsWith('http') ? avatar[0] : `https://musica-store-production.up.railway.app/uploads/${avatar[0]}`) : '';
+  const avatarUrl = avatar && avatar[0] ? `https://musica-store-production.up.railway.app/uploads/${avatar[0]}` : '';
 
   useEffect(() => {
     // Obtener el rol del usuario desde el backend

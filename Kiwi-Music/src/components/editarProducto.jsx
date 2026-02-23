@@ -21,7 +21,7 @@ const EditarProducto = ({ isOpen, onClose, productData, onSave }) => {
                 precio: productData.precio || '',
                 descripcion: productData.descripcion || '',
                 cantidad: productData.cantidad || '',
-                categoria: productData.categoria || '',
+                categoria: productData.categoria?._id || '',
                 descuento: productData.descuento || '', // Cargar el descuento si está presente
                 imagenes: null
             });

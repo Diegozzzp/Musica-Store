@@ -153,7 +153,7 @@ exports.obtenerUsuario = async (req, res) => {
 exports.crearUsuario = async (req, res) => {
     try {
         const { nombre, apellido, telefono, correo, password, rol } = req.body;
-        const avatar = req.file ? req.file.filename : null;
+        const avatar = req.file ? [req.file.filename] : [];
 
         if (!nombre || !apellido || !telefono || !correo || !password) {
             return res.status(400).json({ msg: 'Faltan campos requeridos' });
@@ -199,7 +199,7 @@ exports.editarUsuario = async (req, res) => {
 
         const { id } = req.params;
         const { nombre, apellido, telefono, rol, password } = req.body;
-        const avatar = req.file ? [req.file.path] : req.body.avatar;
+        const avatar = req.file ? [req.file.filename] : (req.body.avatar || []); // Agregar este log
 
         console.log('User in request:', req.user);
         console.log('Requested user ID:', req.params.id);
