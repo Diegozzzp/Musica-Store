@@ -24,10 +24,18 @@ const UsuariosSchema = new mongoose.Schema({
 });
 
 
+UsuariosSchema.pre('save', function(next) {
+    if (this.fecha && typeof this.fecha === 'object' && this.fecha['$date']) {
+        this.fecha = new Date(this.fecha['$date']);
+    }
+    if (!(this.fecha instanceof Date)) {
+        this.fecha = new Date();
+    }
+    next();
+});
+
 UsuariosSchema.plugin(mongoosePaginate);
 
 const Usuarios = mongoose.model('usuarios', UsuariosSchema);
-
-Usuarios.paginate().then({});
 
 module.exports = Usuarios;
