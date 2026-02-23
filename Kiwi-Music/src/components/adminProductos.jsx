@@ -142,10 +142,10 @@ const AdminProductos = () => {
                         />
                         <div className="p-6">
                             <h3 className="text-lg font-semibold text-indigo-600 flex items-center justify-between">
-                                {product.nombre}
+                                {product.descripcion}
                             </h3>
                             <p className="mt-2 text-gray-600">Precio: ${product.precio}</p>
-                            <p className="mt-2 text-gray-600 text-sm">Descripción: {product.descripcion}</p>
+                            <p className="mt-2 text-gray-600 text-sm"> {product.nombre}</p>
                             <div className="mt-4 flex justify-between">
                                 <button
                                     onClick={() => handleEditClick(product)}

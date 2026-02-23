@@ -5,7 +5,7 @@ import Products from "../components/Products";
 
 const Merch = () => {
   return (
-    <Products categoriaId="669d83c3cfe2fec066e2031e" titulo={"Merch"} />
+    <Products categoriaId="699c6b1f238857741c629819" titulo={"Merch"} />
   );
 };
 

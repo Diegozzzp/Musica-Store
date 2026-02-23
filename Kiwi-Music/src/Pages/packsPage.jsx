@@ -4,7 +4,7 @@ import AlbumsPage from "../components/Products";
 
 const Packs = () => {
   return (
-    <AlbumsPage categoriaId="66c79f57a76cb0efd7f8311e" titulo={"Packs"} />
+    <AlbumsPage categoriaId="699c69ee238857741c6297f6" titulo={"Packs"} />
   );
 };
 

@@ -8,9 +8,9 @@ const HomePage = () => {
   return (
     <div >
       <Banner />
-      <Component categoriaId={'66aba85f829468324fa4ed52'} titulo={'Albums'}/>
-      <Component categoriaId={'669d83c3cfe2fec066e2031e'} titulo={'Merch'}/>
-      <Component categoriaId={'66b105bc00b2c3e2941151b8'} titulo={'Proximamente'}/>
+      <Component categoriaId={'699c698b238857741c6297ea'} titulo={'Albums'}/>
+      <Component categoriaId={'699c6b1f238857741c629819'} titulo={'Merch'}/>
+      <Component categoriaId={'699c6b9a238857741c62981d'} titulo={'Proximamente'}/>
       <MusicPlayer />
     </div>
   );

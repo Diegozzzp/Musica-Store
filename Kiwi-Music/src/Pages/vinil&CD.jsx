@@ -4,7 +4,7 @@ import AlbumsPage from "../components/Products";
 
 const Cd = () => {
   return (
-    <AlbumsPage categoriaId="66aba85f829468324fa4ed52" titulo={"Vinilos y CD's"} />
+    <AlbumsPage categoriaId="699c698b238857741c6297ea" titulo={"Vinilos y CD's"} />
   );
 };
 
