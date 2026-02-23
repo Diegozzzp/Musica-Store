@@ -145,7 +145,7 @@ exports.crearProducto = async (req, res) => {
 
     try {
         const { nombre, precio, cantidad, categoria, descripcion, descuento, tipo, tallas } = req.body;
-        const imagenes = req.files ? req.files.map(file => file.filename) : []; // Obtener nombres de los archivos subidos
+        const imagenes = req.files ? req.files.map(file => file.path) : []; // Obtener URLs de los archivos subidos
 
         let precioFinal = parseFloat(precio);
         if (descuento) {
@@ -210,16 +210,8 @@ exports.editarProducto = async (req, res) => {
         let imagenes = producto.imagenes; // Obtener imágenes actuales del producto
 
         if (req.files && req.files.length > 0) {
-            // Si se subieron nuevas imágenes, eliminar las antiguas
-            imagenes.forEach(imagen => {
-                const filePath = path.join(__dirname, '..', 'uploads', imagen);
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath);
-                }
-            });
-
             // Asignar nuevas imágenes
-            imagenes = req.files.map(file => file.filename);
+            imagenes = req.files.map(file => file.path);
         }
 
         const updateData = { ...req.body, imagenes }; // Preparar datos de actualización

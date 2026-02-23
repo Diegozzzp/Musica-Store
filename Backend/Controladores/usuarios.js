@@ -199,7 +199,7 @@ exports.editarUsuario = async (req, res) => {
 
         const { id } = req.params;
         const { nombre, apellido, telefono, rol, password } = req.body;
-        const avatar = req.file ? req.file.filename : req.body.avatar;
+        const avatar = req.file ? [req.file.path] : req.body.avatar;
 
         console.log('User in request:', req.user);
         console.log('Requested user ID:', req.params.id);

@@ -97,7 +97,7 @@ const Compras = () => {
                         >
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={`https://musica-store-production.up.railway.app/uploads/${compra.usuario.avatar?.[0] || 'default-avatar.png'}`}
+                                    src={compra.usuario.avatar?.[0] ? (compra.usuario.avatar[0].startsWith('http') ? compra.usuario.avatar[0] : `https://musica-store-production.up.railway.app/uploads/${compra.usuario.avatar[0]}`) : 'default-avatar.png'}
                                     alt={`${compra.usuario.nombre} ${compra.usuario.apellido}`}
                                     className="w-12 h-12 rounded-full object-cover"
                                 />
@@ -117,7 +117,7 @@ const Compras = () => {
                                             return (
                                                 <li key={index} className="flex items-center space-x-2">
                                                     <img
-                                                        src={`https://musica-store-production.up.railway.app/uploads/${product.imagenes?.[0] || 'default-product.png'}`}
+                                                        src={product.imagenes?.[0] ? (product.imagenes[0].startsWith('http') ? product.imagenes[0] : `https://musica-store-production.up.railway.app/uploads/${product.imagenes[0]}`) : 'default-product.png'}
                                                         alt={product.nombre}
                                                         className="w-10 h-10 rounded object-cover"
                                                     />
