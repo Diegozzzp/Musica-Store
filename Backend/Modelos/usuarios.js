@@ -24,7 +24,12 @@ const UsuariosSchema = new mongoose.Schema({
 });
 
 
-UsuariosSchema.plugin(mongoosePaginate);
+UsuariosSchema.pre('save', function(next) {
+    if (!(this.fecha instanceof Date)) {
+        this.fecha = new Date();
+    }
+    next();
+});
 
 const Usuarios = mongoose.model('usuarios', UsuariosSchema);
 
