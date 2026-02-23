@@ -128,6 +128,9 @@ exports.realizarCompra = async function (req, res) {
 
         // Actualizar el usuario con la nueva compra
         usuario.compras.push(nuevaCompra._id);
+        if (usuario.fecha && typeof usuario.fecha === 'object' && usuario.fecha['$date']) {
+            usuario.fecha = new Date(usuario.fecha['$date']);
+        }
         await usuario.save();
 
         res.status(201).json({ msg: 'Compra realizada con éxito.', compra: nuevaCompra });
