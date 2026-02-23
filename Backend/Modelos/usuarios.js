@@ -33,6 +33,4 @@ UsuariosSchema.pre('save', function(next) {
 
 const Usuarios = mongoose.model('usuarios', UsuariosSchema);
 
-Usuarios.paginate().then({});
-
 module.exports = Usuarios;
