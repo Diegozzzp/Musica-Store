@@ -3,7 +3,10 @@ const Categorias = require('../Modelos/categoria');
 // Obtener todas las categorias 
 exports.obtenerCategorias = async (req, res) => {
     try{
-        const categorias = await Categorias.paginate({}, { page: req.query.page || 1, limit: 10 });
+        const categorias = await Categorias.paginate({}, {
+            page: req.query.page || 1,
+            limit: req.query.limit || 10
+        });
         res.json(categorias);
     }
     catch(error){

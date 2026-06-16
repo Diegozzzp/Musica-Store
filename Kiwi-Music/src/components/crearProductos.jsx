@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
+import axios from 'axios';
+
+const API_URL = 'https://musica-store.vercel.app';
 
 const CrearProducto = ({ isOpen, onClose, onSave }) => {
   const [form, setForm] = useState({
@@ -15,6 +18,39 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
   });
   const [error, setError] = useState({});
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(false);
+
+  const categoriaSeleccionada = useMemo(
+    () => categorias.find((categoria) => categoria._id === form.categoria),
+    [categorias, form.categoria]
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const obtenerCategorias = async () => {
+      setLoadingCategorias(true);
+
+      try {
+        const response = await axios.get(`${API_URL}/categorias`, {
+          params: { page: 1, limit: 100 }
+        });
+
+        setCategorias(response.data.docs || response.data || []);
+      } catch (error) {
+        console.error('Error al obtener categorias:', error);
+        setError((prevError) => ({
+          ...prevError,
+          categoria: 'No se pudieron cargar las categorias'
+        }));
+      } finally {
+        setLoadingCategorias(false);
+      }
+    };
+
+    obtenerCategorias();
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -140,14 +176,27 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">Categoría</label>
-            <input
-              type="text"
+            <select
               name="categoria"
               value={form.categoria}
               onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.categoria ? 'border-red-500' : 'border-gray-300'}`}
-            />
+              disabled={loadingCategorias}
+              className={`w-full p-3 border rounded bg-white ${error.categoria ? 'border-red-500' : 'border-gray-300'}`}
+            >
+              <option value="">{loadingCategorias ? 'Cargando categorias...' : 'Selecciona una categoria'}</option>
+              {categorias.map((categoria) => (
+                <option key={categoria._id} value={categoria._id}>
+                  {categoria.nombre} - {categoria._id}
+                </option>
+              ))}
+            </select>
             {error.categoria && <p className="text-red-500 text-sm mt-1">{error.categoria}</p>}
+            {categoriaSeleccionada && (
+              <div className="mt-2 rounded border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                <p className="font-medium">{categoriaSeleccionada.nombre}</p>
+                <p className="break-all text-gray-500">ID: {categoriaSeleccionada._id}</p>
+              </div>
+            )}
           </div>
 
           <div className="mb-4">
