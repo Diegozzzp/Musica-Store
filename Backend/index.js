@@ -1,15 +1,26 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const path = require('path');
+
+const app = express();
+const port = process.env.PORT || 3002;
+
 app.use(express.json());
 
 const allowedOrigins = [
   'https://musica-store-chqr.vercel.app',
-  'https://musica-store-chqr-pygrp5n2v-diegozzzps-projects.vercel.app',
   'https://kiwi-stores.netlify.app',
   'http://localhost:5173'
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
@@ -17,7 +28,7 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    return callback(new Error('No permitido por CORS'));
+    return callback(new Error(`No permitido por CORS: ${origin}`));
   },
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
