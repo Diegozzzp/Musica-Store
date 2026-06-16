@@ -8,8 +8,8 @@ const path = require('path');
 app.use(express.json());
 
 
-mongoose.connect('mongodb://mongo:xKIkoivTsGDxgAOldkVjUIRUpgeyfQdK@mongodb.railway.internal:27017')
-  .then(() => console.log('Conectado a MongoDB'))
+mongoose.connect('mongodb+srv://kiwi-music-DB:kiwi-music-DB@kiwi-music.dhnkl.mongodb.net/musica_store?retryWrites=true&w=majority&appName=Kiwi-Music')
+  .then(() => console.log('Conectado a MongoDB Atlas'))
   .catch(err => console.error('Error conectando a MongoDB:', err));
 
 corsOptions = {
