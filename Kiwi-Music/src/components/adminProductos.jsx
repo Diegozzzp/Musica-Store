@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import EditarProducto from './editarProducto';
 import CrearProducto from './crearProductos';
+import { getImageUrl } from '../utils/imageUrl';
 
 const AdminProductos = () => {
     // Variables de estado para la paginación y la lista de productos y sus detalles de productos 
@@ -137,7 +138,7 @@ const AdminProductos = () => {
                     <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden pt-6">
                         <img
                             className="h-48 w-full object-cover"
-                            src={product.imagenes ? `https://musica-store.vercel.app/uploads/${product.imagenes[0]}` : '/default-image.png'}
+                            src={getImageUrl(product.imagenes)}
                             alt={product.nombre}
                         />
                         <div className="p-6">

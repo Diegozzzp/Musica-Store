@@ -18,6 +18,4 @@ compraSchema.plugin(mongoosePaginate);
 
 const Compra = mongoose.model('compra', compraSchema);
 
-Compra.paginate().then({});
-
 module.exports = Compra;

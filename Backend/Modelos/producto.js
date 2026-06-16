@@ -23,6 +23,4 @@ ProductosSchema.plugin(mongoosePaginate);
 
 const Productos = mongoose.model('productos', ProductosSchema);
 
-Productos.paginate().then({});
-
 module.exports = Productos;

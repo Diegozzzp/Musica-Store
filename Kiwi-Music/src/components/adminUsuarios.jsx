@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaEnvelope, FaPhone, FaEdit, FaPlus, FaRecordVinyl, FaTrash } from 'react-icons/fa';
 import EditarUsuario from './editarUsuario';
 import CrearUsuario from './crearUsuario'; // Importa el nuevo componente
+import { getImageUrl } from '../utils/imageUrl';
 
 const AdminUsers = () => {
   // Variables de estado para la paginación y la lista de usuarios y sus detalles
@@ -170,7 +171,7 @@ const AdminUsers = () => {
           <div key={user._id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
               className="h-48 w-full object-cover"
-              src={user.avatar ? `https://musica-store.vercel.app/uploads/${user.avatar[0]}` : '/default-avatar.png'}
+              src={getImageUrl(user.avatar, '/default-avatar.png')}
               alt={`${user.nombre} ${user.apellido}`}
             />
             <div className="p-6">

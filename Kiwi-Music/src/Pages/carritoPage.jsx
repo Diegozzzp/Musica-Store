@@ -4,6 +4,7 @@ import { MdDelete } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify'; 
 import axios from 'axios';
+import { getImageUrl } from '../utils/imageUrl';
 
 const CompraRealizar = () => {
     // Obtener el contexto del carrito de compras
@@ -81,7 +82,7 @@ const CompraRealizar = () => {
                                     <Link to={`/producto/${product._id}`}>
                                         {/* Imagen del producto con enlace a la página del producto */}
                                         <img
-                                            src={`https://musica-store.vercel.app/uploads/${product.imagenes[0]}`}
+                                            src={getImageUrl(product.imagenes)}
                                             alt={product.nombre}
                                             className="w-20 h-20 object-cover mr-4"
                                         />

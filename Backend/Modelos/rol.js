@@ -13,6 +13,4 @@ RolSchema.plugin(mongoosePaginate);
 
 const Rol = mongoose.model('rol', RolSchema);
 
-Rol.paginate().then({});
-
 module.exports = Rol;

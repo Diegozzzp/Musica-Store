@@ -1,7 +1,6 @@
 const Productos = require('../Modelos/producto');
 const { validationResult } = require('express-validator');
-const path = require('path');
-const fs = require('fs');
+const { uploadToCloudinary } = require('../middlewares/cloudinary');
 
 // Función para manejar errores y enviar respuestas adecuadas
 const handleError = (res, message, error) => {
@@ -145,7 +144,12 @@ exports.crearProducto = async (req, res) => {
 
     try {
         const { nombre, precio, cantidad, categoria, descripcion, descuento, tipo, tallas } = req.body;
-        const imagenes = req.files ? req.files.map(file => file.filename) : []; // Obtener nombres de los archivos subidos
+        const imagenes = req.files && req.files.length > 0
+            ? await Promise.all(req.files.map(async (file) => {
+                const uploadedImage = await uploadToCloudinary(file.buffer, 'kiwi-music/productos');
+                return uploadedImage.secure_url;
+            }))
+            : [];
 
         let precioFinal = parseFloat(precio);
         if (descuento) {
@@ -211,7 +215,10 @@ exports.editarProducto = async (req, res) => {
 
         if (req.files && req.files.length > 0) {
             // Asignar nuevas imágenes
-            imagenes = req.files.map(file => file.filename);
+            imagenes = await Promise.all(req.files.map(async (file) => {
+                const uploadedImage = await uploadToCloudinary(file.buffer, 'kiwi-music/productos');
+                return uploadedImage.secure_url;
+            }));
         }
 
         const updateData = { ...req.body, imagenes }; // Preparar datos de actualización

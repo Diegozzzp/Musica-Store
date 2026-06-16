@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getImageUrl } from '../utils/imageUrl';
 
 const Compras = () => {
     // Variables de estado para la paginación y la lista de compras y sus detalles de productos 
@@ -97,7 +98,7 @@ const Compras = () => {
                         >
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={`https://musica-store.vercel.app/uploads/${compra.usuario.avatar?.[0] || 'default-avatar.png'}`}
+                                    src={getImageUrl(compra.usuario.avatar, '/default-avatar.png')}
                                     alt={`${compra.usuario.nombre} ${compra.usuario.apellido}`}
                                     className="w-12 h-12 rounded-full object-cover"
                                 />
@@ -117,7 +118,7 @@ const Compras = () => {
                                             return (
                                                 <li key={index} className="flex items-center space-x-2">
                                                     <img
-                                                        src={`https://musica-store.vercel.app/uploads/${product.imagenes?.[0] || 'default-product.png'}`}
+                                                        src={getImageUrl(product.imagenes, '/default-product.png')}
                                                         alt={product.nombre}
                                                         className="w-10 h-10 rounded object-cover"
                                                     />

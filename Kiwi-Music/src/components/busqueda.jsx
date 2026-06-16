@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
+import { getImageUrl } from '../utils/imageUrl';
 
 const UserSearchResults = () => {
   const location = useLocation();
@@ -44,7 +45,7 @@ const UserSearchResults = () => {
             <li key={producto._id} className="border-b border-gray-200 py-2 flex items-center">
               <Link to={`/producto/${producto._id}`}>
                 <img
-                  src={`https://musica-store.vercel.app/uploads/${producto.imagenes[0]}`}
+                  src={getImageUrl(producto.imagenes)}
                   alt={producto.nombre}
                   className="w-12 h-12 object-cover mr-4"
                 />

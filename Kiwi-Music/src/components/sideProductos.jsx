@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom';
 import '../index.css';
+import { getImageUrl } from '../utils/imageUrl';
 
 const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/categoria/';
 
@@ -32,7 +33,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         }
     }, [categoriaId]);
 
-    const fixImagePath = path => `https://musica-store.vercel.app/uploads/${path.replace(/\\/g, '/')}`;
+    const fixImagePath = path => getImageUrl(path);
 
     const handleMouseDown = useCallback(e => {
         e.preventDefault();

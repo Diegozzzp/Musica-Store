@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom';
 import '../index.css';
+import { getImageUrl } from '../utils/imageUrl';
 
 // URL de la API para obtener productos aleatorios
 const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/random';
@@ -33,7 +34,7 @@ const RandomsIntereses = ({ titulo }) => {
     }, []);
 
     // Función para arreglar la ruta de la imagen
-    const fixImagePath = path => `https://musica-store.vercel.app/uploads/${path.replace(/\\/g, '/')}`;
+    const fixImagePath = path => getImageUrl(path);
 
     // Manejar el inicio del arrastre con el mouse
     const handleMouseDown = useCallback(e => {

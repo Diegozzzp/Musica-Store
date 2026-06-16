@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getImageUrl } from '../utils/imageUrl';
 
 const CompraCard = ({ compra }) => {
   // Define un estado para controlar el estado de expandido
@@ -34,7 +35,7 @@ const CompraCard = ({ compra }) => {
             {compra.productos.map(item => (
               <li key={item.producto._id} className="flex items-center space-x-2 mb-2">
                 <img
-                  src={`https://musica-store.vercel.app/uploads/${item.producto.imagenes[0]}`} // Ruta a la primera imagen del array
+                  src={getImageUrl(item.producto.imagenes)}
                   alt={item.producto.nombre}
                   className="w-10 h-10 object-cover rounded"
                 />

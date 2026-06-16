@@ -5,6 +5,7 @@ import Logout from '../components/cerrar-sesion';
 import CompraHistorial from './historial';
 import EditarUsuario from './editarUsuario';
 import { useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../utils/imageUrl';
 
 const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -12,7 +13,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
   const [isAdmin, setIsAdmin] = useState(false); // Nuevo estado para el rol del usuario
   const navigate = useNavigate();
 
-  const avatarUrl = avatar && avatar[0] ? `https://musica-store.vercel.app/uploads/${avatar[0]}` : '';
+  const avatarUrl = getImageUrl(avatar, '');
 
   useEffect(() => {
     // Obtener el rol del usuario desde el backend

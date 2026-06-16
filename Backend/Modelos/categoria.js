@@ -13,6 +13,4 @@ CategoriasSchema.plugin(mongoosePaginate);
 
 const Categorias = mongoose.model('categorias', CategoriasSchema);
 
-Categorias.paginate().then({});
-
 module.exports = Categorias;

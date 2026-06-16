@@ -7,6 +7,7 @@ import { HiOutlineShoppingCart } from "react-icons/hi";
 import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto'; 
 import { MdDelete } from 'react-icons/md'; 
+import { getImageUrl } from '../utils/imageUrl';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -133,7 +134,7 @@ const NavBar = () => {
                       <li key={index} className="border-b border-gray-200 py-2 flex items-start justify-between pt-4">
                         <div className="flex"> 
                           <img
-                            src={`https://musica-store.vercel.app/uploads/${product.imagenes[0]}`}
+                            src={getImageUrl(product.imagenes)}
                             alt={product.nombre}
                             className="w-12 h-12 object-cover mr-4"
                           />

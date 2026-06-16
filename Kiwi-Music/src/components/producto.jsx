@@ -4,6 +4,7 @@ import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { CartContext } from './carritoContexto';
 import RandomsIntereses from './interesesRandom';
+import { getImageUrl } from '../utils/imageUrl';
 
 // Componente de carrusel de imágenes
 const Carousel = ({ images }) => {
@@ -32,7 +33,7 @@ const Carousel = ({ images }) => {
       />
       {/* Imagen actual */}
       <img
-        src={`https://musica-store.vercel.app/uploads/${images[currentIndex]}`}
+        src={getImageUrl(images[currentIndex])}
         alt={`Imagen ${currentIndex + 1}`}
         className="w-full h-full object-cover rounded-lg"
       />

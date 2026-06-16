@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const transporter = require('../middlewares/nodemailer'); // Importa el transportador de correo
 const crypto = require('crypto');
 const { signToken } = require('../middlewares/jwt');
+const { uploadToCloudinary } = require('../middlewares/cloudinary');
 
 // Solicita un restablecimiento de contraseña
 exports.solicitarRestablecimiento = async (req, res) => {
@@ -153,10 +154,15 @@ exports.obtenerUsuario = async (req, res) => {
 exports.crearUsuario = async (req, res) => {
     try {
         const { nombre, apellido, telefono, correo, password, rol } = req.body;
-        const avatar = req.file ? [req.file.filename] : [];
+        let avatar = [];
 
         if (!nombre || !apellido || !telefono || !correo || !password) {
             return res.status(400).json({ msg: 'Faltan campos requeridos' });
+        }
+
+        if (req.file) {
+            const uploadedImage = await uploadToCloudinary(req.file.buffer, 'kiwi-music/usuarios');
+            avatar = [uploadedImage.secure_url];
         }
 
         const nuevoUsuario = new Usuarios({
@@ -206,7 +212,16 @@ exports.editarUsuario = async (req, res) => {
 
         const { id } = req.params;
         const { nombre, apellido, telefono, rol, password } = req.body;
-        const avatar = req.file ? [req.file.filename] : (req.body.avatar || []); // Agregar este log
+        let avatar = req.body.avatar || [];
+
+        if (typeof avatar === 'string') {
+            avatar = avatar ? [avatar] : [];
+        }
+
+        if (req.file) {
+            const uploadedImage = await uploadToCloudinary(req.file.buffer, 'kiwi-music/usuarios');
+            avatar = [uploadedImage.secure_url];
+        }
 
         console.log('User in request:', req.user);
         console.log('Requested user ID:', req.params.id);
