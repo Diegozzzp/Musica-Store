@@ -166,7 +166,7 @@ exports.crearUsuario = async (req, res) => {
             avatar,
             correo,
             password,
-            rol
+            rol: rol || 'usuario'
         });
 
         const salt = await bcrypt.genSalt(10);
@@ -181,12 +181,19 @@ exports.crearUsuario = async (req, res) => {
             text: `Hola ${nombre},\n\nTe has registrado exitosamente en nuestra aplicación. ¡Bienvenido!`
         };
 
-        await transporter.sendMail(mailOptions);
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (emailError) {
+            console.error('Error enviando correo de registro:', emailError);
+        }
 
         res.json({ msg: 'Usuario creado correctamente' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: 'Error al crear el usuario' });
+        console.error('Error al crear usuario:', error);
+        res.status(500).json({
+            msg: 'Error al crear el usuario',
+            error: error.message
+        });
     }
 };
 

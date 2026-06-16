@@ -98,8 +98,11 @@ const Auth = ({ isLogin }) => {
       } else {
         // Preparar datos para el registro
         const formData = new FormData();
-        Object.keys(form).forEach((key) => formData.append(key, form[key]));
-
+        Object.keys(form).forEach((key) => {
+          if (form[key] !== null && form[key] !== '') {
+            formData.append(key, form[key]);
+          }
+        });
         // Enviar datos de registro
         await axios.post('https://musica-store.vercel.app/usuario', formData, {
           headers: {
