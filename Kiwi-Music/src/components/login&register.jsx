@@ -88,7 +88,7 @@ const Auth = ({ isLogin }) => {
     try {
       if (isLogin) {
         // Enviar datos de inicio de sesión
-        const response = await axios.post('https://musica-store-production.up.railway.app/login', {
+        const response = await axios.post('https://musica-store.vercel.app/login', {
           correo: form.correo,
           password: form.password,
         });
@@ -101,7 +101,7 @@ const Auth = ({ isLogin }) => {
         Object.keys(form).forEach((key) => formData.append(key, form[key]));
 
         // Enviar datos de registro
-        await axios.post('https://musica-store-production.up.railway.app/usuario', formData, {
+        await axios.post('https://musica-store.vercel.app/usuario', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

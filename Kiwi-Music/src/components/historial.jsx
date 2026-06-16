@@ -34,7 +34,7 @@ const CompraCard = ({ compra }) => {
             {compra.productos.map(item => (
               <li key={item.producto._id} className="flex items-center space-x-2 mb-2">
                 <img
-                  src={`https://musica-store-production.up.railway.app/uploads/${item.producto.imagenes[0]}`} // Ruta a la primera imagen del array
+                  src={`https://musica-store.vercel.app/uploads/${item.producto.imagenes[0]}`} // Ruta a la primera imagen del array
                   alt={item.producto.nombre}
                   className="w-10 h-10 object-cover rounded"
                 />
@@ -59,7 +59,7 @@ const CompraHistorial = () => {
     const fetchCompras = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://musica-store-production.up.railway.app/perfil/compras', {
+        const response = await axios.get('https://musica-store.vercel.app/perfil/compras', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCompras(response.data);

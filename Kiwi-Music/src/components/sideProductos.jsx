@@ -4,7 +4,7 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import '../index.css';
 
-const URL_PRODUCTOS = 'https://musica-store-production.up.railway.app/productos/categoria/';
+const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/categoria/';
 
 const CarruselProductos = ({ categoriaId, titulo }) => {
     const [productos, setProductos] = useState([]);
@@ -32,7 +32,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         }
     }, [categoriaId]);
 
-    const fixImagePath = path => `https://musica-store-production.up.railway.app/uploads/${path.replace(/\\/g, '/')}`;
+    const fixImagePath = path => `https://musica-store.vercel.app/uploads/${path.replace(/\\/g, '/')}`;
 
     const handleMouseDown = useCallback(e => {
         e.preventDefault();

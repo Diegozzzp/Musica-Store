@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import '../index.css';
 
 // URL de la API para obtener productos aleatorios
-const URL_PRODUCTOS = 'https://musica-store-production.up.railway.app/productos/random';
+const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/random';
 
 const RandomsIntereses = ({ titulo }) => {
     const [productos, setProductos] = useState([]); // Estado para almacenar los productos
@@ -33,7 +33,7 @@ const RandomsIntereses = ({ titulo }) => {
     }, []);
 
     // Función para arreglar la ruta de la imagen
-    const fixImagePath = path => `https://musica-store-production.up.railway.app/uploads/${path.replace(/\\/g, '/')}`;
+    const fixImagePath = path => `https://musica-store.vercel.app/uploads/${path.replace(/\\/g, '/')}`;
 
     // Manejar el inicio del arrastre con el mouse
     const handleMouseDown = useCallback(e => {

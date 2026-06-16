@@ -9,7 +9,11 @@ const port = process.env.PORT || 3002;
 app.use(express.json());
 
 const corsOptions = {
-  origin: 'https://kiwi-stores.netlify.app',
+  origin: [
+    'https://musica-store-chqr.vercel.app',
+    'https://kiwi-stores.netlify.app',
+    'http://localhost:5173'
+  ],
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
@@ -33,6 +37,14 @@ const reportes = require('./Rutas/reportes');
 
 app.use(usuarios, categoria, rol, compra, producto, reportes);
 
-app.listen(port, () => {
-  console.log(`Servidor corriendo en el puerto ${port}`);
+app.get('/', (req, res) => {
+  res.json({ msg: 'API Kiwi Music funcionando' });
 });
+
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Servidor corriendo en el puerto ${port}`);
+  });
+}
+
+module.exports = app;

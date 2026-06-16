@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto';
 import { FiPlayCircle } from "react-icons/fi";
 
-const URL_albums = 'https://musica-store-production.up.railway.app/productos';
+const URL_albums = 'https://musica-store.vercel.app/productos';
 
 const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const [data, setData] = useState([]);
@@ -20,7 +20,7 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
 
   const fixImagePath = (path) => {
     if (!path) return 'ruta-a-imagen-por-defecto'; // Ruta a una imagen por defecto si no hay imágenes disponibles
-    return `https://musica-store-production.up.railway.app/uploads/${path.replace(/\\/g, '/')}`;
+    return `https://musica-store.vercel.app/uploads/${path.replace(/\\/g, '/')}`;
   };
 
   useEffect(() => {

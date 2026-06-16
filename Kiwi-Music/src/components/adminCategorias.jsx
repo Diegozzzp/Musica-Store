@@ -18,7 +18,7 @@ const CategoriasComponent = () => {
 // Función para obtener las categorías
     const fetchCategorias = async () => {
         try {
-            const response = await axios.get(`https://musica-store-production.up.railway.app/categorias?page=${page}`);
+            const response = await axios.get(`https://musica-store.vercel.app/categorias?page=${page}`);
             const { docs, hasPrevPage, hasNextPage, totalPages } = response.data;
             setCategorias(docs || []);
             setTotalPages(totalPages || 1);
@@ -32,7 +32,7 @@ const CategoriasComponent = () => {
     // Funciones para crear, editar y eliminar categorías
     const handleCreateCategoria = async () => {
         try {
-            await axios.post('https://musica-store-production.up.railway.app/categorias', { nombre });
+            await axios.post('https://musica-store.vercel.app/categorias', { nombre });
             fetchCategorias();
             setNombre('');
             setModalOpen(false); // Cerrar el modal después de crear
@@ -43,7 +43,7 @@ const CategoriasComponent = () => {
 
     const handleEditCategoria = async (id) => {
         try {
-            await axios.patch(`https://musica-store-production.up.railway.app/categorias/${id}`, { nombre });
+            await axios.patch(`https://musica-store.vercel.app/categorias/${id}`, { nombre });
             fetchCategorias();
             setNombre('');
             setEditingId(null);
@@ -55,7 +55,7 @@ const CategoriasComponent = () => {
 
     const handleDeleteCategoria = async (id) => {
         try {
-            await axios.delete(`https://musica-store-production.up.railway.app/categorias/${id}`);
+            await axios.delete(`https://musica-store.vercel.app/categorias/${id}`);
             fetchCategorias();
         } catch (error) {
             console.error('Error al eliminar la categoría', error);

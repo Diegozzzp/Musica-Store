@@ -12,7 +12,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
   const [isAdmin, setIsAdmin] = useState(false); // Nuevo estado para el rol del usuario
   const navigate = useNavigate();
 
-  const avatarUrl = avatar && avatar[0] ? `https://musica-store-production.up.railway.app/uploads/${avatar[0]}` : '';
+  const avatarUrl = avatar && avatar[0] ? `https://musica-store.vercel.app/uploads/${avatar[0]}` : '';
 
   useEffect(() => {
     // Obtener el rol del usuario desde el backend
@@ -21,7 +21,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No se proporcionó token.');
   
-        const response = await axios.get(`https://musica-store-production.up.railway.app/usuario/${id}`, {
+        const response = await axios.get(`https://musica-store.vercel.app/usuario/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
   
@@ -47,7 +47,7 @@ const UserProfile = ({ id, nombre, apellido, correo, telefono, avatar }) => {
       if (!token) throw new Error('No se proporcionó token.');
 
       const response = await axios.patch(
-        `https://musica-store-production.up.railway.app/editarUsuario/${userId}`,
+        `https://musica-store.vercel.app/editarUsuario/${userId}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
