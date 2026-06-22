@@ -25,7 +25,7 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(styleSheet);
 }
 
-const API_KEY = '4619f4cbf2mshd6a2e2d71c5fab1p1aeba8jsne2dd9f9ae550';
+const API_KEY = '43b92e0e0bmsh49ea26730c066fbp15bc44jsn41a81288771d';
 const BASE_URL = 'https://spotify23.p.rapidapi.com';
 
 const getRandomFamousSongs = async () => {
