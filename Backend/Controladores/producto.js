@@ -45,7 +45,7 @@ exports.obtenerProductos = async (req, res) => {
         }
 
         if (esProximamente !== undefined) {
-            query.esProximamente = esProximamente === 'true' ? true : { $ne: true };
+            query.esProximamente = esProximamente === 'true';
         }
 
         // Aplicar ordenamiento según el criterio especificado

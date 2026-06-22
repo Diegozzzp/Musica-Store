@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -9,8 +9,7 @@ const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos';
 
 const shuffleProducts = (items) => [...items].sort(() => Math.random() - 0.5);
 
-const CarruselProductos = ({ categoriaId, categoriaIds, esProximamente = false, random = false, titulo }) => {
-  const normalizedCategoryIds = useMemo(() => (Array.isArray(categoriaIds) ? categoriaIds : []), [categoriaIds]);
+const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = false, random = false, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef(null);
@@ -23,13 +22,14 @@ const CarruselProductos = ({ categoriaId, categoriaIds, esProximamente = false, 
         const params = {
           page: 1,
           limit: 24,
-          ordenarPor: 'masReciente',
-          esProximamente: esProximamente ? 'true' : 'false'
+          ordenarPor: 'masReciente'
         };
 
-        if (!esProximamente && normalizedCategoryIds.length > 0) {
-          params.categorias = normalizedCategoryIds.join(',');
-        } else if (!esProximamente && categoriaId) {
+        if (esProximamente) {
+          params.esProximamente = 'true';
+        } else if (categoriaIds.length > 0) {
+          params.categorias = categoriaIds.join(',');
+        } else if (categoriaId) {
           params.categoria = categoriaId;
         }
 
@@ -45,7 +45,7 @@ const CarruselProductos = ({ categoriaId, categoriaIds, esProximamente = false, 
     };
 
     fetchProductos();
-  }, [categoriaId, normalizedCategoryIds, esProximamente, random]);
+  }, [categoriaId, categoriaIds, esProximamente, random]);
 
   const handleScroll = useCallback((direction) => {
     const scrollAmount = direction === 'left' ? -420 : 420;
