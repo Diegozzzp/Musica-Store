@@ -147,9 +147,6 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
         };
         // Obtener productos por categoría con paginación y opciones especificadas
         const productos = await Productos.paginate({ categoria: id }, options);
-        if (!productos.docs.length) {
-            return res.status(404).json({ msg: 'No se encontraron productos para la categoría especificada' });
-        }
         const totalProductos = await Productos.countDocuments({ categoria: id }); // Contar el total de productos en la categoría
         res.json({
             productos: productos.docs,

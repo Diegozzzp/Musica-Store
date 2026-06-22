@@ -16,6 +16,19 @@ const normalizeProducts = (data) => {
   return [];
 };
 
+const getCategoryProducts = async (id, limit = 24) => {
+  try {
+    const { data } = await axios.get(`${URL_PRODUCTOS}/categoria/${id}`, {
+      params: { page: 1, limit, sort: 'mas-recientes' }
+    });
+
+    return normalizeProducts(data);
+  } catch (error) {
+    if (error.response?.status === 404) return [];
+    throw error;
+  }
+};
+
 const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = false, random = false, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,19 +42,10 @@ const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = fa
         let docs = [];
 
         if (categoriaIds.length > 0) {
-          const responses = await Promise.all(
-            categoriaIds.map((id) => axios.get(`${URL_PRODUCTOS}/categoria/${id}`, {
-              params: { page: 1, limit: 12, sort: 'mas-recientes' }
-            }))
-          );
-
-          docs = responses.flatMap((response) => normalizeProducts(response.data));
+          const responses = await Promise.all(categoriaIds.map((id) => getCategoryProducts(id, 12)));
+          docs = responses.flat();
         } else if (categoriaId) {
-          const { data } = await axios.get(`${URL_PRODUCTOS}/categoria/${categoriaId}`, {
-            params: { page: 1, limit: 24, sort: 'mas-recientes' }
-          });
-
-          docs = normalizeProducts(data);
+          docs = await getCategoryProducts(categoriaId, 24);
         } else {
           const params = {
             page: 1,
