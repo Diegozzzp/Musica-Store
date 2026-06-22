@@ -14,6 +14,8 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
     descuento: '',
     tipo: 'otros',
     tallas: '',
+    esProximamente: false,
+    fechaLlegada: '',
     imagenes: []
   });
   const [error, setError] = useState({});
@@ -59,6 +61,8 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
     if (name === 'imagenes') {
       setSelectedFiles([...files]);
       setForm((prevForm) => ({ ...prevForm, imagenes: [...files] }));
+    } else if (name === 'esProximamente') {
+      setForm((prevForm) => ({ ...prevForm, esProximamente: e.target.checked }));
     } else {
       setForm((prevForm) => ({ ...prevForm, [name]: value }));
     }
@@ -75,12 +79,18 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
       newError.precio = 'El precio debe ser un número positivo';
     }
 
-    if (isNaN(form.cantidad) || form.cantidad <= 0) {
-      newError.cantidad = 'La cantidad debe ser un número positivo';
+    const categoriaEsProximamente = categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente');
+
+    if (isNaN(form.cantidad) || Number(form.cantidad) < 0 || (!form.esProximamente && !categoriaEsProximamente && Number(form.cantidad) <= 0)) {
+      newError.cantidad = 'La cantidad debe ser mayor a 0, excepto en productos proximamente';
     }
 
     if (form.tipo === 'ropa' && !form.tallas) {
       newError.tallas = 'Las tallas son obligatorias para productos de tipo ropa';
+    }
+
+    if ((form.esProximamente || categoriaEsProximamente) && !form.fechaLlegada) {
+      newError.fechaLlegada = 'La fecha de llegada es obligatoria para productos proximamente';
     }
 
     // Validar formato de tallas si es ropa
@@ -111,6 +121,8 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
     data.append('descripcion', form.descripcion);
     data.append('descuento', form.descuento);
     data.append('tipo', form.tipo);
+    data.append('esProximamente', String(form.esProximamente || categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente')));
+    data.append('fechaLlegada', form.fechaLlegada);
     
     // Convertir tallas a array si es necesario
     if (form.tipo === 'ropa') {
@@ -234,6 +246,33 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
               <option value="ropa">Ropa</option>
             </select>
             {error.tipo && <p className="text-red-500 text-sm mt-1">{error.tipo}</p>}
+          </div>
+
+          <div className="mb-4 rounded border border-gray-200 bg-gray-50 p-4">
+            <label className="flex items-center gap-3 text-gray-700 font-semibold">
+              <input
+                type="checkbox"
+                name="esProximamente"
+                checked={form.esProximamente}
+                onChange={handleChange}
+                className="h-4 w-4"
+              />
+              Producto proximamente / preorden
+            </label>
+            <p className="mt-2 text-xs text-gray-500">Tambien se activa si eliges una categoria llamada Proximamente.</p>
+            {(form.esProximamente || categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente')) && (
+              <div className="mt-4">
+                <label className="block text-gray-700 font-semibold mb-1">Fecha estimada de llegada</label>
+                <input
+                  type="date"
+                  name="fechaLlegada"
+                  value={form.fechaLlegada}
+                  onChange={handleChange}
+                  className={`w-full p-3 border rounded ${error.fechaLlegada ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {error.fechaLlegada && <p className="text-red-500 text-sm mt-1">{error.fechaLlegada}</p>}
+              </div>
+            )}
           </div>
 
           {form.tipo === 'ropa' && (

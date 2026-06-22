@@ -11,6 +11,8 @@ const ProductosSchema = new mongoose.Schema({
     imagenes : [{ type: String}],
     descripcion : { type: String, required: true, min : 3, max : 300},
     descuento : { type: Number,  min : 0, max : 1000, default : 0 },
+    esProximamente: { type: Boolean, default: false },
+    fechaLlegada: { type: Date },
     cantidadVendida: { type: Number, default: 0 },
     fecha : { type: Date, default: Date.now },
     fechaActualizacion : { type: Date },

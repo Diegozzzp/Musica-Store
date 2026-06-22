@@ -41,6 +41,11 @@ const CompraCard = ({ compra }) => {
                 />
                 <span className="text-sm">{item.producto.nombre}</span>
                 <span className="text-sm">x {item.cantidad}</span>
+                {item.esPreorden && (
+                  <span className="rounded bg-[#17252a] px-2 py-1 text-xs font-semibold text-white">
+                    Llega {item.fechaLlegada ? new Date(item.fechaLlegada).toLocaleDateString() : 'proximamente'}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

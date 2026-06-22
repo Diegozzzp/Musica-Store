@@ -90,6 +90,12 @@ const CompraRealizar = () => {
                                     <div>
                                         <p className="text-lg font-semibold">{product.nombre}</p>
                                         <p className="text-gray-600">{product.descripcion}</p>
+                                        {product.esProximamente && (
+                                            <p className="mt-1 text-sm font-semibold text-[#547980]">
+                                                Preorden
+                                                {product.fechaLlegada ? ` - llegada estimada: ${new Date(product.fechaLlegada).toLocaleDateString()}` : ''}
+                                            </p>
+                                        )}
                                         <p>Cantidad: {product.cantidad}</p>
                                         <p>Precio unitario: ${product.precio}</p>
                                     </div>

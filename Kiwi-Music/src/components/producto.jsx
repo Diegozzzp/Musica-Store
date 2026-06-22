@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { CartContext } from './carritoContexto';
@@ -57,6 +57,7 @@ const Carousel = ({ images }) => {
 
 const ProductDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [producto, setProducto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,8 +90,15 @@ const ProductDetailPage = () => {
 
   const stock = Number(producto.cantidad || 0);
   const soldOut = stock === 0;
+  const isPreorder = Boolean(producto.esProximamente);
 
   const increaseQuantity = () => {
+    if (isPreorder) {
+      setQuantity(quantity + 1);
+      setMessage('');
+      return;
+    }
+
     if (quantity < stock) {
       setQuantity(quantity + 1);
       setMessage('');
@@ -107,7 +115,7 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
-    if (soldOut) {
+    if (soldOut && !isPreorder) {
       setMessage('Producto sin stock disponible.');
       return;
     }
@@ -118,7 +126,11 @@ const ProductDetailPage = () => {
 
   return (
     <>
-      <section className="kiwi-section grid gap-10 py-10 md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,27rem)] md:py-16">
+      <section className="kiwi-section py-8 md:py-12">
+        <button onClick={() => navigate(-1)} className="mb-6 flex items-center gap-2 rounded bg-white px-4 py-3 text-sm font-semibold text-[#17252a] shadow hover:bg-gray-50">
+          <FaArrowLeft /> Volver
+        </button>
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,27rem)]">
         <div>
           {producto.imagenes && producto.imagenes.length > 0 ? (
             <Carousel images={producto.imagenes} />
@@ -131,6 +143,14 @@ const ProductDetailPage = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#547980]">{producto.tipo || 'Producto'}</p>
           <h1 className="mt-2 text-3xl font-black leading-tight text-[#17252a] md:text-4xl">{producto.nombre}</h1>
           <p className="mt-5 text-base leading-7 text-gray-600">{producto.descripcion}</p>
+          {isPreorder && (
+            <div className="mt-5 rounded bg-[#17252a] p-4 text-white">
+              <p className="text-sm font-black">Disponible para preorden</p>
+              {producto.fechaLlegada && (
+                <p className="mt-1 text-sm text-white/80">Llegada estimada: {new Date(producto.fechaLlegada).toLocaleDateString()}</p>
+              )}
+            </div>
+          )}
 
           <div className="mt-6 flex items-end justify-between border-y border-gray-200 py-5">
             <div>
@@ -161,22 +181,22 @@ const ProductDetailPage = () => {
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-700">Cantidad</p>
               <p className={`text-sm font-semibold ${soldOut ? 'text-red-500' : 'text-gray-500'}`}>
-                {soldOut ? 'Sin stock' : `${stock} disponibles`}
+                {isPreorder ? 'Preorden' : soldOut ? 'Sin stock' : `${stock} disponibles`}
               </p>
             </div>
             <div className="flex w-36 overflow-hidden rounded border border-gray-200 bg-white">
               <button onClick={decreaseQuantity} className="w-12 py-3 text-lg font-black hover:bg-gray-50" disabled={quantity <= 1}>-</button>
               <input value={quantity} readOnly className="w-12 border-x border-gray-200 bg-white text-center font-bold outline-none" />
-              <button onClick={increaseQuantity} className="w-12 py-3 text-lg font-black hover:bg-gray-50" disabled={soldOut}>+</button>
+              <button onClick={increaseQuantity} className="w-12 py-3 text-lg font-black hover:bg-gray-50" disabled={soldOut && !isPreorder}>+</button>
             </div>
           </div>
 
           <button
             onClick={handleAddToCart}
-            disabled={soldOut}
-            className={`mt-7 w-full rounded py-4 text-sm font-black ${soldOut ? 'bg-gray-200 text-gray-400' : 'kiwi-button'}`}
+            disabled={soldOut && !isPreorder}
+            className={`mt-7 w-full rounded py-4 text-sm font-black ${soldOut && !isPreorder ? 'bg-gray-200 text-gray-400' : 'kiwi-button'}`}
           >
-            {soldOut ? 'No disponible' : 'Agregar al carrito'}
+            {isPreorder ? 'Preordenar' : soldOut ? 'No disponible' : 'Agregar al carrito'}
           </button>
 
           {message && (
@@ -185,6 +205,7 @@ const ProductDetailPage = () => {
             </p>
           )}
         </aside>
+        </div>
       </section>
 
       <RandomsIntereses titulo="Productos recomendados" />

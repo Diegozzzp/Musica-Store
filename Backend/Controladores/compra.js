@@ -91,6 +91,11 @@ exports.realizarCompra = async function (req, res) {
                 return res.status(404).json({ msg: `Producto con ID ${item.producto} no encontrado.` });
             }
 
+            // Las preordenes de productos proximamente no descuentan stock actual
+            if (producto.esProximamente) {
+                continue;
+            }
+
             // Verificar si la cantidad solicitada excede el stock disponible
             if (item.cantidad > producto.cantidad) {
                 productosNoDisponibles.push({
@@ -119,7 +124,9 @@ exports.realizarCompra = async function (req, res) {
             usuario: userId,
             productos: productos.map(item => ({
                 producto: item.producto,
-                cantidad: item.cantidad
+                cantidad: item.cantidad,
+                esPreorden: Boolean(productosMap[item.producto]?.esProximamente),
+                fechaLlegada: productosMap[item.producto]?.fechaLlegada || null
             })),
             total
         });

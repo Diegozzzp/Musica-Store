@@ -31,7 +31,7 @@ exports.obtenerProductos = async (req, res) => {
             page: pageNumber, // Número de página
            limit: limitNumber, // Cantidad de resultados por página
             populate: 'categoria', // Incluir información de la categoría
-            select: 'nombre precio cantidad categoria imagenes descripcion descuento cantidadVendida fecha', // Campos a seleccionar
+            select: 'nombre precio cantidad categoria imagenes descripcion descuento esProximamente fechaLlegada cantidadVendida fecha', // Campos a seleccionar
             sort: {} // Opciones de ordenamiento
         }; 
 
@@ -137,7 +137,7 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
             limit: parseInt(limit, 10), // Cantidad de resultados por página
             sort: sortOption, // Ordenar según opción seleccionada
             populate: 'categoria', // Incluir información de la categoría
-            select: 'nombre precio cantidad categoria imagenes descripcion descuento ventas popularidad createdAt' // Campos a seleccionar
+            select: 'nombre precio cantidad categoria imagenes descripcion descuento esProximamente fechaLlegada ventas popularidad createdAt' // Campos a seleccionar
         };
         // Obtener productos por categoría con paginación y opciones especificadas
         const productos = await Productos.paginate({ categoria: id }, options);
@@ -179,7 +179,7 @@ exports.crearProducto = async (req, res) => {
     }
 
     try {
-        const { nombre, precio, cantidad, categoria, descripcion, descuento, tipo, tallas } = req.body;
+        const { nombre, precio, cantidad, categoria, descripcion, descuento, tipo, tallas, esProximamente, fechaLlegada } = req.body;
         const imagenes = req.files && req.files.length > 0
             ? await Promise.all(req.files.map(async (file) => {
                 const uploadedImage = await uploadToCloudinary(file.buffer, 'kiwi-music/productos');
@@ -213,7 +213,9 @@ exports.crearProducto = async (req, res) => {
             descripcion,
             descuento: descuento || 0,
             tipo,
-            tallas: tipo === 'ropa' ? tallasArray : []  // Solo asignar tallas si el tipo es 'ropa'
+            tallas: tipo === 'ropa' ? tallasArray : [],  // Solo asignar tallas si el tipo es 'ropa'
+            esProximamente: esProximamente === 'true' || esProximamente === true,
+            fechaLlegada: fechaLlegada || null
         });
 
         // Crear el nuevo producto con los datos proporcionados
@@ -258,6 +260,14 @@ exports.editarProducto = async (req, res) => {
         }
 
         const updateData = { ...req.body, imagenes }; // Preparar datos de actualización
+
+        if (updateData.esProximamente !== undefined) {
+            updateData.esProximamente = updateData.esProximamente === 'true' || updateData.esProximamente === true;
+        }
+
+        if (updateData.fechaLlegada === '') {
+            updateData.fechaLlegada = null;
+        }
 
         // Aplicar descuento si está presente en la solicitud
         if (updateData.descuento) {

@@ -5,7 +5,9 @@ const compraSchema = new mongoose.Schema({
     usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'usuarios', required: true },
     productos: [{
         producto: { type: mongoose.Schema.Types.ObjectId, ref: 'productos', required: true },
-        cantidad: { type: Number, required: true, min: 1}
+        cantidad: { type: Number, required: true, min: 1},
+        esPreorden: { type: Boolean, default: false },
+        fechaLlegada: { type: Date }
     }],
     total: { type: Number, required: true },
     fecha: { type: Date, default: Date.now },

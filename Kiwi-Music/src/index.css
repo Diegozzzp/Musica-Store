@@ -68,3 +68,12 @@ img {
 .cursor-grabbing {
   cursor: grabbing;
 }
+
+.carousel-drag {
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.carousel-drag img {
+  pointer-events: none;
+}

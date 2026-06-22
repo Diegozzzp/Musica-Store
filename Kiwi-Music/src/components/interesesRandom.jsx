@@ -11,6 +11,7 @@ const RandomsIntereses = ({ titulo }) => {
   const [productos, setProductos] = useState([]);
   const carouselRef = useRef(null);
   const isDragging = useRef(false);
+  const hasDragged = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
@@ -33,24 +34,39 @@ const RandomsIntereses = ({ titulo }) => {
     carouselRef.current?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }, []);
 
-  const startDrag = useCallback((clientX) => {
+  const startDrag = useCallback((event) => {
     if (!carouselRef.current) return;
     isDragging.current = true;
-    startX.current = clientX;
+    hasDragged.current = false;
+    startX.current = event.clientX;
     scrollLeft.current = carouselRef.current.scrollLeft;
+    carouselRef.current.setPointerCapture?.(event.pointerId);
     carouselRef.current.classList.add('cursor-grabbing');
   }, []);
 
-  const moveDrag = useCallback((clientX) => {
+  const moveDrag = useCallback((event) => {
     if (!isDragging.current || !carouselRef.current) return;
-    const walk = (clientX - startX.current) * 1.4;
+    const walk = event.clientX - startX.current;
+    if (Math.abs(walk) > 6) {
+      hasDragged.current = true;
+    }
     carouselRef.current.scrollLeft = scrollLeft.current - walk;
   }, []);
 
-  const endDrag = useCallback(() => {
+  const endDrag = useCallback((event) => {
     isDragging.current = false;
+    if (event?.pointerId && carouselRef.current?.hasPointerCapture?.(event.pointerId)) {
+      carouselRef.current.releasePointerCapture(event.pointerId);
+    }
     carouselRef.current?.classList.remove('cursor-grabbing');
   }, []);
+
+  const handleLinkClick = (event) => {
+    if (hasDragged.current) {
+      event.preventDefault();
+      hasDragged.current = false;
+    }
+  };
 
   if (productos.length === 0) return null;
 
@@ -73,17 +89,14 @@ const RandomsIntereses = ({ titulo }) => {
 
       <div
         ref={carouselRef}
-        className="scrollbar-hide flex cursor-grab gap-6 overflow-x-auto scroll-smooth pb-4"
-        onMouseDown={(e) => startDrag(e.pageX)}
-        onMouseMove={(e) => moveDrag(e.pageX)}
-        onMouseUp={endDrag}
-        onMouseLeave={endDrag}
-        onTouchStart={(e) => startDrag(e.touches[0].pageX)}
-        onTouchMove={(e) => moveDrag(e.touches[0].pageX)}
-        onTouchEnd={endDrag}
+        className="scrollbar-hide carousel-drag flex cursor-grab gap-6 overflow-x-auto scroll-smooth pb-4"
+        onPointerDown={startDrag}
+        onPointerMove={moveDrag}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
       >
         {productos.map((producto) => (
-          <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[21rem] overflow-hidden rounded">
+          <Link to={`/producto/${producto._id}`} key={producto._id} onClick={handleLinkClick} draggable="false" className="kiwi-card group min-w-[21rem] overflow-hidden rounded">
             <div className="aspect-[5/4] overflow-hidden bg-[#f2efe8]">
               <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-[1.03]" />
             </div>

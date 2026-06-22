@@ -29,7 +29,7 @@ export const CartProvider = ({ children }) => {
         const existingProduct = updatedCart[existingProductIndex];
         
         const newQuantity = existingProduct.cantidad + quantity;
-        if (newQuantity > product.cantidad) {
+        if (!product.esProximamente && newQuantity > product.cantidad) {
           return prevCart;
         }
 

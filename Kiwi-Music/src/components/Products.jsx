@@ -3,10 +3,22 @@ import axios from 'axios';
 import { FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto';
-import { FiShoppingBag } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 import { getImageUrl } from '../utils/imageUrl';
 
 const URL_ALBUMS = 'https://musica-store.vercel.app/productos';
+
+const VinylAddButton = ({ label, onClick }) => (
+  <button
+    onClick={onClick}
+    className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#17252a] text-[#9DE0AD] shadow transition hover:scale-105 hover:bg-[#22363b]"
+    aria-label={label}
+  >
+    <span className="absolute h-7 w-7 rounded-full border border-white/25" />
+    <span className="absolute h-2 w-2 rounded-full bg-[#f7f5f0]" />
+    <FiPlus className="relative z-10 ml-7 mt-7 rounded-full bg-[#9DE0AD] p-0.5 text-lg text-[#17252a]" />
+  </button>
+);
 
 const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const [data, setData] = useState([]);
@@ -118,17 +130,16 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
                       -{producto.descuento}%
                     </span>
                   )}
+                  {producto.esProximamente && (
+                    <span className="rounded bg-[#17252a] px-2 py-1 text-xs font-bold text-white">
+                      Preorden
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between">
                   <p className="text-xl font-black text-[#17252a]">${producto.precio}</p>
-                  <button
-                    onClick={() => handleAddToCart(producto)}
-                    className="kiwi-button flex h-10 w-10 items-center justify-center rounded"
-                    aria-label={`Agregar ${producto.nombre} al carrito`}
-                  >
-                    <FiShoppingBag />
-                  </button>
+                  <VinylAddButton label={`Agregar ${producto.nombre} al carrito`} onClick={() => handleAddToCart(producto)} />
                 </div>
               </div>
             </article>
