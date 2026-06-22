@@ -1,4 +1,3 @@
-// UserSearchResults.js
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -8,25 +7,27 @@ const UserSearchResults = () => {
   const location = useLocation();
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get('nombre');
 
   useEffect(() => {
     const fetchResults = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
         const response = await axios.get('https://musica-store.vercel.app/productos/campos', {
           params: { nombre: searchTerm }
         });
 
-        if (response.data && Array.isArray(response.data)) {
-          setResults(response.data);
-        } else {
-          console.error('Unexpected response data:', response.data);
-        }
+        setResults(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
-        setError('Error fetching search results');
+        setError('No pudimos cargar los resultados.');
         console.error('Error fetching search results:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -36,31 +37,42 @@ const UserSearchResults = () => {
   }, [searchTerm]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Resultados de Búsqueda para "{searchTerm}"</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      {results.length > 0 ? (
-        <ul>
-          {results.map((producto) => (
-            <li key={producto._id} className="border-b border-gray-200 py-2 flex items-center">
-              <Link to={`/producto/${producto._id}`}>
-                <img
-                  src={getImageUrl(producto.imagenes)}
-                  alt={producto.nombre}
-                  className="w-12 h-12 object-cover mr-4"
-                />
-              </Link>
-              <div>
-                <p className="text-sm text-gray-600">{producto.descripcion}</p>
-                <p className="font-semibold">${producto.precio}</p>
-              </div>
-            </li>
+    <section className="kiwi-section py-12 md:py-16">
+      <div className="mb-8">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#547980]">Busqueda</p>
+        <h1 className="mt-2 text-3xl font-black text-[#17252a] md:text-5xl">Resultados para "{searchTerm}"</h1>
+      </div>
+
+      {error && <p className="mb-6 rounded bg-red-50 p-4 text-sm font-semibold text-red-600">{error}</p>}
+
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-[24rem] animate-pulse rounded bg-white/70" />
           ))}
-        </ul>
+        </div>
+      ) : results.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {results.map((producto) => (
+            <Link key={producto._id} to={`/producto/${producto._id}`} className="kiwi-card group overflow-hidden rounded">
+              <div className="aspect-[4/5] overflow-hidden bg-gray-100">
+                <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+              </div>
+              <div className="p-4">
+                <h2 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h2>
+                <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-600">{producto.descripcion}</p>
+                <p className="mt-4 text-xl font-black text-[#17252a]">${producto.precio}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       ) : (
-        <p>No se encontraron resultados.</p>
+        <div className="kiwi-card rounded p-10 text-center">
+          <p className="text-lg font-semibold text-[#17252a]">No se encontraron resultados.</p>
+          <p className="mt-2 text-sm text-gray-500">Prueba con otro artista, album o producto.</p>
+        </div>
       )}
-    </div>
+    </section>
   );
 };
 

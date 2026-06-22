@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; 
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import '../index.css';
 import { getImageUrl } from '../utils/imageUrl';
@@ -8,123 +8,75 @@ import { getImageUrl } from '../utils/imageUrl';
 const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/categoria/';
 
 const CarruselProductos = ({ categoriaId, titulo }) => {
-    const [productos, setProductos] = useState([]);
-    const carouselRef = useRef(null);
-    const isDragging = useRef(false);
-    const startX = useRef(0);
-    const scrollLeft = useRef(0);
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const carouselRef = useRef(null);
 
-    useEffect(() => {
-        const fetchProductos = async () => {
-            try {
-                const { data } = await axios.get(`${URL_PRODUCTOS}${categoriaId}`);
-                if (Array.isArray(data.productos)) {
-                    setProductos(data.productos);
-                } else {
-                    console.error("Unexpected data format:", data);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
+  useEffect(() => {
+    const fetchProductos = async () => {
+      setLoading(true);
 
-        if (categoriaId) {
-            fetchProductos();
-        }
-    }, [categoriaId]);
+      try {
+        const { data } = await axios.get(`${URL_PRODUCTOS}${categoriaId}`);
+        setProductos(Array.isArray(data.productos) ? data.productos : []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const fixImagePath = path => getImageUrl(path);
+    if (categoriaId) {
+      fetchProductos();
+    }
+  }, [categoriaId]);
 
-    const handleMouseDown = useCallback(e => {
-        e.preventDefault();
-        isDragging.current = true;
-        startX.current = e.pageX - carouselRef.current.offsetLeft;
-        scrollLeft.current = carouselRef.current.scrollLeft;
-        carouselRef.current.classList.add('cursor-grabbing');
-    }, []);
+  const handleScroll = useCallback((direction) => {
+    const scrollAmount = direction === 'left' ? -340 : 340;
+    carouselRef.current?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }, []);
 
-    const handleMouseLeaveOrUp = useCallback(() => {
-        isDragging.current = false;
-        carouselRef.current.classList.remove('cursor-grabbing');
-    }, []);
+  if (!loading && productos.length === 0) return null;
 
-    const handleMouseMove = useCallback(e => {
-        if (!isDragging.current) return;
-        e.preventDefault();
-        const x = e.pageX - carouselRef.current.offsetLeft;
-        const walk = (x - startX.current) * 2;
-        carouselRef.current.scrollLeft = scrollLeft.current - walk;
-    }, []);
+  return (
+    <section className="kiwi-section py-8 md:py-12">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#547980]">Seleccion Kiwi</p>
+          <h2 className="mt-1 text-2xl font-black text-[#17252a] md:text-3xl">{titulo}</h2>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => handleScroll('left')} className="rounded border border-gray-200 bg-white p-3 text-[#17252a] shadow-sm hover:bg-gray-50" aria-label="Ver anteriores">
+            <FaArrowLeft size={16} />
+          </button>
+          <button onClick={() => handleScroll('right')} className="rounded border border-gray-200 bg-white p-3 text-[#17252a] shadow-sm hover:bg-gray-50" aria-label="Ver siguientes">
+            <FaArrowRight size={16} />
+          </button>
+        </div>
+      </div>
 
-    const handleTouchStart = useCallback(e => {
-        e.preventDefault();
-        isDragging.current = true;
-        startX.current = e.touches[0].pageX - carouselRef.current.offsetLeft;
-        scrollLeft.current = carouselRef.current.scrollLeft;
-        carouselRef.current.classList.add('cursor-grabbing');
-    }, []);
-
-    const handleTouchMove = useCallback(e => {
-        if (!isDragging.current) return;
-        const x = e.touches[0].pageX - carouselRef.current.offsetLeft;
-        const walk = (x - startX.current) * 2;
-        carouselRef.current.scrollLeft = scrollLeft.current - walk;
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        isDragging.current = false;
-        carouselRef.current.classList.remove('cursor-grabbing');
-    }, []);
-
-    const handleScroll = useCallback(direction => {
-        const scrollAmount = direction === 'left' ? -200 : 200;
-        carouselRef.current.scrollBy({
-            left: scrollAmount,
-            behavior: 'smooth'
-        });
-    }, []);
-
-    return (
-        <section className="relative w-full pt-10 mb-4 h-[600px]">
-            <div className='flex items-center justify-around pb-8'>
-                <button onClick={() => handleScroll('left')} className="bg-white rounded-full p-2 text-gray-600 hover:text-gray-800">
-                    <FaArrowLeft size={24} />
-                </button>
-                <p className='text-2xl font-light text-center'>{titulo}</p>
-                <button onClick={() => handleScroll('right')} className="bg-white rounded-full p-2 text-gray-600 hover:text-gray-800">
-                    <FaArrowRight size={24} />
-                </button>
-            </div>
-            <div
-                ref={carouselRef}
-                className="flex overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide w-full cursor-grab"
-                onMouseDown={handleMouseDown}
-                onMouseLeave={handleMouseLeaveOrUp}
-                onMouseUp={handleMouseLeaveOrUp}
-                onMouseMove={handleMouseMove}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-            >
-                {productos.map(producto => (
-                    <Link to={`/producto/${producto._id}`} key={producto._id} className="flex flex-col h-full px-12 pr-8 min-w-[400px] sm:min-w-[500px] md:px-2 md:min-w-[400px] lg:min-w-[300px] hover:shadow-xl transition-shadow duration-300">
-                        <div className="w-full h-72">
-                            {producto.imagenes?.length ? (
-                                <img src={fixImagePath(producto.imagenes[0])} alt={producto.nombre} className="object-cover w-full h-full" />
-                            ) : (
-                                <p className="text-center">No image available</p>
-                            )}
-                        </div>
-                        <div className="pt-4 h-full">
-                            <h3 className="text-lg font-semibold">{producto.nombre}</h3>
-                            <p className="text-gray-500 text-sm w-64 h-8 overflow-hidden">{producto.descripcion}</p>
-                            <p className="text-gray-600 pt-4">${producto.precio}</p>
-                        </div>
-                    </Link>
-                ))}
-            </div>
-        </section>
-    );
+      <div ref={carouselRef} className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth pb-4">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-[25rem] min-w-[17rem] animate-pulse rounded bg-white/70" />
+          ))
+        ) : (
+          productos.map((producto) => (
+            <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[17rem] overflow-hidden rounded">
+              <div className="aspect-[4/5] overflow-hidden bg-gray-100">
+                <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+              </div>
+              <div className="p-4">
+                <h3 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h3>
+                <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">{producto.descripcion}</p>
+                <p className="mt-4 text-lg font-black text-[#17252a]">${producto.precio}</p>
+              </div>
+            </Link>
+          ))
+        )}
+      </div>
+    </section>
+  );
 };
 
 export default CarruselProductos;

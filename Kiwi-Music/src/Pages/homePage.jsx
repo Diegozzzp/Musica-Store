@@ -6,7 +6,7 @@ import MusicPlayer from '../components/produccMusic';
 
 const HomePage = () => {
   return (
-    <div >
+    <div className="bg-[#f7f5f0]">
       <Banner />
       <Component categoriaId={'699c698b238857741c6297ea'} titulo={'Albums'}/>
       <Component categoriaId={'699c6b1f238857741c629819'} titulo={'Merch'}/>

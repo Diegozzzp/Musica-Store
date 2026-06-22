@@ -34,7 +34,7 @@ const AdminSearchResults = () => {
             break;
           case 'productos':
             url = `https://musica-store.vercel.app/productos/campos`;
-            params.id = searchTerm; // Usar 'nombre' para buscar productos
+            params.nombre = searchTerm;
             break;
           case 'usuarios':
             url = `https://musica-store.vercel.app/usuario/${searchTerm}`;

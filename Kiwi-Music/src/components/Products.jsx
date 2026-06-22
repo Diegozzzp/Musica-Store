@@ -1,45 +1,40 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CartContext } from './carritoContexto';
-import { FiPlayCircle } from "react-icons/fi";
+import { FiShoppingBag } from 'react-icons/fi';
 import { getImageUrl } from '../utils/imageUrl';
 
-const URL_albums = 'https://musica-store.vercel.app/productos';
+const URL_ALBUMS = 'https://musica-store.vercel.app/productos';
 
 const AlbumsPage = ({ categoriaId = null, titulo }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalProductos, setTotalProductos] = useState(0);
-  const [filtro, setFiltro] = useState('masReciente'); // Cambiar a coincidencia exacta con backend
+  const [filtro, setFiltro] = useState('masReciente');
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [hasPrevPage, setHasPrevPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(false);
   const { addToCart } = useContext(CartContext);
 
-  const fixImagePath = (path) => {
-    if (!path) return 'ruta-a-imagen-por-defecto'; // Ruta a una imagen por defecto si no hay imágenes disponibles
-    return getImageUrl(path);
-  };
-
   useEffect(() => {
     const obtenerProductos = async () => {
-      setLoading(true); // Iniciar con carga activa al hacer nueva petición
+      setLoading(true);
+
       try {
         const params = {
-          ordenarPor: filtro, // Cambiar a ordenarPor para coincidir con el controlador
+          ordenarPor: filtro,
           page: paginaActual,
-          limit: 10
+          limit: 12
         };
 
-        // Solo agrega la categoría si el ID de la categoría se ha proporcionado
         if (categoriaId) {
           params.categoria = categoriaId;
         }
 
-        const response = await axios.get(URL_albums, { params });
+        const response = await axios.get(URL_ALBUMS, { params });
 
         if (response.data && Array.isArray(response.data.docs)) {
           setData(response.data.docs);
@@ -48,11 +43,9 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
           setPaginaActual(response.data.page);
           setHasPrevPage(response.data.page > 1);
           setHasNextPage(response.data.page < response.data.totalPages);
-        } else {
-          console.error("Unexpected response data format", response.data);
         }
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error('Error fetching data: ', error);
       } finally {
         setLoading(false);
       }
@@ -61,92 +54,106 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
     obtenerProductos();
   }, [categoriaId, filtro, paginaActual]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <FaSpinner className="animate-spin text-4xl" />
-      </div>
-    );
-  }
-
   const handleFiltroChange = (event) => {
     setFiltro(event.target.value);
-    setPaginaActual(1); // Resetear a la primera página cuando se cambia el filtro
+    setPaginaActual(1);
   };
 
   const handleAddToCart = (producto) => {
-    const cantidad = 1;
-    addToCart(producto, cantidad);
-  };
-
-  const handlePrevPage = () => {
-    if (hasPrevPage) {
-      setPaginaActual(paginaActual - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (hasNextPage) {
-      setPaginaActual(paginaActual + 1);
-    }
+    addToCart(producto, 1);
   };
 
   return (
-    <>
-      <div className="w-full h-full mb-44">
-        <h1 className="text-3xl font-semibold pt-16 text-center">{titulo}</h1>
-        <div className="text-center flex justify-between items-center px-8">
-          <select value={filtro} onChange={handleFiltroChange} className="p-2 rounded border-none focus:outline-none">
-            <option value="masReciente">Más recientes</option>
-            <option value="masAntiguos">Más antiguos</option>
-            <option value="masVendidos">Más vendidos</option>
-            <option value="ordenAlfabetico">Orden alfabético</option>
-            <option value="masPopulares">Más populares</option>
-          </select>
-          <p className="text-gray-700 text-center">Total de productos: {totalProductos}</p>
+    <section className="kiwi-section py-12 md:py-16">
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#547980]">Catalogo</p>
+          <h1 className="mt-2 text-3xl font-black text-[#17252a] md:text-5xl">{titulo}</h1>
+          <p className="mt-2 text-sm text-gray-600">{totalProductos} productos disponibles</p>
         </div>
-        <div className="grid justify-items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-32">
-          {data.map(producto => (
-            <div key={producto._id} className="p-4 w-full h-[400px] sm:h-[300px] lg:h-[330px]">
-              <Link to={`/producto/${producto._id}`}>
-                <img
-                  src={fixImagePath(producto.imagenes[0])}
-                  alt={producto.nombre}
-                  className="object-cover w-full h-full"
-                />
+
+        <select
+          value={filtro}
+          onChange={handleFiltroChange}
+          className="w-full rounded border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm outline-none focus:border-[#547980] md:w-64"
+        >
+          <option value="masReciente">Mas recientes</option>
+          <option value="masAntiguos">Mas antiguos</option>
+          <option value="masVendidos">Mas vendidos</option>
+          <option value="ordenAlfabetico">Orden alfabetico</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="flex min-h-[24rem] items-center justify-center">
+          <FaSpinner className="animate-spin text-4xl text-[#547980]" />
+        </div>
+      ) : data.length === 0 ? (
+        <div className="kiwi-card rounded p-10 text-center">
+          <p className="text-lg font-semibold text-[#17252a]">No hay productos para mostrar.</p>
+          <p className="mt-2 text-sm text-gray-500">Prueba con otra categoria u orden.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {data.map((producto) => (
+            <article key={producto._id} className="kiwi-card group overflow-hidden rounded">
+              <Link to={`/producto/${producto._id}`} className="block">
+                <div className="aspect-[4/5] overflow-hidden bg-gray-100">
+                  <img
+                    src={getImageUrl(producto.imagenes)}
+                    alt={producto.nombre}
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                </div>
               </Link>
-              <h2 className="text-lg font-semibold mb-2">{producto.nombre}</h2>
-              <p className="text-gray-700 text-sm mb-2">{producto.descripcion}</p>
-              <div className="text-black font-light flex items-center justify-between w-52">
-                ${producto.precio}
-                <button 
-                  onClick={() => handleAddToCart(producto)}
-                  className="text-lg">
-                  <FiPlayCircle />
-                </button>
+
+              <div className="p-4">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h2>
+                    <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-600">{producto.descripcion}</p>
+                  </div>
+                  {producto.descuento > 0 && (
+                    <span className="rounded bg-[#9DE0AD] px-2 py-1 text-xs font-bold text-[#17252a]">
+                      -{producto.descuento}%
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <p className="text-xl font-black text-[#17252a]">${producto.precio}</p>
+                  <button
+                    onClick={() => handleAddToCart(producto)}
+                    className="kiwi-button flex h-10 w-10 items-center justify-center rounded"
+                    aria-label={`Agregar ${producto.nombre} al carrito`}
+                  >
+                    <FiShoppingBag />
+                  </button>
+                </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
-        <div className="flex justify-center pt-40 justify-between">
-          <button
-            onClick={handlePrevPage}
-            disabled={!hasPrevPage}
-            className={`px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-300 ${!hasPrevPage ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Anterior
-          </button>
-          <span className="text-gray-700">Página {paginaActual} de {totalPaginas}</span>
-          <button
-            onClick={handleNextPage}
-            disabled={!hasNextPage}
-            className={`px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-300 ${!hasNextPage ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Siguiente
-          </button>
-        </div>
+      )}
+
+      <div className="mt-12 flex items-center justify-between gap-4">
+        <button
+          onClick={() => hasPrevPage && setPaginaActual(paginaActual - 1)}
+          disabled={!hasPrevPage}
+          className={`rounded px-5 py-3 text-sm font-semibold transition ${hasPrevPage ? 'bg-white text-[#17252a] shadow hover:bg-gray-50' : 'bg-gray-200 text-gray-400'}`}
+        >
+          Anterior
+        </button>
+        <span className="text-sm font-semibold text-gray-600">Pagina {paginaActual} de {totalPaginas}</span>
+        <button
+          onClick={() => hasNextPage && setPaginaActual(paginaActual + 1)}
+          disabled={!hasNextPage}
+          className={`rounded px-5 py-3 text-sm font-semibold transition ${hasNextPage ? 'bg-white text-[#17252a] shadow hover:bg-gray-50' : 'bg-gray-200 text-gray-400'}`}
+        >
+          Siguiente
+        </button>
       </div>
-    </>
+    </section>
   );
 };
 

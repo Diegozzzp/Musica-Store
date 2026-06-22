@@ -62,34 +62,34 @@ const NavBar = () => {
   }, []);
 
   return (
-    <nav className={`w-full p-4 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300 ${isScrolled ? 'bg-[#547980] text-white' : 'bg-[#5a8a99] text-white'}`}>
-      <div className="flex items-center pl-8">
-        <Link to="/"><span className="text-xl font-semibold ">Kiwi <br/> Music</span></Link>
+    <nav className={`w-full border-b border-white/10 px-4 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#17252a]/95 text-white shadow-lg backdrop-blur' : 'bg-[#547980] text-white'}`}>
+      <div className="flex items-center pl-2 md:pl-6">
+        <Link to="/" className="leading-none"><span className="text-xl font-black tracking-tight">Kiwi</span><span className="block text-xs font-semibold uppercase tracking-[0.22em] text-[#9DE0AD]">Music</span></Link>
       </div>
-      <div className="hidden lg:flex space-x-24 text-lg">
-        <Link to="/tours" className="hover:text-gray-400 flex items-center gap-2 hover:border-b border-[#9DE0AD] hover:transition hover:ease-in hover:duration-300 hover:transform hover:scale-105">
+      <div className="hidden lg:flex items-center gap-10 text-sm font-semibold uppercase tracking-[0.08em]">
+        <Link to="/tours" className="flex items-center gap-2 rounded px-2 py-2 hover:bg-white/10">
           <FaEarthAmericas className='text-[#9DE0AD]' />
           Tours
         </Link>
         <div className="relative">
           <button
             onClick={toggleAlbums}
-            className="flex items-center hover:text-gray-400 gap-2 hover:border-b border-[#9DE0AD] hover:transition hover:ease-in hover:duration-300 hover:transform hover:scale-105"
+            className="flex items-center gap-2 rounded px-2 py-2 hover:bg-white/10"
           >
             <TbVinyl className='text-[#9DE0AD]' />
               Albums
           </button>
           {isAlbumsOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-[#547980] text-white rounded-lg shadow-lg w-48">
-              <Link to="/products" className="block px-4 py-2 hover:bg-gray-600">Todos los Productos</Link>
-              <Link to="/cassetes" className="block px-4 py-2 hover:bg-gray-600">Cassetes</Link>
-              <Link to="/discos" className="block px-4 py-2 hover:bg-gray-600">Vinilos & CDs</Link>
-              <Link to="/boxes" className="block px-4 py-2 hover:bg-gray-600">Boxs</Link>
-              <Link to="/packs" className="block px-4 py-2 hover:bg-gray-600">Packs</Link>
+            <div className="absolute top-full right-0 mt-3 w-56 overflow-hidden rounded border border-white/10 bg-[#17252a] text-sm normal-case tracking-normal text-white shadow-xl">
+              <Link to="/products" className="block px-4 py-3 hover:bg-white/10">Todos los Productos</Link>
+              <Link to="/cassetes" className="block px-4 py-3 hover:bg-white/10">Cassetes</Link>
+              <Link to="/discos" className="block px-4 py-3 hover:bg-white/10">Vinilos & CDs</Link>
+              <Link to="/boxes" className="block px-4 py-3 hover:bg-white/10">Boxs</Link>
+              <Link to="/packs" className="block px-4 py-3 hover:bg-white/10">Packs</Link>
             </div>
           )}
         </div>
-        <Link to="/merch" className="hover:text-gray-400 flex items-center gap-2 hover:border-b border-[#9DE0AD] hover:transition hover:ease-in hover:duration-300 hover:transform hover:scale-105">
+        <Link to="/merch" className="flex items-center gap-2 rounded px-2 py-2 hover:bg-white/10">
           <FaTshirt className='text-[#9DE0AD] ' />
           Merch
         </Link>
@@ -100,15 +100,16 @@ const NavBar = () => {
             <FaSearch className="w-4 h-4 text-white hover:text-gray-400" />
           </button>
           {isSearchOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-white text-black rounded-lg shadow-lg p-4 w-48">
+            <div className="absolute right-0 top-full mt-3 w-72 rounded border border-gray-100 bg-white p-4 text-black shadow-xl">
               <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}  // Actualiza el estado del término de búsqueda
-                className="border border-gray-300 rounded-lg py-1 px-2 w-full"
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="w-full rounded border border-gray-200 px-3 py-3 text-sm outline-none focus:border-[#547980]"
               />
-              <button onClick={handleSearch} className="mt-2 bg-[#547980] text-white w-full py-1 px-2 rounded-lg">
+              <button onClick={handleSearch} className="kiwi-button mt-3 w-full rounded px-3 py-3 text-sm">
                 Buscar
               </button>
             </div>
@@ -126,17 +127,17 @@ const NavBar = () => {
             )}
           </button>
           {isCartOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-white text-black rounded-lg shadow-lg p-4 max-h-64 overflow-y-auto">
+            <div className="absolute right-0 mt-3 max-h-[24rem] w-80 overflow-y-auto rounded border border-gray-100 bg-white p-4 text-black shadow-xl">
               {cart.length > 0 ? (
                 <>
                   <ul>
                     {cart.map((product, index) => (
-                      <li key={index} className="border-b border-gray-200 py-2 flex items-start justify-between pt-4">
+                      <li key={index} className="border-b border-gray-100 py-3 flex items-start justify-between">
                         <div className="flex"> 
                           <img
                             src={getImageUrl(product.imagenes)}
                             alt={product.nombre}
-                            className="w-12 h-12 object-cover mr-4"
+                            className="w-14 h-14 rounded object-cover mr-4"
                           />
                           <div>
                             <p className="text-sm text-gray-600">{product.descripcion}</p>
@@ -149,7 +150,7 @@ const NavBar = () => {
                       </li>
                     ))}
                   </ul>
-                  <Link to="/carritoPage" className="block text-center hover:text-[#9DE0AD] mt-2">
+                  <Link to="/carritoPage" className="kiwi-button mt-4 block rounded px-4 py-3 text-center text-sm">
                     Ver carrito completo
                   </Link>
                 </>

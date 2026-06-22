@@ -1,4 +1,5 @@
 const Productos = require('../Modelos/producto');
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const { uploadToCloudinary } = require('../middlewares/cloudinary');
 
@@ -80,6 +81,41 @@ exports.randomProductos = async (req, res) => {
 
 
 // Controlador para obtener productos por categoría
+exports.buscarProductosPorCampos = async (req, res) => {
+    try {
+        const { id, nombre, descripcion, categoria, tipo } = req.query;
+        const filtro = {};
+
+        if (id && mongoose.Types.ObjectId.isValid(id)) {
+            filtro._id = id;
+        }
+
+        if (nombre) {
+            filtro.nombre = { $regex: new RegExp(nombre, 'i') };
+        }
+
+        if (descripcion) {
+            filtro.descripcion = { $regex: new RegExp(descripcion, 'i') };
+        }
+
+        if (categoria) {
+            filtro.categoria = categoria;
+        }
+
+        if (tipo) {
+            filtro.tipo = tipo;
+        }
+
+        const productos = await Productos.find(filtro)
+            .populate('categoria')
+            .sort({ fecha: -1 });
+
+        res.json(productos);
+    } catch (error) {
+        handleError(res, 'Error al buscar productos', error);
+    }
+};
+
 exports.obtenerProductosPorCategoria = async (req, res) => {
     try {
         const { id } = req.params; // Obtener ID de categoría desde parámetros

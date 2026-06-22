@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
@@ -6,66 +6,69 @@ import { CartContext } from './carritoContexto';
 import RandomsIntereses from './interesesRandom';
 import { getImageUrl } from '../utils/imageUrl';
 
-// Componente de carrusel de imágenes
 const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Función para ir a la imagen anterior
   const handlePrev = () => {
-    setCurrentIndex(prevIndex =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
   };
 
-  // Función para ir a la imagen siguiente
   const handleNext = () => {
-    setCurrentIndex(prevIndex =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
   };
 
   return (
-    <div className="relative w-full h-full">
-      {/* Botón de imagen anterior */}
-      <FaArrowLeft
-        className="absolute top-1/2 left-0 transform -translate-y-1/2 text-3xl text-gray-500 cursor-pointer"
-        onClick={handlePrev}
-      />
-      {/* Imagen actual */}
-      <img
-        src={getImageUrl(images[currentIndex])}
-        alt={`Imagen ${currentIndex + 1}`}
-        className="w-full h-full object-cover rounded-lg"
-      />
-      {/* Botón de imagen siguiente */}
-      <FaArrowRight
-        className="absolute top-1/2 right-0 transform -translate-y-1/2 text-3xl text-gray-500 cursor-pointer"
-        onClick={handleNext}
-      />
+    <div className="space-y-4">
+      <div className="relative aspect-[4/5] overflow-hidden rounded bg-gray-100 shadow-xl">
+        <img
+          src={getImageUrl(images[currentIndex])}
+          alt={`Imagen ${currentIndex + 1}`}
+          className="h-full w-full object-cover"
+        />
+        {images.length > 1 && (
+          <>
+            <button className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/85 p-3 text-[#17252a] shadow hover:bg-white" onClick={handlePrev} aria-label="Imagen anterior">
+              <FaArrowLeft />
+            </button>
+            <button className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/85 p-3 text-[#17252a] shadow hover:bg-white" onClick={handleNext} aria-label="Imagen siguiente">
+              <FaArrowRight />
+            </button>
+          </>
+        )}
+      </div>
+
+      {images.length > 1 && (
+        <div className="grid grid-cols-5 gap-3">
+          {images.slice(0, 5).map((image, index) => (
+            <button
+              key={`${image}-${index}`}
+              onClick={() => setCurrentIndex(index)}
+              className={`aspect-square overflow-hidden rounded border-2 bg-gray-100 ${index === currentIndex ? 'border-[#547980]' : 'border-transparent'}`}
+              aria-label={`Ver imagen ${index + 1}`}
+            >
+              <img src={getImageUrl(image)} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-// Componente de página de detalle del producto
 const ProductDetailPage = () => {
-  const { id } = useParams(); // Obtiene el id del producto desde los parámetros de la ruta
-  const [producto, setProducto] = useState(null); // Estado para el producto
-  const [loading, setLoading] = useState(true); // Estado para el estado de carga
-  const [error, setError] = useState(null); // Estado para errores
-  const [message, setMessage] = useState(''); // Mensaje para mostrar información al usuario
-  const [quantity, setQuantity] = useState(1); // Estado para la cantidad de producto
-  const { addToCart } = useContext(CartContext); // Contexto para agregar al carrito
+  const { id } = useParams();
+  const [producto, setProducto] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useContext(CartContext);
 
-  // Efecto para cargar el producto desde la API
   useEffect(() => {
     const fetchProducto = async () => {
       try {
         const response = await axios.get(`https://musica-store.vercel.app/productos/${id}`);
-        if (response.data) {
-          setProducto(response.data);
-        } else {
-          setError('No se encontró el producto');
-        }
+        setProducto(response.data || null);
       } catch (error) {
         setError('Error al obtener el producto');
       } finally {
@@ -76,22 +79,26 @@ const ProductDetailPage = () => {
     fetchProducto();
   }, [id]);
 
-  // Muestra un mensaje de carga o error mientras se obtienen los datos
-  if (loading) return <p className="text-center py-4">Cargando...</p>;
-  if (error) return <p className="text-center py-4">{error}</p>;
-  if (!producto) return <p className="text-center py-4">Producto no encontrado</p>;
+  if (loading) {
+    return <div className="kiwi-section py-20 text-center text-gray-600">Cargando producto...</div>;
+  }
 
-  // Función para aumentar la cantidad del producto
+  if (error || !producto) {
+    return <div className="kiwi-section py-20 text-center text-gray-600">{error || 'Producto no encontrado'}</div>;
+  }
+
+  const stock = Number(producto.cantidad || 0);
+  const soldOut = stock === 0;
+
   const increaseQuantity = () => {
-    if (quantity < producto.cantidad) {
+    if (quantity < stock) {
       setQuantity(quantity + 1);
       setMessage('');
     } else {
-      setMessage('No puedes agregar más de la cantidad disponible.');
+      setMessage('No puedes agregar mas de la cantidad disponible.');
     }
   };
 
-  // Función para disminuir la cantidad del producto
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
@@ -99,85 +106,88 @@ const ProductDetailPage = () => {
     }
   };
 
-  // Función para manejar el agregado al carrito
   const handleAddToCart = () => {
-    if (quantity > producto.cantidad) {
-      setMessage('No puedes agregar más de la cantidad disponible.');
+    if (soldOut) {
+      setMessage('Producto sin stock disponible.');
       return;
     }
+
     addToCart(producto, quantity);
-    setMessage('Producto añadido al carrito.');
+    setMessage('Producto agregado al carrito.');
   };
 
   return (
     <>
-      <div className="flex flex-col md:flex-row h-full items-start justify-around pb-6">
-        {/* Sección de imagen del producto */}
-        <div className="h-[30rem] pl-4">
-          {producto.imagenes && producto.imagenes.length > 0 && (
+      <section className="kiwi-section grid gap-10 py-10 md:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] md:py-16">
+        <div>
+          {producto.imagenes && producto.imagenes.length > 0 ? (
             <Carousel images={producto.imagenes} />
+          ) : (
+            <div className="aspect-[4/5] rounded bg-gray-100" />
           )}
         </div>
 
-        {/* Sección de detalles del producto */}
-        <div className="flex flex-col pl-4 pb-8 md:mt-20">
-          <h1 className="text-3xl font-semibold mb-2">{producto.nombre}</h1>
-          <p className="text-lg mb-4 w-80 lg:w-96">{producto.descripcion}</p>
-          {producto.precio && (
-            <p className="text-lg font-semibold mb-4">Precio: ${producto.precio}</p>
-          )}
-          {producto.descuento && (
-            <p className="text-sm font-light mb-4">Descuento: {producto.descuento}%</p>
-          )}
+        <aside className="kiwi-card rounded p-6 md:sticky md:top-28 md:self-start">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#547980]">{producto.tipo || 'Producto'}</p>
+          <h1 className="mt-2 text-3xl font-black leading-tight text-[#17252a] md:text-4xl">{producto.nombre}</h1>
+          <p className="mt-5 text-base leading-7 text-gray-600">{producto.descripcion}</p>
+
+          <div className="mt-6 flex items-end justify-between border-y border-gray-200 py-5">
+            <div>
+              <p className="text-sm text-gray-500">Precio</p>
+              <p className="text-3xl font-black text-[#17252a]">${producto.precio}</p>
+            </div>
+            {producto.descuento > 0 && (
+              <span className="rounded bg-[#9DE0AD] px-3 py-2 text-sm font-black text-[#17252a]">
+                -{producto.descuento}%
+              </span>
+            )}
+          </div>
+
           {producto.tipo === 'ropa' && producto.tallas && producto.tallas.length > 0 && (
-            <div className="pt-6">
-              <h2 className="text-lg font-semibold mb-4">Tallas Disponibles:</h2>
-              <div className="flex gap-8 items-center justify-center">
-                {producto.tallas.map((talla, index) => (
-                  <p key={index} className="text-md bg-gray-200 p-6 rounded-lg h-10 flex items-center">{talla}</p>
+            <div className="mt-6">
+              <p className="mb-3 text-sm font-semibold text-gray-700">Tallas disponibles</p>
+              <div className="flex flex-wrap gap-2">
+                {producto.tallas.map((talla) => (
+                  <span key={talla} className="rounded border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-[#17252a]">
+                    {talla}
+                  </span>
                 ))}
               </div>
             </div>
           )}
-          {/* Control de cantidad y botón de agregar al carrito */}
-          <div className="flex flex-col mt-4 mb-">
-            <p className="text-lg font-semibold mb-4">Cantidad:</p>
-            <div className='flex items-center'>
-              <button 
-                onClick={decreaseQuantity} 
-                className="text-lg font-semibold bg-gray-300 px-4 py-2 rounded-l-lg">
-                -
-              </button>
-              <input
-                type="text"
-                value={quantity}
-                readOnly
-                className="text-lg w-14 font-semibold text-center px-4 py-2 border-none border-gray-300"
-              />
-              <button 
-                onClick={increaseQuantity} 
-                className="text-lg font-semibold bg-gray-300 px-4 py-2 rounded-r-lg">
-                +
-              </button>
-            </div>
-            {message && (
-              <p className={`text-lg font-semibold mt-2 ${message.includes('No') ? 'text-red-500' : 'text-green-500'}`}>
-                {message}
+
+          <div className="mt-6">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-gray-700">Cantidad</p>
+              <p className={`text-sm font-semibold ${soldOut ? 'text-red-500' : 'text-gray-500'}`}>
+                {soldOut ? 'Sin stock' : `${stock} disponibles`}
               </p>
-            )}
+            </div>
+            <div className="flex w-36 overflow-hidden rounded border border-gray-200 bg-white">
+              <button onClick={decreaseQuantity} className="w-12 py-3 text-lg font-black hover:bg-gray-50" disabled={quantity <= 1}>-</button>
+              <input value={quantity} readOnly className="w-12 border-x border-gray-200 bg-white text-center font-bold outline-none" />
+              <button onClick={increaseQuantity} className="w-12 py-3 text-lg font-black hover:bg-gray-50" disabled={soldOut}>+</button>
+            </div>
           </div>
-          <button 
-            onClick={handleAddToCart} 
-            className="bg-[#9DE0AD] text-white w-32 h-10 py-2 px-4 rounded-lg mt-6">
-            <p className="text-sm text-black font-light w-24 text-center">Añadir al carrito</p>
+
+          <button
+            onClick={handleAddToCart}
+            disabled={soldOut}
+            className={`mt-7 w-full rounded py-4 text-sm font-black ${soldOut ? 'bg-gray-200 text-gray-400' : 'kiwi-button'}`}
+          >
+            {soldOut ? 'No disponible' : 'Agregar al carrito'}
           </button>
-          {producto.cantidad === 0 && (
-            <p className="text-lg font-semibold mt-4 text-red-500">No hay más stock disponible</p>
+
+          {message && (
+            <p className={`mt-4 text-sm font-semibold ${message.includes('agregado') ? 'text-[#547980]' : 'text-red-500'}`}>
+              {message}
+            </p>
           )}
-        </div>
-      </div>
-      {/* Componente de productos recomendados */}
-      <RandomsIntereses titulo={'Productos Recomendados'} />
+        </aside>
+      </section>
+
+      <RandomsIntereses titulo="Productos recomendados" />
     </>
   );
 };
