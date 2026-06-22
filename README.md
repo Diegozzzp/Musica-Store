@@ -1,6 +1,9 @@
 # 🥝🎧 KiwiMusic - Tu Tienda de Música Online 🎶
 
 Bienvenido a **MusicStore**, tu tienda en línea para todo lo relacionado con la música. Aquí podrás encontrar y comprar una gran variedad de productos musicales, desde **merchandising de tus artistas favoritos** hasta **álbumes en CD, vinilos y cassettes**. ¡Sumérgete en el mundo de la música con nosotros!
+Para Acceder como admin puedes acceder con las siguientes credenciales 
+correo : *superadmin@admin.com*
+Password : *32759409*
 
 ## 🛒 Características
 
