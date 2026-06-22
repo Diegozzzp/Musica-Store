@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'; // Added useEffect here
+import { useState, useContext, useEffect, useRef } from 'react'; // Added useEffect here
 import { useNavigate } from 'react-router-dom';  // Importa useNavigate para redirección
 import { FaEarthAmericas, FaXmark, FaBars } from "react-icons/fa6";
 import { FaRegUserCircle, FaSearch, FaTshirt } from 'react-icons/fa';
@@ -18,6 +18,7 @@ const NavBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);  // Estado para controlar si se ha hecho scroll
   const { cart, removeFromCart } = useContext(CartContext);
   const navigate = useNavigate();  // Hook para redirección
+  const albumsRef = useRef(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -61,6 +62,20 @@ const NavBar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (albumsRef.current && !albumsRef.current.contains(event.target)) {
+        setIsAlbumsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <nav className={`w-full border-b border-white/10 px-4 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#547980]/95 text-white shadow-md backdrop-blur' : 'bg-[#5a8a99] text-white'}`}>
       <div className="flex items-center pl-2 md:pl-6">
@@ -71,7 +86,7 @@ const NavBar = () => {
           <FaEarthAmericas className='text-[#9DE0AD]' />
           Tours
         </Link>
-        <div className="relative">
+        <div className="relative" ref={albumsRef}>
           <button
             onClick={toggleAlbums}
             className="flex items-center gap-2 rounded px-2 py-2 hover:bg-white/10"

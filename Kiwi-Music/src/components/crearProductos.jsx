@@ -28,6 +28,9 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
     [categorias, form.categoria]
   );
 
+  const categoriaEsProximamente = categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente');
+  const esPreorden = form.esProximamente || categoriaEsProximamente;
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -57,31 +60,35 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
   if (!isOpen) return null;
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files, checked } = e.target;
+
     if (name === 'imagenes') {
-      setSelectedFiles([...files]);
-      setForm((prevForm) => ({ ...prevForm, imagenes: [...files] }));
-    } else if (name === 'esProximamente') {
-      setForm((prevForm) => ({ ...prevForm, esProximamente: e.target.checked }));
-    } else {
-      setForm((prevForm) => ({ ...prevForm, [name]: value }));
+      const nextFiles = Array.from(files || []);
+      setSelectedFiles(nextFiles);
+      setForm((prevForm) => ({ ...prevForm, imagenes: nextFiles }));
+      return;
     }
+
+    if (name === 'esProximamente') {
+      setForm((prevForm) => ({ ...prevForm, esProximamente: checked }));
+      return;
+    }
+
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
   const validateForm = () => {
     const newError = {};
 
-    if (!form.nombre || !form.precio || !form.cantidad || !form.categoria || !form.descripcion || !form.descuento) {
-      newError.general = 'Todos los campos son obligatorios';
+    if (!form.nombre || !form.precio || form.cantidad === '' || !form.categoria || !form.descripcion || form.descuento === '') {
+      newError.general = 'Completa los campos obligatorios.';
     }
 
-    if (isNaN(form.precio) || form.precio <= 0) {
-      newError.precio = 'El precio debe ser un número positivo';
+    if (isNaN(form.precio) || Number(form.precio) <= 0) {
+      newError.precio = 'El precio debe ser un numero positivo';
     }
 
-    const categoriaEsProximamente = categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente');
-
-    if (isNaN(form.cantidad) || Number(form.cantidad) < 0 || (!form.esProximamente && !categoriaEsProximamente && Number(form.cantidad) <= 0)) {
+    if (isNaN(form.cantidad) || Number(form.cantidad) < 0 || (!esPreorden && Number(form.cantidad) <= 0)) {
       newError.cantidad = 'La cantidad debe ser mayor a 0, excepto en productos proximamente';
     }
 
@@ -89,14 +96,13 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
       newError.tallas = 'Las tallas son obligatorias para productos de tipo ropa';
     }
 
-    if ((form.esProximamente || categoriaEsProximamente) && !form.fechaLlegada) {
+    if (esPreorden && !form.fechaLlegada) {
       newError.fechaLlegada = 'La fecha de llegada es obligatoria para productos proximamente';
     }
 
-    // Validar formato de tallas si es ropa
     if (form.tipo === 'ropa' && form.tallas) {
-      const tallasArray = form.tallas.split(',').map(talla => talla.trim());
-      if (!tallasArray.every(talla => ['S', 'M', 'L', 'XL'].includes(talla))) {
+      const tallasArray = form.tallas.split(',').map((talla) => talla.trim());
+      if (!tallasArray.every((talla) => ['S', 'M', 'L', 'XL'].includes(talla))) {
         newError.tallas = 'Las tallas deben ser S, M, L, XL y separadas por comas';
       }
     }
@@ -121,16 +127,14 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
     data.append('descripcion', form.descripcion);
     data.append('descuento', form.descuento);
     data.append('tipo', form.tipo);
-    data.append('esProximamente', String(form.esProximamente || categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente')));
+    data.append('esProximamente', String(esPreorden));
     data.append('fechaLlegada', form.fechaLlegada);
-    
-    // Convertir tallas a array si es necesario
+
     if (form.tipo === 'ropa') {
-      const tallasArray = form.tallas.split(',').map(talla => talla.trim());
-      tallasArray.forEach(talla => data.append('tallas[]', talla));
+      form.tallas.split(',').map((talla) => talla.trim()).forEach((talla) => data.append('tallas[]', talla));
     }
 
-    selectedFiles.forEach(file => {
+    selectedFiles.forEach((file) => {
       data.append('imagenes', file);
     });
 
@@ -138,179 +142,123 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-      <div className="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-md max-h-screen overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
-        >
-          <FaTimes size={20} />
-        </button>
-        <h2 className="text-2xl font-bold mb-6">Crear Producto</h2>
-        <form onSubmit={handleSubmit}>
-          {error.general && <p className="text-red-500 text-sm mb-4">{error.general}</p>}
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Nombre</label>
-            <input
-              type="text"
-              name="nombre"
-              value={form.nombre}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.nombre ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            {error.nombre && <p className="text-red-500 text-sm mt-1">{error.nombre}</p>}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
+      <div className="relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded bg-white shadow-2xl">
+        <div className="sticky top-0 z-10 flex items-start justify-between border-b border-gray-100 bg-white px-6 py-5">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#547980]">Administracion</p>
+            <h2 className="mt-1 text-2xl font-black text-[#17252a]">Crear producto</h2>
           </div>
+          <button onClick={onClose} className="rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900" aria-label="Cerrar">
+            <FaTimes size={18} />
+          </button>
+        </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Precio</label>
-            <input
-              type="number"
-              name="precio"
-              value={form.precio}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.precio ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            {error.precio && <p className="text-red-500 text-sm mt-1">{error.precio}</p>}
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6 p-6">
+          {error.general && <p className="rounded bg-red-50 p-3 text-sm font-semibold text-red-600">{error.general}</p>}
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Cantidad</label>
-            <input
-              type="number"
-              name="cantidad"
-              value={form.cantidad}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.cantidad ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            {error.cantidad && <p className="text-red-500 text-sm mt-1">{error.cantidad}</p>}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Categoría</label>
-            <select
-              name="categoria"
-              value={form.categoria}
-              onChange={handleChange}
-              disabled={loadingCategorias}
-              className={`w-full p-3 border rounded bg-white ${error.categoria ? 'border-red-500' : 'border-gray-300'}`}
-            >
-              <option value="">{loadingCategorias ? 'Cargando categorias...' : 'Selecciona una categoria'}</option>
-              {categorias.map((categoria) => (
-                <option key={categoria._id} value={categoria._id}>
-                  {categoria.nombre} - {categoria._id}
-                </option>
-              ))}
-            </select>
-            {error.categoria && <p className="text-red-500 text-sm mt-1">{error.categoria}</p>}
+          <section className="rounded border border-gray-100 bg-[#f7f5f0] p-5">
+            <h3 className="mb-4 text-lg font-black text-[#17252a]">Informacion principal</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Nombre" error={error.nombre}>
+                <input name="nombre" value={form.nombre} onChange={handleChange} className="product-input" />
+              </Field>
+              <Field label="Categoria" error={error.categoria}>
+                <select name="categoria" value={form.categoria} onChange={handleChange} disabled={loadingCategorias} className="product-input bg-white">
+                  <option value="">{loadingCategorias ? 'Cargando categorias...' : 'Selecciona una categoria'}</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria._id} value={categoria._id}>
+                      {categoria.nombre} - {categoria._id}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Descripcion" error={error.descripcion} className="md:col-span-2">
+                <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows="4" className="product-input resize-none" />
+              </Field>
+            </div>
             {categoriaSeleccionada && (
-              <div className="mt-2 rounded border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-                <p className="font-medium">{categoriaSeleccionada.nombre}</p>
+              <div className="mt-4 rounded border border-gray-200 bg-white p-3 text-sm text-gray-700">
+                <p className="font-black text-[#17252a]">{categoriaSeleccionada.nombre}</p>
                 <p className="break-all text-gray-500">ID: {categoriaSeleccionada._id}</p>
               </div>
             )}
-          </div>
+          </section>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Descripción</label>
-            <textarea
-              name="descripcion"
-              value={form.descripcion}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.descripcion ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            {error.descripcion && <p className="text-red-500 text-sm mt-1">{error.descripcion}</p>}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Descuento</label>
-            <input
-              type="number"
-              name="descuento"
-              value={form.descuento}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.descuento ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            {error.descuento && <p className="text-red-500 text-sm mt-1">{error.descuento}</p>}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Tipo</label>
-            <select
-              name="tipo"
-              value={form.tipo}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded ${error.tipo ? 'border-red-500' : 'border-gray-300'}`}
-            >
-              <option value="otros">Otros</option>
-              <option value="ropa">Ropa</option>
-            </select>
-            {error.tipo && <p className="text-red-500 text-sm mt-1">{error.tipo}</p>}
-          </div>
-
-          <div className="mb-4 rounded border border-gray-200 bg-gray-50 p-4">
-            <label className="flex items-center gap-3 text-gray-700 font-semibold">
-              <input
-                type="checkbox"
-                name="esProximamente"
-                checked={form.esProximamente}
-                onChange={handleChange}
-                className="h-4 w-4"
-              />
-              Producto proximamente / preorden
-            </label>
-            <p className="mt-2 text-xs text-gray-500">Tambien se activa si eliges una categoria llamada Proximamente.</p>
-            {(form.esProximamente || categoriaSeleccionada?.nombre?.toLowerCase().includes('proximamente')) && (
-              <div className="mt-4">
-                <label className="block text-gray-700 font-semibold mb-1">Fecha estimada de llegada</label>
-                <input
-                  type="date"
-                  name="fechaLlegada"
-                  value={form.fechaLlegada}
-                  onChange={handleChange}
-                  className={`w-full p-3 border rounded ${error.fechaLlegada ? 'border-red-500' : 'border-gray-300'}`}
-                />
-                {error.fechaLlegada && <p className="text-red-500 text-sm mt-1">{error.fechaLlegada}</p>}
-              </div>
-            )}
-          </div>
-
-          {form.tipo === 'ropa' && (
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-1">Tallas</label>
-              <input
-                type="text"
-                name="tallas"
-                value={form.tallas}
-                onChange={handleChange}
-                placeholder="S, M, L, XL"
-                className={`w-full p-3 border rounded ${error.tallas ? 'border-red-500' : 'border-gray-300'}`}
-              />
-              {error.tallas && <p className="text-red-500 text-sm mt-1">{error.tallas}</p>}
+          <section className="rounded border border-gray-100 p-5">
+            <h3 className="mb-4 text-lg font-black text-[#17252a]">Precio e inventario</h3>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Field label="Precio" error={error.precio}>
+                <input type="number" name="precio" value={form.precio} onChange={handleChange} className="product-input" />
+              </Field>
+              <Field label="Cantidad" error={error.cantidad}>
+                <input type="number" name="cantidad" value={form.cantidad} onChange={handleChange} className="product-input" />
+              </Field>
+              <Field label="Descuento (%)" error={error.descuento}>
+                <input type="number" name="descuento" value={form.descuento} onChange={handleChange} className="product-input" />
+              </Field>
             </div>
-          )}
+          </section>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-1">Imágenes</label>
-            <input
-              type="file"
-              name="imagenes"
-              multiple
-              onChange={handleChange}
-              className="w-full border rounded"
-            />
+          <section className="rounded border border-gray-100 p-5">
+            <h3 className="mb-4 text-lg font-black text-[#17252a]">Tipo y disponibilidad</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Tipo" error={error.tipo}>
+                <select name="tipo" value={form.tipo} onChange={handleChange} className="product-input bg-white">
+                  <option value="otros">Otros</option>
+                  <option value="ropa">Ropa</option>
+                </select>
+              </Field>
+              {form.tipo === 'ropa' && (
+                <Field label="Tallas" error={error.tallas}>
+                  <input name="tallas" value={form.tallas} onChange={handleChange} placeholder="S, M, L, XL" className="product-input" />
+                </Field>
+              )}
+            </div>
+
+            <div className="mt-5 rounded border border-gray-200 bg-gray-50 p-4">
+              <label className="flex items-center gap-3 font-black text-[#17252a]">
+                <input type="checkbox" name="esProximamente" checked={form.esProximamente} onChange={handleChange} className="h-4 w-4" />
+                Producto proximamente / preorden
+              </label>
+              <p className="mt-2 text-xs text-gray-500">Tambien se activa si eliges una categoria llamada Proximamente.</p>
+              {esPreorden && (
+                <Field label="Fecha estimada de llegada" error={error.fechaLlegada} className="mt-4">
+                  <input type="date" name="fechaLlegada" value={form.fechaLlegada} onChange={handleChange} className="product-input" />
+                </Field>
+              )}
+            </div>
+          </section>
+
+          <section className="rounded border border-gray-100 p-5">
+            <h3 className="mb-4 text-lg font-black text-[#17252a]">Imagenes</h3>
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded border-2 border-dashed border-gray-300 bg-[#f7f5f0] px-4 py-8 text-center hover:border-[#547980]">
+              <span className="font-black text-[#17252a]">Seleccionar imagenes</span>
+              <span className="mt-1 text-sm text-gray-500">{selectedFiles.length ? `${selectedFiles.length} archivo(s) seleccionado(s)` : 'Puedes subir hasta 5 imagenes'}</span>
+              <input type="file" name="imagenes" multiple onChange={handleChange} className="hidden" />
+            </label>
+          </section>
+
+          <div className="sticky bottom-0 -mx-6 flex justify-end gap-3 border-t border-gray-100 bg-white px-6 py-4">
+            <button type="button" onClick={onClose} className="rounded border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+              Cancelar
+            </button>
+            <button type="submit" className="kiwi-button rounded px-5 py-3 text-sm">
+              Crear producto
+            </button>
           </div>
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-300"
-          >
-            Crear Producto
-          </button>
         </form>
       </div>
     </div>
   );
 };
+
+const Field = ({ label, error, className = '', children }) => (
+  <div className={className}>
+    <label className="mb-1 block text-sm font-black text-[#17252a]">{label}</label>
+    {children}
+    {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+  </div>
+);
 
 export default CrearProducto;

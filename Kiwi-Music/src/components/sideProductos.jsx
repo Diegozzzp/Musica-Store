@@ -11,10 +11,6 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef(null);
-  const isDragging = useRef(false);
-  const hasDragged = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -48,40 +44,6 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
     carouselRef.current?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }, []);
 
-  const startDrag = useCallback((event) => {
-    if (!carouselRef.current) return;
-    isDragging.current = true;
-    hasDragged.current = false;
-    startX.current = event.clientX;
-    scrollLeft.current = carouselRef.current.scrollLeft;
-    carouselRef.current.setPointerCapture?.(event.pointerId);
-    carouselRef.current.classList.add('cursor-grabbing');
-  }, []);
-
-  const moveDrag = useCallback((event) => {
-    if (!isDragging.current || !carouselRef.current) return;
-    const walk = event.clientX - startX.current;
-    if (Math.abs(walk) > 6) {
-      hasDragged.current = true;
-    }
-    carouselRef.current.scrollLeft = scrollLeft.current - walk;
-  }, []);
-
-  const endDrag = useCallback((event) => {
-    isDragging.current = false;
-    if (event?.pointerId && carouselRef.current?.hasPointerCapture?.(event.pointerId)) {
-      carouselRef.current.releasePointerCapture(event.pointerId);
-    }
-    carouselRef.current?.classList.remove('cursor-grabbing');
-  }, []);
-
-  const handleLinkClick = (event) => {
-    if (hasDragged.current) {
-      event.preventDefault();
-      hasDragged.current = false;
-    }
-  };
-
   return (
     <section className="kiwi-section py-8 md:py-12">
       <div className="mb-5 flex items-center justify-between gap-4">
@@ -101,11 +63,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
 
       <div
         ref={carouselRef}
-        className="scrollbar-hide carousel-drag flex cursor-grab gap-6 overflow-x-auto scroll-smooth pb-4"
-        onPointerDown={startDrag}
-        onPointerMove={moveDrag}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
+        className="scrollbar-hide flex gap-6 overflow-x-auto scroll-smooth pb-4"
       >
         {loading ? (
           Array.from({ length: 4 }).map((_, index) => (
@@ -113,7 +71,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
           ))
         ) : (
           productos.map((producto) => (
-            <Link to={`/producto/${producto._id}`} key={producto._id} onClick={handleLinkClick} draggable="false" className="kiwi-card group min-w-[21rem] overflow-hidden rounded">
+            <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[21rem] overflow-hidden rounded">
               <div className="aspect-[5/4] overflow-hidden bg-[#f2efe8]">
                 <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-[1.03]" />
               </div>

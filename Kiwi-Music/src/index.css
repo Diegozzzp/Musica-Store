@@ -69,11 +69,18 @@ img {
   cursor: grabbing;
 }
 
-.carousel-drag {
-  touch-action: pan-y;
-  user-select: none;
+.product-input {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.carousel-drag img {
-  pointer-events: none;
+.product-input:focus {
+  border-color: #547980;
+  box-shadow: 0 0 0 3px rgba(84, 121, 128, 0.14);
 }
