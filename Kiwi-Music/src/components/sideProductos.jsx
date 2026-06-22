@@ -5,9 +5,11 @@ import { Link } from 'react-router-dom';
 import '../index.css';
 import { getImageUrl } from '../utils/imageUrl';
 
-const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/categoria/';
+const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos';
 
-const CarruselProductos = ({ categoriaId, titulo }) => {
+const shuffleProducts = (items) => [...items].sort(() => Math.random() - 0.5);
+
+const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = false, random = false, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef(null);
@@ -17,32 +19,42 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
       setLoading(true);
 
       try {
-        const { data } = await axios.get(`${URL_PRODUCTOS}${categoriaId}`);
-        setProductos(Array.isArray(data.productos) ? data.productos : []);
+        const params = {
+          page: 1,
+          limit: 24,
+          ordenarPor: 'masReciente'
+        };
+
+        if (esProximamente) {
+          params.esProximamente = 'true';
+        } else if (categoriaIds.length > 0) {
+          params.categorias = categoriaIds.join(',');
+        } else if (categoriaId) {
+          params.categoria = categoriaId;
+        }
+
+        const { data } = await axios.get(URL_PRODUCTOS, { params });
+        const docs = Array.isArray(data.docs) ? data.docs : [];
+        setProductos(random ? shuffleProducts(docs) : docs);
       } catch (error) {
         console.error('Error fetching data:', error);
-        try {
-          const fallback = await axios.get('https://musica-store.vercel.app/productos', {
-            params: { page: 1, limit: 10 }
-          });
-          setProductos(Array.isArray(fallback.data.docs) ? fallback.data.docs : []);
-        } catch (fallbackError) {
-          console.error('Error fetching fallback products:', fallbackError);
-        }
+        setProductos([]);
       } finally {
         setLoading(false);
       }
     };
 
-    if (categoriaId) {
-      fetchProductos();
-    }
-  }, [categoriaId]);
+    fetchProductos();
+  }, [categoriaId, categoriaIds, esProximamente, random]);
 
   const handleScroll = useCallback((direction) => {
     const scrollAmount = direction === 'left' ? -420 : 420;
     carouselRef.current?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }, []);
+
+  if (!loading && productos.length === 0) {
+    return null;
+  }
 
   return (
     <section className="kiwi-section py-8 md:py-12">
@@ -61,10 +73,7 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         </div>
       </div>
 
-      <div
-        ref={carouselRef}
-        className="scrollbar-hide flex gap-6 overflow-x-auto scroll-smooth pb-4"
-      >
+      <div ref={carouselRef} className="scrollbar-hide flex gap-6 overflow-x-auto scroll-smooth pb-4">
         {loading ? (
           Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="h-[24rem] min-w-[21rem] animate-pulse rounded bg-white/70" />
@@ -76,7 +85,10 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
                 <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-[1.03]" />
               </div>
               <div className="p-4">
-                <h3 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h3>
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <h3 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h3>
+                  {producto.esProximamente && <span className="rounded bg-[#17252a] px-2 py-1 text-xs font-bold text-white">Preorden</span>}
+                </div>
                 <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">{producto.descripcion}</p>
                 <p className="mt-4 text-lg font-black text-[#17252a]">${producto.precio}</p>
               </div>

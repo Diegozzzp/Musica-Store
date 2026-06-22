@@ -12,7 +12,7 @@ const handleError = (res, message, error) => {
 // Controlador para obtener una lista paginada de productos
 exports.obtenerProductos = async (req, res) => {
     try {
-        const { page = 1, limit = 10, categoria, ordenarPor } = req.query; // Obtener parámetros de paginación, categoría y orden
+        const { page = 1, limit = 10, categoria, categorias, ordenarPor, esProximamente } = req.query; // Obtener parámetros de paginación, categoría y orden
 
         // Validación de parámetros
         const validSortOptions = ['masVendidos', 'ordenAlfabetico', 'masAntiguos', 'masReciente'];
@@ -38,8 +38,14 @@ exports.obtenerProductos = async (req, res) => {
         // Crear el filtro para la búsqueda
         const query = {};
 
-        if (categoria) {
+        if (categorias) {
+            query.categoria = { $in: categorias.split(',').map(id => id.trim()).filter(Boolean) };
+        } else if (categoria) {
             query.categoria = categoria; // Filtrar por ID de categoría si se proporciona
+        }
+
+        if (esProximamente !== undefined) {
+            query.esProximamente = esProximamente === 'true';
         }
 
         // Aplicar ordenamiento según el criterio especificado
@@ -228,7 +234,9 @@ exports.crearProducto = async (req, res) => {
             descripcion,
             descuento: descuento || 0, // Guardar el descuento como porcentaje
             tipo,
-            tallas: tipo === 'ropa' ? tallasArray : []  // Solo asignar tallas si el tipo es 'ropa'
+            tallas: tipo === 'ropa' ? tallasArray : [],  // Solo asignar tallas si el tipo es 'ropa'
+            esProximamente: esProximamente === 'true' || esProximamente === true,
+            fechaLlegada: fechaLlegada || null
         });
 
         await nuevoProducto.save(); // Guardar el nuevo producto en la base de datos
@@ -308,3 +316,4 @@ exports.eliminarProducto = async (req, res) => {
         handleError(res, 'Error al eliminar el producto', error); // Manejar errores
     }
 };
+
