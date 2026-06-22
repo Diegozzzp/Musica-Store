@@ -9,6 +9,13 @@ const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos';
 
 const shuffleProducts = (items) => [...items].sort(() => Math.random() - 0.5);
 
+const normalizeProducts = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.docs)) return data.docs;
+  if (Array.isArray(data?.productos)) return data.productos;
+  return [];
+};
+
 const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = false, random = false, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,22 +26,37 @@ const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = fa
       setLoading(true);
 
       try {
-        const params = {
-          page: 1,
-          limit: 24,
-          ordenarPor: 'masReciente'
-        };
+        let docs = [];
 
-        if (esProximamente) {
-          params.esProximamente = 'true';
-        } else if (categoriaIds.length > 0) {
-          params.categorias = categoriaIds.join(',');
+        if (categoriaIds.length > 0) {
+          const responses = await Promise.all(
+            categoriaIds.map((id) => axios.get(`${URL_PRODUCTOS}/categoria/${id}`, {
+              params: { page: 1, limit: 12, sort: 'mas-recientes' }
+            }))
+          );
+
+          docs = responses.flatMap((response) => normalizeProducts(response.data));
         } else if (categoriaId) {
-          params.categoria = categoriaId;
+          const { data } = await axios.get(`${URL_PRODUCTOS}/categoria/${categoriaId}`, {
+            params: { page: 1, limit: 24, sort: 'mas-recientes' }
+          });
+
+          docs = normalizeProducts(data);
+        } else {
+          const params = {
+            page: 1,
+            limit: 24,
+            ordenarPor: 'masReciente'
+          };
+
+          if (esProximamente) {
+            params.esProximamente = 'true';
+          }
+
+          const { data } = await axios.get(URL_PRODUCTOS, { params });
+          docs = normalizeProducts(data);
         }
 
-        const { data } = await axios.get(URL_PRODUCTOS, { params });
-        const docs = Array.isArray(data.docs) ? data.docs : [];
         setProductos(random ? shuffleProducts(docs) : docs);
       } catch (error) {
         console.error('Error fetching data:', error);
