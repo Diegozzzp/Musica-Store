@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,7 @@ import '../index.css';
 import { getImageUrl } from '../utils/imageUrl';
 
 const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos';
+const EMPTY_CATEGORY_IDS = [];
 
 const shuffleProducts = (items) => [...items].sort(() => Math.random() - 0.5);
 
@@ -16,51 +17,35 @@ const normalizeProducts = (data) => {
   return [];
 };
 
-const getCategoryProducts = async (id, limit = 24) => {
-  try {
-    const { data } = await axios.get(`${URL_PRODUCTOS}/categoria/${id}`, {
-      params: { page: 1, limit, sort: 'mas-recientes' }
-    });
-
-    return normalizeProducts(data);
-  } catch (error) {
-    if (error.response?.status === 404) return [];
-    throw error;
-  }
-};
-
-const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = false, random = false, titulo }) => {
+const CarruselProductos = ({ categoriaId, categoriaIds = EMPTY_CATEGORY_IDS, esProximamente = false, random = false, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef(null);
+  const categoryIdsKey = useMemo(() => categoriaIds.join(','), [categoriaIds]);
 
   useEffect(() => {
     const fetchProductos = async () => {
       setLoading(true);
 
       try {
-        let docs = [];
+        const params = {
+          page: 1,
+          limit: 24,
+          ordenarPor: 'masReciente'
+        };
 
-        if (categoriaIds.length > 0) {
-          const responses = await Promise.all(categoriaIds.map((id) => getCategoryProducts(id, 12)));
-          docs = responses.flat();
+        if (categoryIdsKey) {
+          params.categorias = categoryIdsKey;
         } else if (categoriaId) {
-          docs = await getCategoryProducts(categoriaId, 24);
-        } else {
-          const params = {
-            page: 1,
-            limit: 24,
-            ordenarPor: 'masReciente'
-          };
-
-          if (esProximamente) {
-            params.esProximamente = 'true';
-          }
-
-          const { data } = await axios.get(URL_PRODUCTOS, { params });
-          docs = normalizeProducts(data);
+          params.categoria = categoriaId;
         }
 
+        if (esProximamente) {
+          params.esProximamente = 'true';
+        }
+
+        const { data } = await axios.get(URL_PRODUCTOS, { params });
+        const docs = normalizeProducts(data);
         setProductos(random ? shuffleProducts(docs) : docs);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -71,7 +56,7 @@ const CarruselProductos = ({ categoriaId, categoriaIds = [], esProximamente = fa
     };
 
     fetchProductos();
-  }, [categoriaId, categoriaIds, esProximamente, random]);
+  }, [categoriaId, categoryIdsKey, esProximamente, random]);
 
   const handleScroll = useCallback((direction) => {
     const scrollAmount = direction === 'left' ? -420 : 420;
