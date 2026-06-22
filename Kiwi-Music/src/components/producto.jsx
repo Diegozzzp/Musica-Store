@@ -19,11 +19,11 @@ const Carousel = ({ images }) => {
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-[4/5] overflow-hidden rounded bg-gray-100 shadow-xl">
+      <div className="relative aspect-[4/3] overflow-hidden rounded bg-[#f2efe8] shadow-xl">
         <img
           src={getImageUrl(images[currentIndex])}
           alt={`Imagen ${currentIndex + 1}`}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain p-4"
         />
         {images.length > 1 && (
           <>
@@ -46,7 +46,7 @@ const Carousel = ({ images }) => {
               className={`aspect-square overflow-hidden rounded border-2 bg-gray-100 ${index === currentIndex ? 'border-[#547980]' : 'border-transparent'}`}
               aria-label={`Ver imagen ${index + 1}`}
             >
-              <img src={getImageUrl(image)} alt="" className="h-full w-full object-cover" />
+              <img src={getImageUrl(image)} alt="" className="h-full w-full object-contain p-1" />
             </button>
           ))}
         </div>
@@ -118,12 +118,12 @@ const ProductDetailPage = () => {
 
   return (
     <>
-      <section className="kiwi-section grid gap-10 py-10 md:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] md:py-16">
+      <section className="kiwi-section grid gap-10 py-10 md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,27rem)] md:py-16">
         <div>
           {producto.imagenes && producto.imagenes.length > 0 ? (
             <Carousel images={producto.imagenes} />
           ) : (
-            <div className="aspect-[4/5] rounded bg-gray-100" />
+            <div className="aspect-[4/3] rounded bg-[#f2efe8]" />
           )}
         </div>
 

@@ -11,6 +11,9 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -21,6 +24,14 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         setProductos(Array.isArray(data.productos) ? data.productos : []);
       } catch (error) {
         console.error('Error fetching data:', error);
+        try {
+          const fallback = await axios.get('https://musica-store.vercel.app/productos', {
+            params: { page: 1, limit: 10 }
+          });
+          setProductos(Array.isArray(fallback.data.docs) ? fallback.data.docs : []);
+        } catch (fallbackError) {
+          console.error('Error fetching fallback products:', fallbackError);
+        }
       } finally {
         setLoading(false);
       }
@@ -32,11 +43,28 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
   }, [categoriaId]);
 
   const handleScroll = useCallback((direction) => {
-    const scrollAmount = direction === 'left' ? -340 : 340;
+    const scrollAmount = direction === 'left' ? -420 : 420;
     carouselRef.current?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }, []);
 
-  if (!loading && productos.length === 0) return null;
+  const startDrag = useCallback((clientX) => {
+    if (!carouselRef.current) return;
+    isDragging.current = true;
+    startX.current = clientX;
+    scrollLeft.current = carouselRef.current.scrollLeft;
+    carouselRef.current.classList.add('cursor-grabbing');
+  }, []);
+
+  const moveDrag = useCallback((clientX) => {
+    if (!isDragging.current || !carouselRef.current) return;
+    const walk = (clientX - startX.current) * 1.4;
+    carouselRef.current.scrollLeft = scrollLeft.current - walk;
+  }, []);
+
+  const endDrag = useCallback(() => {
+    isDragging.current = false;
+    carouselRef.current?.classList.remove('cursor-grabbing');
+  }, []);
 
   return (
     <section className="kiwi-section py-8 md:py-12">
@@ -55,16 +83,26 @@ const CarruselProductos = ({ categoriaId, titulo }) => {
         </div>
       </div>
 
-      <div ref={carouselRef} className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth pb-4">
+      <div
+        ref={carouselRef}
+        className="scrollbar-hide flex cursor-grab gap-6 overflow-x-auto scroll-smooth pb-4"
+        onMouseDown={(e) => startDrag(e.pageX)}
+        onMouseMove={(e) => moveDrag(e.pageX)}
+        onMouseUp={endDrag}
+        onMouseLeave={endDrag}
+        onTouchStart={(e) => startDrag(e.touches[0].pageX)}
+        onTouchMove={(e) => moveDrag(e.touches[0].pageX)}
+        onTouchEnd={endDrag}
+      >
         {loading ? (
           Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-[25rem] min-w-[17rem] animate-pulse rounded bg-white/70" />
+            <div key={index} className="h-[24rem] min-w-[21rem] animate-pulse rounded bg-white/70" />
           ))
         ) : (
           productos.map((producto) => (
-            <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[17rem] overflow-hidden rounded">
-              <div className="aspect-[4/5] overflow-hidden bg-gray-100">
-                <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+            <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[21rem] overflow-hidden rounded">
+              <div className="aspect-[5/4] overflow-hidden bg-[#f2efe8]">
+                <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-[1.03]" />
               </div>
               <div className="p-4">
                 <h3 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h3>

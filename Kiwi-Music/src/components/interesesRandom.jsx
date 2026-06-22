@@ -10,6 +10,9 @@ const URL_PRODUCTOS = 'https://musica-store.vercel.app/productos/random';
 const RandomsIntereses = ({ titulo }) => {
   const [productos, setProductos] = useState([]);
   const carouselRef = useRef(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -26,8 +29,27 @@ const RandomsIntereses = ({ titulo }) => {
   }, []);
 
   const handleScroll = useCallback((direction) => {
-    const scrollAmount = direction === 'left' ? -320 : 320;
+    const scrollAmount = direction === 'left' ? -420 : 420;
     carouselRef.current?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }, []);
+
+  const startDrag = useCallback((clientX) => {
+    if (!carouselRef.current) return;
+    isDragging.current = true;
+    startX.current = clientX;
+    scrollLeft.current = carouselRef.current.scrollLeft;
+    carouselRef.current.classList.add('cursor-grabbing');
+  }, []);
+
+  const moveDrag = useCallback((clientX) => {
+    if (!isDragging.current || !carouselRef.current) return;
+    const walk = (clientX - startX.current) * 1.4;
+    carouselRef.current.scrollLeft = scrollLeft.current - walk;
+  }, []);
+
+  const endDrag = useCallback(() => {
+    isDragging.current = false;
+    carouselRef.current?.classList.remove('cursor-grabbing');
   }, []);
 
   if (productos.length === 0) return null;
@@ -49,11 +71,21 @@ const RandomsIntereses = ({ titulo }) => {
         </div>
       </div>
 
-      <div ref={carouselRef} className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth pb-4">
+      <div
+        ref={carouselRef}
+        className="scrollbar-hide flex cursor-grab gap-6 overflow-x-auto scroll-smooth pb-4"
+        onMouseDown={(e) => startDrag(e.pageX)}
+        onMouseMove={(e) => moveDrag(e.pageX)}
+        onMouseUp={endDrag}
+        onMouseLeave={endDrag}
+        onTouchStart={(e) => startDrag(e.touches[0].pageX)}
+        onTouchMove={(e) => moveDrag(e.touches[0].pageX)}
+        onTouchEnd={endDrag}
+      >
         {productos.map((producto) => (
-          <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[16rem] overflow-hidden rounded">
-            <div className="aspect-[4/5] overflow-hidden bg-gray-100">
-              <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+          <Link to={`/producto/${producto._id}`} key={producto._id} className="kiwi-card group min-w-[21rem] overflow-hidden rounded">
+            <div className="aspect-[5/4] overflow-hidden bg-[#f2efe8]">
+              <img src={getImageUrl(producto.imagenes)} alt={producto.nombre} className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-[1.03]" />
             </div>
             <div className="p-4">
               <h3 className="line-clamp-1 text-lg font-black text-[#17252a]">{producto.nombre}</h3>

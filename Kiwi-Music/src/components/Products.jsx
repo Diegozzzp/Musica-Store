@@ -94,15 +94,15 @@ const AlbumsPage = ({ categoriaId = null, titulo }) => {
           <p className="mt-2 text-sm text-gray-500">Prueba con otra categoria u orden.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           {data.map((producto) => (
             <article key={producto._id} className="kiwi-card group overflow-hidden rounded">
               <Link to={`/producto/${producto._id}`} className="block">
-                <div className="aspect-[4/5] overflow-hidden bg-gray-100">
+                <div className="aspect-[5/4] overflow-hidden bg-[#f2efe8]">
                   <img
                     src={getImageUrl(producto.imagenes)}
                     alt={producto.nombre}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain p-4 transition duration-300 group-hover:scale-[1.03]"
                   />
                 </div>
               </Link>

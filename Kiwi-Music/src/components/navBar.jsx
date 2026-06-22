@@ -62,7 +62,7 @@ const NavBar = () => {
   }, []);
 
   return (
-    <nav className={`w-full border-b border-white/10 px-4 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#17252a]/95 text-white shadow-lg backdrop-blur' : 'bg-[#547980] text-white'}`}>
+    <nav className={`w-full border-b border-white/10 px-4 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#547980]/95 text-white shadow-md backdrop-blur' : 'bg-[#5a8a99] text-white'}`}>
       <div className="flex items-center pl-2 md:pl-6">
         <Link to="/" className="leading-none"><span className="text-xl font-black tracking-tight">Kiwi</span><span className="block text-xs font-semibold uppercase tracking-[0.22em] text-[#9DE0AD]">Music</span></Link>
       </div>
@@ -100,18 +100,20 @@ const NavBar = () => {
             <FaSearch className="w-4 h-4 text-white hover:text-gray-400" />
           </button>
           {isSearchOpen && (
-            <div className="absolute right-0 top-full mt-3 w-72 rounded border border-gray-100 bg-white p-4 text-black shadow-xl">
+            <div className="absolute right-0 top-full mt-3 w-[22rem] rounded border border-gray-100 bg-white p-5 text-black shadow-xl">
+              <p className="mb-3 text-sm font-black text-[#17252a]">Buscar en Kiwi Music</p>
               <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}  // Actualiza el estado del término de búsqueda
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="w-full rounded border border-gray-200 px-3 py-3 text-sm outline-none focus:border-[#547980]"
+                className="w-full rounded border border-gray-200 bg-[#f7f5f0] px-3 py-3 text-sm outline-none focus:border-[#547980]"
               />
               <button onClick={handleSearch} className="kiwi-button mt-3 w-full rounded px-3 py-3 text-sm">
                 Buscar
               </button>
+              <p className="mt-3 text-xs text-gray-500">Busca por artista, album o producto.</p>
             </div>
           )}
           

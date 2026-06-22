@@ -102,12 +102,16 @@ const App = () => {
   const albumImage = images.length > 0 ? images[0].url : ''; 
   const duration = Math.floor(duration_ms / 1000);
 
+  if (songs.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <p className="text-3xl font-bold text-center mb-8 text-[#9DE0AD]">Lo más escuchado esta semana:</p>
-      <div className="w-full lg:w-2/3 mx-auto px-4 mb-8">
+      <div className="kiwi-section mb-8">
         {/* Contenedor principal del reproductor */}
-        <div className="bg-gradient-to-br from-[#547980] to-[#3d5a66] shadow-2xl rounded-2xl overflow-hidden mb-8 backdrop-blur-sm border border-[#9DE0AD] border-opacity-20">
+        <div className="bg-gradient-to-br from-[#547980] to-[#3d5a66] shadow-xl rounded overflow-hidden mb-8 backdrop-blur-sm border border-[#9DE0AD] border-opacity-20">
           
           {/* Sección superior: Información de la canción - COMPACTA */}
           <div className="bg-gradient-to-r from-[#547980] to-[#4a6f7a] p-4 lg:p-6">
