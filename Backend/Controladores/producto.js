@@ -9,6 +9,7 @@ const handleError = (res, message, error) => {
     res.status(500).json({ msg: message, error: error.message });
 };
 
+
 // Controlador para obtener una lista paginada de productos
 exports.obtenerProductos = async (req, res) => {
     try {
@@ -147,10 +148,9 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
         };
         // Obtener productos por categoría con paginación y opciones especificadas
         const productos = await Productos.paginate({ categoria: id }, options);
-        const totalProductos = await Productos.countDocuments({ categoria: id }); // Contar el total de productos en la categoría
         res.json({
             productos: productos.docs,
-            totalProductos,
+            totalProductos: productos.totalDocs,
             totalPages: productos.totalPages,
             currentPage: productos.page
         }); // Enviar respuesta con detalles de los productos
@@ -313,4 +313,3 @@ exports.eliminarProducto = async (req, res) => {
         handleError(res, 'Error al eliminar el producto', error); // Manejar errores
     }
 };
-
