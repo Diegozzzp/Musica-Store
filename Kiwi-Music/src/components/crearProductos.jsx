@@ -161,7 +161,7 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
             <h3 className="mb-4 text-lg font-black text-[#17252a]">Informacion principal</h3>
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Nombre" error={error.nombre}>
-                <input name="nombre" value={form.nombre} onChange={handleChange} className="product-input" />
+                <input name="nombre" value={form.nombre} placeholder="Nombre del cantante completo" onChange={handleChange} className="product-input" />
               </Field>
               <Field label="Categoria" error={error.categoria}>
                 <select name="categoria" value={form.categoria} onChange={handleChange} disabled={loadingCategorias} className="product-input bg-white">
@@ -174,7 +174,7 @@ const CrearProducto = ({ isOpen, onClose, onSave }) => {
                 </select>
               </Field>
               <Field label="Descripcion" error={error.descripcion} className="md:col-span-2">
-                <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows="4" className="product-input resize-none" />
+                <textarea name="descripcion" placeholder="Ejem: Shawn - CASSETTES, X's - CASSETTES, etc..." value={form.descripcion} onChange={handleChange} rows="4" className="product-input resize-none" />
               </Field>
             </div>
             {categoriaSeleccionada && (
