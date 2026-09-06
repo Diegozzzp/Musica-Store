@@ -27,30 +27,101 @@ if (typeof document !== 'undefined') {
 
 const API_KEY = '43b92e0e0bmsh49ea26730c066fbp15bc44jsn41a81288771d';
 const BASE_URL = 'https://spotify23.p.rapidapi.com';
+const PLAYLIST_ID = '37i9dQZF1DXcBWIGoYBM5M';
+const SONGS_CACHE_KEY = 'kiwi-music:spotify:songs:v1';
+const SONGS_CACHE_TTL = 6 * 60 * 60 * 1000;
+const FAILED_REQUEST_CACHE_TTL = 5 * 60 * 1000;
+const SONGS_LIMIT = 20;
+
+let songsRequest = null;
+
+const readSongsCache = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  let cachedSongs;
+  try {
+    cachedSongs = window.localStorage.getItem(SONGS_CACHE_KEY);
+  } catch (error) {
+    console.error('No se pudo acceder a la caché de Spotify:', error);
+    return null;
+  }
+  if (!cachedSongs) {
+    return null;
+  }
+
+  try {
+    const { songs, expiresAt } = JSON.parse(cachedSongs);
+    if (expiresAt <= Date.now() || !Array.isArray(songs)) {
+      window.localStorage.removeItem(SONGS_CACHE_KEY);
+      return null;
+    }
+
+    return songs;
+  } catch (error) {
+    console.error('No se pudo leer la caché de Spotify:', error);
+    window.localStorage.removeItem(SONGS_CACHE_KEY);
+    return null;
+  }
+};
+
+const writeSongsCache = (songs, ttl = SONGS_CACHE_TTL) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(SONGS_CACHE_KEY, JSON.stringify({
+      songs,
+      expiresAt: Date.now() + ttl,
+    }));
+  } catch (error) {
+    console.error('No se pudo guardar la caché de Spotify:', error);
+  }
+};
 
 const getRandomFamousSongs = async () => {
-  try {
-    const { data } = await axios.get(`${BASE_URL}/playlist_tracks`, {
-      headers: {
-        'X-RapidAPI-Key': API_KEY,
-        'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
-      },
-      params: {
-        id: '37i9dQZF1DXcBWIGoYBM5M',
-        limit: 50,
-      },
-    });
+  const cachedSongs = readSongsCache();
+  if (cachedSongs) {
+    return cachedSongs;
+  }
+
+  if (songsRequest) {
+    return songsRequest;
+  }
+
+  songsRequest = axios.get(`${BASE_URL}/playlist_tracks`, {
+    headers: {
+      'X-RapidAPI-Key': API_KEY,
+      'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
+    },
+    params: {
+      id: PLAYLIST_ID,
+      limit: SONGS_LIMIT,
+      offset: 0,
+    },
+  }).then(({ data }) => {
     if (!Array.isArray(data?.items)) {
+      writeSongsCache([], FAILED_REQUEST_CACHE_TTL);
       return [];
     }
 
-    return data.items
-      .map(({ track }) => track)
+    const songs = data.items
+      .map((item) => item?.track)
       .filter((track) => track?.preview_url);
-  } catch (error) {
+
+    writeSongsCache(songs);
+    return songs;
+  }).catch((error) => {
     console.error('Error fetching famous songs:', error);
+    writeSongsCache([], FAILED_REQUEST_CACHE_TTL);
     return [];
-  }
+  }).finally(() => {
+    songsRequest = null;
+  });
+
+  return songsRequest;
 };
 
 const App = () => {
@@ -62,8 +133,17 @@ const App = () => {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const fetchSongs = async () => setSongs(await getRandomFamousSongs());
-    fetchSongs();
+    let isMounted = true;
+
+    getRandomFamousSongs().then((fetchedSongs) => {
+      if (isMounted) {
+        setSongs(fetchedSongs);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
