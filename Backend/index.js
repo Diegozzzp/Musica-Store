@@ -49,13 +49,31 @@ mongoose.connect('mongodb+srv://kiwi-music-DB:kiwi-music-DB@kiwi-music.dhnkl.mon
   .then(() => console.log('Conectado a MongoDB Atlas'))
   .catch(err => console.error('Error conectando a MongoDB:', err));
 
+// Evita que las consultas queden en el buffer mientras MongoDB todavía conecta.
+const ensureMongoConnection = async (req, res, next) => {
+  if (mongoose.connection.readyState === 1) {
+    return next();
+  }
+
+  try {
+    await mongoose.connection.asPromise();
+    return next();
+  } catch (error) {
+    console.error('MongoDB no está disponible para atender la solicitud:', error);
+    return res.status(503).json({
+      msg: 'Base de datos no disponible',
+      error: 'No fue posible conectar con la base de datos'
+    });
+  }
+};
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.json({ msg: 'API Kiwi Music funcionando' });
 });
 
-app.use(usuarios, categoria, rol, compra, producto, reportes);
+app.use(ensureMongoConnection, usuarios, categoria, rol, compra, producto, reportes);
 
 if (!process.env.VERCEL) {
   app.listen(port, () => {

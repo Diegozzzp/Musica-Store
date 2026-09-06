@@ -40,7 +40,13 @@ const getRandomFamousSongs = async () => {
         limit: 50,
       },
     });
-    return data.items.map(({ track }) => track).filter(({ preview_url }) => preview_url);
+    if (!Array.isArray(data?.items)) {
+      return [];
+    }
+
+    return data.items
+      .map(({ track }) => track)
+      .filter((track) => track?.preview_url);
   } catch (error) {
     console.error('Error fetching famous songs:', error);
     return [];
@@ -63,14 +69,21 @@ const App = () => {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = songs[currentSongIndex]?.preview_url || '';
-      isPlaying ? audioRef.current.play() : audioRef.current.pause();
+      if (isPlaying) {
+        audioRef.current.play().catch((error) => {
+          console.error('No se pudo reproducir la canción:', error);
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
+      }
     }
   }, [currentSongIndex, isPlaying, songs]);
 
   const updateProgress = () => {
     if (audioRef.current) {
       const { currentTime, duration } = audioRef.current;
-      setProgress((currentTime / duration) * 100);
+      setProgress(duration ? (currentTime / duration) * 100 : 0);
     }
   };
 
